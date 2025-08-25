@@ -1,0 +1,25 @@
+import { forwardRef, memo } from 'react';
+import clsx from 'clsx';
+
+interface ITableCell extends React.TdHTMLAttributes<HTMLDivElement> {
+  cellValue?: React.ReactNode;
+}
+
+const TableCell = forwardRef((props: ITableCell, ref: React.Ref<HTMLDivElement>) => {
+  const { cellValue, className, children, ...rest } = props;
+
+  return (
+    <div
+      ref={ref}
+      className={clsx(
+        'border-r border-b border-gray-200 px-1.5 cursor-pointer text-xs content-center',
+        className,
+      )}
+      {...rest}
+    >
+      {cellValue || children}
+    </div>
+  );
+});
+
+export default memo(TableCell);
