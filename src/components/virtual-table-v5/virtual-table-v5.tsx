@@ -36,13 +36,8 @@ function VirtualTable5<TData>(virtualTableProps: IVirtualTable<TData>) {
   const modifiedHeaders = useMemo(() => {
     return headers.map((header) => ({
       ...header,
-      ...(header.key !== 'group-header' && { width: header.width || DEFAULT_SIZE.COLUMN_WIDTH }),
+      width: header.width || DEFAULT_SIZE.COLUMN_WIDTH,
       visible: true,
-      children: header?.children?.map((child) => ({
-        ...child,
-        width: child.width || DEFAULT_SIZE.COLUMN_WIDTH,
-        visible: true,
-      })),
     }));
   }, [headers]);
 
