@@ -31,12 +31,13 @@ const VirtualTableBody = forwardRef(
     } = props;
 
     const {
-      columns,
+      isFilterVisible,
       freezeLeftColumns,
       freezeRightColumns,
       freezeRightColumnsWidth,
       freezeLeftColumnsWidth,
-      isFilterVisible,
+      columns,
+      getLeaves,
     } = useHeaderContext();
     const { flattenedData, rowVirtualizer, rowVirtualItems, columnVirtualItems, containerWidth } =
       useVirtualizerContext();
@@ -154,19 +155,58 @@ const VirtualTableBody = forwardRef(
       isRowChecked: boolean,
       isRowExpanded: boolean,
     ) => {
-      return freezeLeftColumns.map((column, freezeLeftIdx) => {
+      return freezeLeftColumns.flatMap((column, freezeLeftIdx) => {
         const isRowHighlighted = rowKey === String(selectedRowKey);
+        const isGroupColumn = column.key === 'group-header';
+
+        if (isGroupColumn) {
+          let childOffset = 0;
+
+          return getLeaves(column).map((child) => {
+            const isVisible = child.visible;
+            const isCheckboxColumn = child.key === 'row-selection';
+            const isExpandColumn = child.key === 'expand';
+            const cellValue = String(rowData[child.key as keyof typeof rowData]);
+            const left = freezeColLeftPositions[freezeLeftIdx] + childOffset;
+            childOffset += child.width || 0;
+
+            return (
+              <TableCell
+                key={'table-cell-freeze-left-group-' + String(child.key)}
+                data-row-key={rowKey}
+                data-col-key={String(child.key)}
+                className={clsx('table-cell bg-white truncate', {
+                  '!bg-[#F6F6FF]': isRowHighlighted,
+                  '!border-b !border-l !border-t !border-y-[#2F3574] nth-[1]:border-l-[#2F3574]':
+                    isRowHighlighted,
+                  '!hidden': !isVisible,
+                })}
+                style={{
+                  position: 'absolute',
+                  minHeight: rowHeight,
+                  transform: `translateX(${left}px)`,
+                  width: child.width!,
+                  top: 0,
+                }}
+              >
+                {!isCheckboxColumn && !isExpandColumn && (child?.render?.(rowData) || cellValue)}
+                {isCheckboxColumn && <RowCheckbox checked={isRowChecked} />}
+                {isExpandColumn && <RowExpand isExpanded={isRowExpanded} />}
+              </TableCell>
+            );
+          });
+        }
+
         const isVisible = column.visible;
         const isCheckboxColumn = column.key === 'row-selection';
         const isExpandColumn = column.key === 'expand';
-
         const cellValue = String(rowData[column.key as keyof typeof rowData]);
 
-        return (
+        return [
           <TableCell
-            key={'table-cell-freeze-left-' + column.key}
+            key={'table-cell-freeze-left-' + String(column.key)}
             data-row-key={rowKey}
-            data-col-key={column.key}
+            data-col-key={String(column.key)}
             className={clsx('table-cell bg-white truncate', {
               '!bg-[#F6F6FF]': isRowHighlighted,
               '!border-b !border-l !border-t !border-y-[#2F3574] nth-[1]:border-l-[#2F3574]':
@@ -184,8 +224,8 @@ const VirtualTableBody = forwardRef(
             {!isCheckboxColumn && !isExpandColumn && (column?.render?.(rowData) || cellValue)}
             {isCheckboxColumn && <RowCheckbox checked={isRowChecked} />}
             {isExpandColumn && <RowExpand isExpanded={isRowExpanded} />}
-          </TableCell>
-        );
+          </TableCell>,
+        ];
       });
     };
 
@@ -195,19 +235,57 @@ const VirtualTableBody = forwardRef(
       isRowChecked: boolean,
       isRowExpanded: boolean,
     ) => {
-      return freezeRightColumns.map((column, freezeRightIdx) => {
+      return freezeRightColumns.flatMap((column, freezeRightIdx) => {
         const isRowHighlighted = rowKey === String(selectedRowKey);
+        const isGroupColumn = column.key === 'group-header';
+
+        if (isGroupColumn) {
+          let childOffset = 0;
+
+          return getLeaves(column).map((child) => {
+            const isVisible = child.visible;
+            const isCheckboxColumn = child.key === 'row-selection';
+            const isExpandColumn = child.key === 'expand';
+            const cellValue = String(rowData[child.key as keyof typeof rowData]);
+            const left = freezeColRightPositions[freezeRightIdx] + childOffset;
+            childOffset += child.width || 0;
+
+            return (
+              <TableCell
+                key={'table-cell-freeze-right-group-' + String(child.key)}
+                data-row-key={rowKey}
+                data-col-key={String(child.key)}
+                className={clsx('table-cell bg-white nth-[1]:!border-l truncate', {
+                  '!bg-[#F6F6FF]': isRowHighlighted,
+                  '!border-b !border-t !border-y-[#2F3574] nth-last-[1]:border-r-[#2F3574]': isRowHighlighted,
+                  '!hidden': !isVisible,
+                })}
+                style={{
+                  position: 'absolute',
+                  minHeight: rowHeight,
+                  transform: `translateX(${left}px)`,
+                  width: child.width!,
+                  top: 0,
+                }}
+              >
+                {!isCheckboxColumn && !isExpandColumn && (child?.render?.(rowData) || cellValue)}
+                {isCheckboxColumn && <RowCheckbox checked={isRowChecked} />}
+                {isExpandColumn && <RowExpand isExpanded={isRowExpanded} />}
+              </TableCell>
+            );
+          });
+        }
+
         const isVisible = column.visible;
         const isCheckboxColumn = column.key === 'row-selection';
         const isExpandColumn = column.key === 'expand';
-
         const cellValue = String(rowData[column.key as keyof typeof rowData]);
 
-        return (
+        return [
           <TableCell
-            key={'table-cell-freeze-right-' + column.key}
+            key={'table-cell-freeze-right-' + String(column.key)}
             data-row-key={rowKey}
-            data-col-key={column.key}
+            data-col-key={String(column.key)}
             className={clsx('table-cell bg-white nth-[1]:!border-l truncate', {
               '!bg-[#F6F6FF]': isRowHighlighted,
               '!border-b !border-t !border-y-[#2F3574] nth-last-[1]:border-r-[#2F3574]': isRowHighlighted,
@@ -224,8 +302,8 @@ const VirtualTableBody = forwardRef(
             {!isCheckboxColumn && !isExpandColumn && (column?.render?.(rowData) || cellValue)}
             {isCheckboxColumn && <RowCheckbox checked={isRowChecked} />}
             {isExpandColumn && <RowExpand isExpanded={isRowExpanded} />}
-          </TableCell>
-        );
+          </TableCell>,
+        ];
       });
     };
 
@@ -235,20 +313,63 @@ const VirtualTableBody = forwardRef(
       isRowChecked: boolean,
       isRowExpanded: boolean,
     ) => {
-      return columnVirtualItems.map((column, columnIndex) => {
-        const columnKey = columns?.[column.index]?.key as string;
-
+      return columnVirtualItems.flatMap((column, columnIndex) => {
+        const header = columns?.[column.index];
         const isRowHighlighted = rowKey === String(selectedRowKey);
-        const isVisible = columns?.[column.index]?.visible;
-        const isCheckboxColumn = columnKey === 'row-selection';
-        const isExpandColumn = columnKey === 'expand';
         const isFirstIndex = columnIndex === 0;
         const isLastIndex = columnIndex === columnVirtualItems.length - 1;
 
-        const cellValue = String(rowData[columnKey as keyof typeof rowData]);
-        const cellRender = columns?.[column.index]?.render;
+        if (header?.key === 'group-header') {
+          const baseLeft = column.start + freezeLeftColumnsWidth;
+          let childOffset = 0;
 
-        return (
+          return getLeaves(header).map((child) => {
+            const columnKey = child.key as string;
+            const isVisible = child.visible;
+            const isCheckboxColumn = columnKey === 'row-selection';
+            const isExpandColumn = columnKey === 'expand';
+            const cellValue = String(rowData[columnKey as keyof typeof rowData]);
+            const cellRender = child?.render;
+            const left = baseLeft + childOffset;
+            childOffset += child.width || 0;
+
+            return (
+              <TableCell
+                key={'table-cell-group-child-' + column.key + '-' + String(child.key)}
+                data-row-key={rowKey}
+                data-col-key={String(child.key)}
+                className={clsx('table-cell truncate', {
+                  'bg-[#F6F6FF]': isRowHighlighted,
+                  'border-l border-l-[#2F3574]': isRowHighlighted && !freezeLeftColumnsWidth && isFirstIndex,
+                  'nth-last-[1]:!border-r-[#2F3574]': isRowHighlighted && !freezeRightColumnsWidth,
+                  '!border-b !border-t !border-y-[#2F3574]': isRowHighlighted,
+                  '': isLastIndex && freezeRightColumnsWidth > 0,
+                  '!hidden': !isVisible,
+                })}
+                style={{
+                  position: 'absolute',
+                  top: 0,
+                  minHeight: rowHeight,
+                  transform: `translateX(${left}px)`,
+                  width: child.width!,
+                }}
+              >
+                {!isCheckboxColumn && !isExpandColumn && (cellRender?.(rowData) || cellValue)}
+                {isCheckboxColumn && <RowCheckbox checked={isRowChecked} />}
+                {isExpandColumn && <RowExpand isExpanded={isRowExpanded} />}
+              </TableCell>
+            );
+          });
+        }
+
+        const columnKey = header?.key as string;
+        const isVisible = header?.visible;
+        const isCheckboxColumn = columnKey === 'row-selection';
+        const isExpandColumn = columnKey === 'expand';
+        const cellValue = String(rowData[columnKey as keyof typeof rowData]);
+        const cellRender = header?.render;
+
+        return [
           <TableCell
             key={'table-cell-' + column.key}
             data-row-key={rowKey}
@@ -272,8 +393,8 @@ const VirtualTableBody = forwardRef(
             {!isCheckboxColumn && !isExpandColumn && (cellRender?.(rowData) || cellValue)}
             {isCheckboxColumn && <RowCheckbox checked={isRowChecked} />}
             {isExpandColumn && <RowExpand isExpanded={isRowExpanded} />}
-          </TableCell>
-        );
+          </TableCell>,
+        ];
       });
     };
 

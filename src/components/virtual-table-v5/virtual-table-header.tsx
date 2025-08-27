@@ -5,6 +5,7 @@ import { useSelectionContext } from './context/selection-context';
 import { useHeaderContext } from './context/header-context';
 import { useUIContext } from './context/ui-context';
 import { HeaderCaption, ResizeIndicator, RowCheckbox, TableFilter, TableHead } from './components';
+import { DEFAULT_SIZE } from './lib';
 
 interface IVirtualTableHeader extends React.HTMLAttributes<HTMLDivElement> {
   headerHeight: number;
@@ -19,12 +20,15 @@ const VirtualTableHeader = forwardRef((props: IVirtualTableHeader, ref: React.Re
   const {
     columns,
     updateColumn,
+    updateChildColumn,
+    updateFreezeChildColumn,
     updateFreezeColumn,
     isFilterVisible,
     freezeLeftColumns,
     freezeRightColumns,
     freezeLeftColumnsWidth,
     freezeRightColumnsWidth,
+    getDepth,
   } = useHeaderContext();
   const { selectAll, deselectedRowKeys, toggleSelectAll } = useSelectionContext();
   const { freezeColLeftPositions, freezeColRightPositions, calcTotalTableWidth } = useUIContext();
@@ -80,34 +84,256 @@ const VirtualTableHeader = forwardRef((props: IVirtualTableHeader, ref: React.Re
     window.addEventListener('mouseup', onMouseUp);
   };
 
+  const handleResizeChildColumn = (
+    e: React.MouseEvent,
+    args: {
+      parentKey: string;
+      childKey: string;
+      parentVirtualIndex?: number;
+      freezeType?: 'left' | 'right';
+    },
+  ) => {
+    e.preventDefault();
+    const { parentKey, childKey, parentVirtualIndex, freezeType } = args;
+    const startX = e.clientX;
+
+    const parent =
+      freezeType === 'left'
+        ? freezeLeftColumns.find((c) => c.key === parentKey)
+        : freezeType === 'right'
+        ? freezeRightColumns.find((c) => c.key === parentKey)
+        : columns.find((c) => c.key === parentKey);
+    const child = parent?.children?.find((c) => c.key === childKey);
+    if (!parent || !child) return;
+
+    const startChildWidth = child.width ?? 0;
+    const startParentWidth = parent.width ?? 0;
+
+    const resizeLine = document.getElementById('resize-line')!;
+    resizeLine.style.display = 'block';
+    resizeLine.style.left = `${e.clientX}px`;
+
+    const onMouseMove = (ev: MouseEvent) => {
+      resizeLine.style.left = `${ev.clientX}px`;
+    };
+
+    const onMouseUp = (ev: MouseEvent) => {
+      resizeLine.style.display = 'none';
+      const delta = ev.clientX - startX;
+      const newChildWidth = Math.max(50, startChildWidth + delta);
+
+      if (freezeType) {
+        updateFreezeChildColumn(parentKey as string, childKey as string, freezeType, {
+          width: newChildWidth,
+        });
+      } else {
+        const newParentWidth = Math.max(50, startParentWidth - startChildWidth + newChildWidth);
+        updateChildColumn(parentKey as string, childKey as string, { width: newChildWidth });
+        if (typeof parentVirtualIndex === 'number') {
+          columnVirtualizer?.resizeItem(parentVirtualIndex, newParentWidth);
+        }
+      }
+
+      window.removeEventListener('mousemove', onMouseMove);
+      window.removeEventListener('mouseup', onMouseUp);
+    };
+
+    window.addEventListener('mousemove', onMouseMove);
+    window.addEventListener('mouseup', onMouseUp);
+  };
+
   const isSingleHeader = headerMode === 'single';
   const calcFilterHeight = isFilterVisible ? filterHeight : 0;
   const calcHeaderHeight = isSingleHeader ? headerHeight : headerHeight + calcFilterHeight;
+
+  type HeaderNode = (typeof columns)[number];
+
+  // Hitung kedalaman maksimum dari semua kolom top-level (virtual dan freeze)
+  const maxDepthTopLevel = Math.max(
+    0,
+    ...columns.map((c) => getDepth(c as HeaderNode)),
+    ...freezeLeftColumns.map((c) => getDepth(c as HeaderNode)),
+    ...freezeRightColumns.map((c) => getDepth(c as HeaderNode)),
+  );
+  // Satu tinggi global untuk seluruh header (agar rata)
+  const computedHeaderHeight = calcHeaderHeight + DEFAULT_SIZE.GROUP_HEADER_WIDTH * maxDepthTopLevel;
+
+  const renderNestedVirtualNode = (node: HeaderNode, rootTopLevelKey: string, parentVirtualIndex: number) => {
+    const isLeaf = !node.children || node.children.length === 0;
+
+    if (isLeaf) {
+      return (
+        <div
+          key={'table-head-group-' + String(node.key)}
+          className={clsx(
+            'group/outer relative border-r nth-last-[1]:border-r-transparent border-gray-200 flex',
+            { 'flex-row justify-between items-center px-1': isSingleHeader },
+            { 'flex-col justify-between items-start': !isSingleHeader },
+          )}
+          style={{ width: node.width! }}
+        >
+          <>
+            <HeaderCaption
+              isSingleHeader={isSingleHeader}
+              isFilterVisible={isFilterVisible}
+              headerKey={node?.key}
+              caption={node?.caption}
+            />
+
+            {isFilterVisible && (
+              <TableFilter
+                headerMode={headerMode}
+                headerKey={node?.key}
+                filterSelectionOptions={node?.filterSelectionOptions || []}
+              />
+            )}
+            <ResizeIndicator
+              handleMouseDown={(e) =>
+                handleResizeChildColumn(e, {
+                  parentKey: rootTopLevelKey,
+                  childKey: node.key as string,
+                  parentVirtualIndex,
+                })
+              }
+            />
+          </>
+        </div>
+      );
+    }
+
+    return (
+      <div
+        key={'table-head-group-node-' + String(node.key)}
+        className='group/outer relative border-r nth-last-[1]:border-r-transparent border-gray-200 !px-0 flex flex-col'
+        style={{ width: node.width! }}
+      >
+        <div
+          className='w-full border-b border-gray-200 text-center content-center'
+          style={{ height: DEFAULT_SIZE.GROUP_HEADER_WIDTH }}
+        >
+          {node.caption}
+        </div>
+        <div className='flex-1 w-full flex'>
+          {node.children?.map((child) =>
+            renderNestedVirtualNode(child as HeaderNode, rootTopLevelKey, parentVirtualIndex),
+          )}
+        </div>
+      </div>
+    );
+  };
+
+  const renderNestedFrozenNode = (
+    node: HeaderNode,
+    rootTopLevelKey: string,
+    freezeType: 'left' | 'right',
+    parentIndex: number,
+  ) => {
+    const isLeaf = !node.children || node.children.length === 0;
+
+    if (isLeaf) {
+      return (
+        <div
+          key={'table-head-freeze-' + freezeType + '-group-' + String(node.key)}
+          className={clsx(
+            'group/outer relative border-r nth-last-[1]:border-r-transparent border-gray-200 flex',
+            { 'flex-row justify-between items-center px-1': isSingleHeader },
+            { 'flex-col justify-between items-start': !isSingleHeader },
+          )}
+          style={{ width: node.width! }}
+        >
+          <>
+            <HeaderCaption
+              isSingleHeader={isSingleHeader}
+              isFilterVisible={isFilterVisible}
+              headerKey={node?.key}
+              caption={node?.caption}
+            />
+
+            {isFilterVisible && (
+              <TableFilter
+                headerMode={headerMode}
+                headerKey={node?.key}
+                filterSelectionOptions={node?.filterSelectionOptions || []}
+              />
+            )}
+
+            <ResizeIndicator
+              handleMouseDown={(e) =>
+                handleResizeChildColumn(e, {
+                  parentKey: rootTopLevelKey,
+                  childKey: node.key as string,
+                  freezeType,
+                })
+              }
+            />
+          </>
+        </div>
+      );
+    }
+
+    return (
+      <div
+        key={'table-head-freeze-' + freezeType + '-group-node-' + String(node.key)}
+        className='group/outer relative border-r nth-last-[1]:border-r-transparent border-gray-200 !px-0 flex flex-col'
+        style={{ width: node.width! }}
+      >
+        <div
+          className='w-full border-b border-gray-200 text-center content-center'
+          style={{ height: DEFAULT_SIZE.GROUP_HEADER_WIDTH }}
+        >
+          {node.caption}
+        </div>
+        <div className='flex-1 w-full flex'>
+          {node.children?.map((child) =>
+            renderNestedFrozenNode(child as HeaderNode, rootTopLevelKey, freezeType, parentIndex),
+          )}
+        </div>
+      </div>
+    );
+  };
 
   const renderFreezeLeftColumns = () => {
     return freezeLeftColumns.map((column, freezeLeftIdx) => {
       const isCheckboxHeader = column.key === 'row-selection';
       const isExpandHeader = column.key === 'expand';
       const isActionHeader = column.key === 'action';
+      const isGroupHeader = column.key === 'group-header';
 
       return (
         <TableHead
           key={'table-head-freeze-left-' + column.key}
-          className={clsx(
-            'flex w-full h-full group/outer relative',
-            isSingleHeader
-              ? 'flex-row justify-between items-center'
-              : 'flex-col justify-between items-start !px-0',
-          )}
+          className={clsx('flex size-full relative h-max', {
+            'group/outer': !isGroupHeader,
+            '!px-0 flex flex-col': isGroupHeader,
+            'flex-row justify-between items-center': isSingleHeader && !isGroupHeader,
+            'flex-col justify-between items-start !px-0': !isSingleHeader || isGroupHeader,
+          })}
           style={{
             position: 'absolute',
             transform: `translateX(${freezeColLeftPositions[freezeLeftIdx]}px)`,
-            height: calcHeaderHeight,
+            height: computedHeaderHeight,
             width: column.width!,
             top: 0,
           }}
         >
-          {!isCheckboxHeader && !isExpandHeader && !isActionHeader && (
+          {isGroupHeader && (
+            <>
+              <div
+                className='w-full border-b border-gray-200 text-center content-center'
+                style={{ height: DEFAULT_SIZE.GROUP_HEADER_WIDTH }}
+              >
+                {column.caption}
+              </div>
+
+              <div className='flex-1 w-full flex'>
+                {column.children?.map((child) =>
+                  renderNestedFrozenNode(child as HeaderNode, column.key as string, 'left', freezeLeftIdx),
+                )}
+              </div>
+            </>
+          )}
+
+          {!isCheckboxHeader && !isExpandHeader && !isActionHeader && !isGroupHeader && (
             <>
               <HeaderCaption
                 isSingleHeader={isSingleHeader}
@@ -133,27 +359,47 @@ const VirtualTableHeader = forwardRef((props: IVirtualTableHeader, ref: React.Re
   };
 
   const renderFreezeRightColumns = () => {
-    return freezeRightColumns.map((column, freezeLeftIdx) => {
+    return freezeRightColumns.map((column, freezeRightIdx) => {
       const isCheckboxHeader = column.key === 'row-selection';
       const isExpandHeader = column.key === 'expand';
       const isActionHeader = column.key === 'action';
+      const isGroupHeader = column.key === 'group-header';
 
       return (
         <TableHead
           key={'table-head-freeze-left-' + column.key}
-          className={clsx('flex w-full h-full group/outer relative nth-[1]:!border-l', {
-            'flex-row justify-between items-center': isSingleHeader,
-            'flex-col justify-between items-start !px-0': !isSingleHeader,
+          className={clsx('flex size-full relative nth-[1]:!border-l', {
+            'group/outer': !isGroupHeader,
+            '!px-0 flex flex-col': isGroupHeader,
+            'flex-row justify-between items-center': isSingleHeader && !isGroupHeader,
+            'flex-col justify-between items-start !px-0': !isSingleHeader || isGroupHeader,
           })}
           style={{
             position: 'absolute',
-            transform: `translateX(${freezeColRightPositions[freezeLeftIdx]}px)`,
-            height: calcHeaderHeight,
+            transform: `translateX(${freezeColRightPositions[freezeRightIdx]}px)`,
+            height: computedHeaderHeight,
             width: column.width!,
             top: 0,
           }}
         >
-          {!isCheckboxHeader && !isExpandHeader && !isActionHeader && (
+          {isGroupHeader && (
+            <>
+              <div
+                className='w-full border-b border-gray-200 text-center content-center'
+                style={{ height: DEFAULT_SIZE.GROUP_HEADER_WIDTH }}
+              >
+                {column.caption}
+              </div>
+
+              <div className='flex-1 w-full flex'>
+                {column.children?.map((child) =>
+                  renderNestedFrozenNode(child as HeaderNode, column.key as string, 'right', freezeRightIdx),
+                )}
+              </div>
+            </>
+          )}
+
+          {!isCheckboxHeader && !isExpandHeader && !isActionHeader && !isGroupHeader && (
             <>
               <HeaderCaption
                 isSingleHeader={isSingleHeader}
@@ -161,6 +407,7 @@ const VirtualTableHeader = forwardRef((props: IVirtualTableHeader, ref: React.Re
                 caption={column.caption}
                 isFilterVisible={isFilterVisible}
               />
+
               {isFilterVisible && (
                 <TableFilter
                   headerMode={headerMode}
@@ -168,7 +415,7 @@ const VirtualTableHeader = forwardRef((props: IVirtualTableHeader, ref: React.Re
                   filterSelectionOptions={column.filterSelectionOptions || []}
                 />
               )}
-              <ResizeIndicator handleMouseDown={(e) => handleResizeColumn(e, freezeLeftIdx, 'right')} />
+              <ResizeIndicator handleMouseDown={(e) => handleResizeColumn(e, freezeRightIdx, 'right')} />
             </>
           )}
 
@@ -185,24 +432,44 @@ const VirtualTableHeader = forwardRef((props: IVirtualTableHeader, ref: React.Re
       const isExpandHeader = header?.key === 'expand';
       const isActionHeader = header?.key === 'action';
       const isLastIndex = columnIndex === columnVirtualItems.length - 1;
+      const isGroupHeader = header?.key === 'group-header';
 
       return (
         <TableHead
           key={'table-head-' + column.key}
-          className={clsx('flex w-full h-full group/outer relative', {
-            'flex-row justify-between items-center': isSingleHeader,
-            'flex-col justify-between items-start !px-0': !isSingleHeader,
+          className={clsx('flex size-full relative', {
+            'group/outer': !isGroupHeader,
+            '!px-0 flex flex-col': isGroupHeader,
+            'flex-row justify-between items-center': isSingleHeader && !isGroupHeader,
+            'flex-col justify-between items-start !px-0': !isSingleHeader && !isGroupHeader,
             'border-r-transparent': isLastIndex && freezeRightColumnsWidth > 0,
           })}
           style={{
             position: 'absolute',
             transform: `translateX(${column.start + freezeLeftColumnsWidth}px)`,
-            height: calcHeaderHeight,
+            height: computedHeaderHeight,
             width: column.size,
             top: 0,
           }}
         >
-          {!isCheckboxHeader && !isExpandHeader && !isActionHeader && (
+          {isGroupHeader && (
+            <>
+              <div
+                className='w-full border-b border-gray-200 text-center content-center'
+                style={{ height: DEFAULT_SIZE.GROUP_HEADER_WIDTH }}
+              >
+                {header.caption}
+              </div>
+
+              <div className='flex-1 w-full flex'>
+                {header.children?.map((child) =>
+                  renderNestedVirtualNode(child as HeaderNode, header.key as string, column.index),
+                )}
+              </div>
+            </>
+          )}
+
+          {!isCheckboxHeader && !isExpandHeader && !isActionHeader && !isGroupHeader && (
             <>
               <HeaderCaption
                 isSingleHeader={isSingleHeader}
@@ -210,6 +477,7 @@ const VirtualTableHeader = forwardRef((props: IVirtualTableHeader, ref: React.Re
                 headerKey={header?.key}
                 caption={header?.caption}
               />
+
               {isFilterVisible && (
                 <TableFilter
                   headerMode={headerMode}
@@ -221,6 +489,7 @@ const VirtualTableHeader = forwardRef((props: IVirtualTableHeader, ref: React.Re
               <ResizeIndicator handleMouseDown={(e) => handleResizeColumn(e, column.index)} />
             </>
           )}
+
           {isCheckboxHeader && <RowCheckbox checked={selectAll && !deselectedRowKeys.size} />}
         </TableHead>
       );

@@ -1,7 +1,7 @@
 import { memo, useMemo, useRef, type ReactNode } from 'react';
 import clsx from 'clsx';
 import { DEFAULT_SIZE, type IVirtualTable } from './lib';
-import { HeaderContextProvider, type HeaderContext } from './context/header-context';
+import { HeaderContextProvider, type IAdjustedHeader } from './context/header-context';
 import { VirtualizerContextProvider } from './context/virtualizer-context';
 import { SelectionContextProvider } from './context/selection-context';
 import { FilterContextProvider } from './context/filter-context';
@@ -36,13 +36,13 @@ function VirtualTable5<TData>(virtualTableProps: IVirtualTable<TData>) {
   const modifiedHeaders = useMemo(() => {
     return headers.map((header) => ({
       ...header,
-      width: header.width || DEFAULT_SIZE.COLUMN_WIDTH,
       visible: true,
+      width: header.width || DEFAULT_SIZE.COLUMN_WIDTH,
     }));
   }, [headers]);
 
   return (
-    <HeaderContextProvider initialColumns={modifiedHeaders as HeaderContext[]}>
+    <HeaderContextProvider initialColumns={modifiedHeaders as IAdjustedHeader[]}>
       <FilterContextProvider dataSource={data}>
         <VirtualizerContextProvider rowKey={rowKey} scrollElementRef={scrollElementRef}>
           <SelectionContextProvider onChangeCheckboxRowSelection={onChangeCheckboxRowSelection}>

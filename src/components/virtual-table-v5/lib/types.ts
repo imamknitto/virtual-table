@@ -44,7 +44,7 @@ export interface IHeader<TData> {
   };
   render?: (item: TData) => React.ReactNode;
   renderFooter?: () => React.ReactNode;
-  children?: Omit<IHeader<TData>, 'children' | 'freeze'>[];
+  children?: Omit<IHeader<TData>, 'freeze'>[];
 }
 
 export interface IFlattenedData<T> {

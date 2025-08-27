@@ -9,19 +9,49 @@ interface IVirtualTableFooter {
   footerHeight: number;
 }
 
-function VirtualTableFooter(props: IVirtualTableFooter) {
+const VirtualTableFooter = (props: IVirtualTableFooter) => {
   const { footerHeight } = props;
 
-  const { columns, freezeLeftColumnsWidth, freezeRightColumnsWidth, freezeLeftColumns, freezeRightColumns } =
-    useHeaderContext();
+  const {
+    columns,
+    freezeLeftColumnsWidth,
+    freezeRightColumnsWidth,
+    freezeLeftColumns,
+    freezeRightColumns,
+    getLeaves,
+  } = useHeaderContext();
   const { containerHeight, containerWidth, columnVirtualItems } = useVirtualizerContext();
   const { calcTotalTableWidth, freezeColLeftPositions, freezeColRightPositions } = useUIContext();
 
   const renderFreezeLeftFooters = () => {
-    return freezeLeftColumns.map((column, freezeLeftIdx) => {
-      return (
+    return freezeLeftColumns.flatMap((column, freezeLeftIdx) => {
+      if (column.key === 'group-header') {
+        let childOffset = 0;
+
+        return getLeaves(column).map((leaf) => {
+          const left = freezeColLeftPositions[freezeLeftIdx] + childOffset;
+          childOffset += leaf.width || 0;
+          return (
+            <TableCell
+              key={'table-footer-cell-freeze-left-group-' + String(leaf.key)}
+              className={clsx('bg-gray-50 border-t truncate !px-0')}
+              style={{
+                position: 'absolute',
+                height: footerHeight,
+                transform: `translateX(${left}px)`,
+                width: leaf.width!,
+                top: 0,
+              }}
+            >
+              {leaf.renderFooter?.()}
+            </TableCell>
+          );
+        });
+      }
+
+      return [
         <TableCell
-          key={'table-footer-cell-freeze-left-' + column.key}
+          key={'table-footer-cell-freeze-left-' + String(column.key)}
           className={clsx('bg-gray-50 border-t truncate !px-0')}
           style={{
             position: 'absolute',
@@ -32,16 +62,40 @@ function VirtualTableFooter(props: IVirtualTableFooter) {
           }}
         >
           {column.renderFooter?.()}
-        </TableCell>
-      );
+        </TableCell>,
+      ];
     });
   };
 
   const renderFreezeRightFooters = () => {
-    return freezeRightColumns.map((column, freezeRightIdx) => {
-      return (
+    return freezeRightColumns.flatMap((column, freezeRightIdx) => {
+      if (column.key === 'group-header') {
+        let childOffset = 0;
+
+        return getLeaves(column).map((leaf) => {
+          const left = freezeColRightPositions[freezeRightIdx] + childOffset;
+          childOffset += leaf.width || 0;
+          return (
+            <TableCell
+              key={'table-footer-cell-freeze-right-group-' + String(leaf.key)}
+              className={clsx('bg-gray-50 border-t nth-[1]:!border-l truncate !px-0')}
+              style={{
+                position: 'absolute',
+                height: footerHeight,
+                transform: `translateX(${left}px)`,
+                width: leaf.width!,
+                top: 0,
+              }}
+            >
+              {leaf.renderFooter?.()}
+            </TableCell>
+          );
+        });
+      }
+
+      return [
         <TableCell
-          key={'table-footer-cell-freeze-right-' + column.key}
+          key={'table-footer-cell-freeze-right-' + String(column.key)}
           className={clsx('bg-gray-50 border-t nth-[1]:!border-l truncate !px-0')}
           style={{
             position: 'absolute',
@@ -52,18 +106,48 @@ function VirtualTableFooter(props: IVirtualTableFooter) {
           }}
         >
           {column.renderFooter?.()}
-        </TableCell>
-      );
+        </TableCell>,
+      ];
     });
   };
 
   const renderVirtualizedFooters = () => {
-    return columnVirtualItems.map((column, columnIndex) => {
+    return columnVirtualItems.flatMap((column, columnIndex) => {
+      const header = columns?.[column.index];
       const isLastIndex = columnIndex === columnVirtualItems.length - 1;
 
-      const cellRender = columns?.[column.index]?.renderFooter;
+      if (header?.key === 'group-header') {
+        const baseLeft = column.start + freezeLeftColumnsWidth;
+        let childOffset = 0;
 
-      return (
+        return getLeaves(header).map((leaf) => {
+          const left = baseLeft + childOffset;
+          childOffset += leaf.width || 0;
+
+          return (
+            <TableCell
+              key={'table-footer-cell-virtualized-group-' + column.key + '-' + String(leaf.key)}
+              data-col-key={String(leaf.key)}
+              className={clsx('bg-gray-50 table-cell truncate border-t !px-0', {
+                '!border-r-transparent': isLastIndex && freezeRightColumnsWidth > 0,
+              })}
+              style={{
+                position: 'absolute',
+                top: 0,
+                height: footerHeight,
+                transform: `translateX(${left}px)`,
+                width: leaf.width!,
+              }}
+            >
+              {leaf.renderFooter?.()}
+            </TableCell>
+          );
+        });
+      }
+
+      const cellRender = header?.renderFooter;
+
+      return [
         <TableCell
           key={'table-footer-cell-virtualized-' + column.key}
           data-col-key={column.key}
@@ -79,8 +163,8 @@ function VirtualTableFooter(props: IVirtualTableFooter) {
           }}
         >
           {cellRender && cellRender()}
-        </TableCell>
-      );
+        </TableCell>,
+      ];
     });
   };
 
@@ -101,6 +185,6 @@ function VirtualTableFooter(props: IVirtualTableFooter) {
       </div>
     </div>
   );
-}
+};
 
 export default memo(VirtualTableFooter);

@@ -10,6 +10,8 @@ export interface IUser {
   phone?: string;
   address?: string;
   city?: string;
+  kabupaten?: string;
+  kecamatan?: string;
   country?: string;
   company?: string;
   company2?: string;
@@ -17,7 +19,7 @@ export interface IUser {
   company4?: string;
 }
 
-export const dummyData: IUser[] = Array.from({ length: 100 }, (_, index) => ({
+export const dummyData: IUser[] = Array.from({ length: 50 }, (_, index) => ({
   id: index + 1,
   name: `User ${index + 1}`,
   email: `user${index + 1}@example.com`,
@@ -28,6 +30,8 @@ export const dummyData: IUser[] = Array.from({ length: 100 }, (_, index) => ({
   )}`,
   address: `Address ${index + 1}`,
   city: `City ${index + 1}`,
+  kabupaten: `Kabupaten ${index + 1}`,
+  kecamatan: `Kecamatan ${index + 1}`,
   country: `Country ${index + 1}`,
   company: `Company ${index + 1}`,
   company2: `Company ${index + 1}`,
@@ -36,8 +40,8 @@ export const dummyData: IUser[] = Array.from({ length: 100 }, (_, index) => ({
 }));
 
 export const columns: IHeader<IUser>[] = [
-  { key: 'expand', caption: '', width: 40, noStretch: true, freeze: 'left' },
-  { key: 'row-selection', caption: '', width: 40, noStretch: true, freeze: 'left' },
+  { key: 'expand', caption: '', width: 40, noStretch: true },
+  { key: 'row-selection', caption: '', width: 40, noStretch: true },
   {
     key: 'name',
     caption: 'Name',
@@ -56,10 +60,21 @@ export const columns: IHeader<IUser>[] = [
   },
   { key: 'gender', caption: 'Gender', width: 160 },
   { key: 'phone', caption: 'Phone', width: 200 },
-  { key: 'address', caption: 'Address', width: 200 },
-  { key: 'city', caption: 'City', width: 140 },
-  { key: 'country', caption: 'Country', width: 200 },
-  { key: 'company', caption: 'Company', width: 200 },
+  {
+    key: 'group-header',
+    caption: 'Address',
+    children: [
+      {
+        key: 'group-header',
+        caption: 'City',
+        children: [
+          { key: 'kabupaten', caption: 'Kabupaten' },
+          { key: 'kecamatan', caption: 'Kecamatan' },
+        ],
+      },
+      { key: 'country', caption: 'Country', width: 200 },
+    ],
+  },
   {
     key: 'group-header',
     caption: 'Group Company',
@@ -68,13 +83,14 @@ export const columns: IHeader<IUser>[] = [
       { key: 'company3', caption: 'Company 3' },
     ],
   },
-  // {
-  //   key: 'company4',
-  //   caption: 'Company4',
-  //   renderFooter: () => (
-  //     <div className='size-full bg-blue-500/50 content-center px-1.5'>Footer Company 4</div>
-  //   ),
-  // },
+  { key: 'company', caption: 'Company', width: 200 },
+  {
+    key: 'company4',
+    caption: 'Company4',
+    renderFooter: () => (
+      <div className='size-full bg-blue-500/50 content-center px-1.5'>Footer Company 4</div>
+    ),
+  },
   {
     key: 'action',
     caption: '',
