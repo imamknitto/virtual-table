@@ -156,7 +156,7 @@ const VirtualTableHeader = forwardRef((props: IVirtualTableHeader, ref: React.Re
     ...freezeRightColumns.map((c) => getDepth(c as HeaderNode)),
   );
   // Satu tinggi global untuk seluruh header (agar rata)
-  const computedHeaderHeight = calcHeaderHeight + DEFAULT_SIZE.GROUP_HEADER_WIDTH * maxDepthTopLevel;
+  const computedHeaderHeight = calcHeaderHeight + DEFAULT_SIZE.GROUP_HEADER_HEIGHT * maxDepthTopLevel;
 
   const renderNestedVirtualNode = (node: HeaderNode, rootTopLevelKey: string, parentVirtualIndex: number) => {
     const isLeaf = !node.children || node.children.length === 0;
@@ -166,7 +166,7 @@ const VirtualTableHeader = forwardRef((props: IVirtualTableHeader, ref: React.Re
         <div
           key={'table-head-group-' + String(node.key)}
           className={clsx(
-            'group/outer relative border-r nth-last-[1]:border-r-transparent border-gray-200 flex',
+            'group/outer relative border-r nth-last-[1]:border-r-transparent border-gray-200 flex h-full',
             { 'flex-row justify-between items-center px-1': isSingleHeader },
             { 'flex-col justify-between items-start': !isSingleHeader },
           )}
@@ -187,6 +187,7 @@ const VirtualTableHeader = forwardRef((props: IVirtualTableHeader, ref: React.Re
                 filterSelectionOptions={node?.filterSelectionOptions || []}
               />
             )}
+
             <ResizeIndicator
               handleMouseDown={(e) =>
                 handleResizeChildColumn(e, {
@@ -204,16 +205,16 @@ const VirtualTableHeader = forwardRef((props: IVirtualTableHeader, ref: React.Re
     return (
       <div
         key={'table-head-group-node-' + String(node.key)}
-        className='group/outer relative border-r nth-last-[1]:border-r-transparent border-gray-200 !px-0 flex flex-col'
+        className='group/outer relative border-r nth-last-[1]:border-r-transparent border-gray-200 !px-0 flex flex-col h-full'
         style={{ width: node.width! }}
       >
         <div
-          className='w-full border-b border-gray-200 text-center content-center'
-          style={{ height: DEFAULT_SIZE.GROUP_HEADER_WIDTH }}
+          className='w-full border-b border-gray-200 text-center content-center flex items-center justify-center'
+          style={{ minHeight: DEFAULT_SIZE.GROUP_HEADER_HEIGHT }}
         >
           {node.caption}
         </div>
-        <div className='flex-1 w-full flex'>
+        <div className='flex-1 w-full flex min-h-0'>
           {node.children?.map((child) =>
             renderNestedVirtualNode(child as HeaderNode, rootTopLevelKey, parentVirtualIndex),
           )}
@@ -235,7 +236,7 @@ const VirtualTableHeader = forwardRef((props: IVirtualTableHeader, ref: React.Re
         <div
           key={'table-head-freeze-' + freezeType + '-group-' + String(node.key)}
           className={clsx(
-            'group/outer relative border-r nth-last-[1]:border-r-transparent border-gray-200 flex',
+            'group/outer relative border-r nth-last-[1]:border-r-transparent border-gray-200 flex h-full',
             { 'flex-row justify-between items-center px-1': isSingleHeader },
             { 'flex-col justify-between items-start': !isSingleHeader },
           )}
@@ -278,12 +279,12 @@ const VirtualTableHeader = forwardRef((props: IVirtualTableHeader, ref: React.Re
         style={{ width: node.width! }}
       >
         <div
-          className='w-full border-b border-gray-200 text-center content-center'
-          style={{ height: DEFAULT_SIZE.GROUP_HEADER_WIDTH }}
+          className='w-full border-b border-gray-200 text-center content-center flex items-center justify-center'
+          style={{ minHeight: DEFAULT_SIZE.GROUP_HEADER_HEIGHT }}
         >
           {node.caption}
         </div>
-        <div className='flex-1 w-full flex'>
+        <div className='flex-1 w-full flex min-h-0'>
           {node.children?.map((child) =>
             renderNestedFrozenNode(child as HeaderNode, rootTopLevelKey, freezeType, parentIndex),
           )}
@@ -320,12 +321,12 @@ const VirtualTableHeader = forwardRef((props: IVirtualTableHeader, ref: React.Re
             <>
               <div
                 className='w-full border-b border-gray-200 text-center content-center'
-                style={{ height: DEFAULT_SIZE.GROUP_HEADER_WIDTH }}
+                style={{ height: DEFAULT_SIZE.GROUP_HEADER_HEIGHT }}
               >
                 {column.caption}
               </div>
 
-              <div className='flex-1 w-full flex'>
+              <div className='flex-1 w-full flex min-h-0'>
                 {column.children?.map((child) =>
                   renderNestedFrozenNode(child as HeaderNode, column.key as string, 'left', freezeLeftIdx),
                 )}
@@ -386,12 +387,12 @@ const VirtualTableHeader = forwardRef((props: IVirtualTableHeader, ref: React.Re
             <>
               <div
                 className='w-full border-b border-gray-200 text-center content-center'
-                style={{ height: DEFAULT_SIZE.GROUP_HEADER_WIDTH }}
+                style={{ height: DEFAULT_SIZE.GROUP_HEADER_HEIGHT }}
               >
                 {column.caption}
               </div>
 
-              <div className='flex-1 w-full flex'>
+              <div className='flex-1 w-full flex min-h-0'>
                 {column.children?.map((child) =>
                   renderNestedFrozenNode(child as HeaderNode, column.key as string, 'right', freezeRightIdx),
                 )}
@@ -456,12 +457,12 @@ const VirtualTableHeader = forwardRef((props: IVirtualTableHeader, ref: React.Re
             <>
               <div
                 className='w-full border-b border-gray-200 text-center content-center'
-                style={{ height: DEFAULT_SIZE.GROUP_HEADER_WIDTH }}
+                style={{ height: DEFAULT_SIZE.GROUP_HEADER_HEIGHT }}
               >
                 {header.caption}
               </div>
 
-              <div className='flex-1 w-full flex'>
+              <div className='flex-1 w-full flex min-h-0'>
                 {header.children?.map((child) =>
                   renderNestedVirtualNode(child as HeaderNode, header.key as string, column.index),
                 )}
@@ -503,12 +504,12 @@ const VirtualTableHeader = forwardRef((props: IVirtualTableHeader, ref: React.Re
       ref={ref as React.Ref<HTMLDivElement>}
       {...propRest}
     >
-      <div className='relative flex' style={{ width: calcTotalTableWidth }}>
-        <div className='sticky left-0 z-20' style={{ width: freezeLeftColumnsWidth }}>
+      <div className='relative flex h-full' style={{ width: calcTotalTableWidth }}>
+        <div className='sticky left-0 z-20 h-full' style={{ width: freezeLeftColumnsWidth }}>
           {renderFreezeLeftColumns()}
         </div>
 
-        <div className='sticky z-20' style={{ left: containerWidth - freezeRightColumnsWidth }}>
+        <div className='sticky z-20 h-full' style={{ left: containerWidth - freezeRightColumnsWidth }}>
           {renderFreezeRightColumns()}
         </div>
 

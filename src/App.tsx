@@ -23,7 +23,7 @@ export default function App() {
             useFooter
             data={dummyData}
             headers={columns}
-            headerMode='single'
+            headerMode='double'
             rowKey='name'
             headerHeight={40}
             filterHeight={32}

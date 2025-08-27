@@ -131,15 +131,26 @@ function updateChildDeep(
 
   const nextChildren = col.children.map((child) => {
     if (child.key === childKey) {
+      // Jika ini adalah leaf yang diupdate
       return { ...child, ...update } as IAdjustedHeader;
     }
+    // Cek child-child lainnya
     return updateChildDeep(child, childKey, update);
   });
 
-  const widthFromLeaves = getLeavesOfNode({ ...col, children: nextChildren }).reduce(
-    (sum, leaf) => sum + (leaf.width || DEFAULT_SIZE.COLUMN_WIDTH),
-    0,
-  );
+  // Hitung total width dari semua leaf children
+  const widthFromLeaves = nextChildren.reduce((sum, child) => {
+    if (!child.children || child.children.length === 0) {
+      // Ini leaf node, gunakan width-nya
+      return sum + (child.width || DEFAULT_SIZE.COLUMN_WIDTH);
+    } else {
+      // Ini parent node, gunakan width dari leaves-nya
+      return sum + getLeavesOfNode(child).reduce(
+        (leafSum, leaf) => leafSum + (leaf.width || DEFAULT_SIZE.COLUMN_WIDTH),
+        0
+      );
+    }
+  }, 0);
 
   return {
     ...col,
