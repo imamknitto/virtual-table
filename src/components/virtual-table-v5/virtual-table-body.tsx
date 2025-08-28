@@ -19,19 +19,10 @@ interface IVirtualTableBody<TData> {
 
 const VirtualTableBody = forwardRef(
   <TData,>(props: IVirtualTableBody<TData>, ref: React.Ref<HTMLDivElement>) => {
-    const {
-      headerHeight,
-      footerHeight,
-      filterHeight,
-      rowHeight,
-      headerMode,
-      onClickRowToParent,
-      onDoubleClickRowToParent,
-      onRightClickRowToParent,
-    } = props;
+    const { footerHeight, rowHeight, onClickRowToParent, onDoubleClickRowToParent, onRightClickRowToParent } =
+      props;
 
     const {
-      isFilterVisible,
       freezeLeftColumns,
       freezeRightColumns,
       freezeRightColumnsWidth,
@@ -144,9 +135,7 @@ const VirtualTableBody = forwardRef(
       }
     };
 
-    const isSingleHeader = headerMode === 'single';
-    const calcFilterHeight = isFilterVisible ? filterHeight : 0;
-    const calcTopPosisition = isSingleHeader ? headerHeight : headerHeight + calcFilterHeight;
+    const { calcHeaderTotalHeight } = useUIContext();
     const calcBodyHeight = (rowVirtualizer?.getTotalSize() ?? 0) + (useFooter ? footerHeight : 0);
 
     const renderFreezeLeftColumns = (
@@ -157,7 +146,7 @@ const VirtualTableBody = forwardRef(
     ) => {
       return freezeLeftColumns.flatMap((column, freezeLeftIdx) => {
         const isRowHighlighted = rowKey === String(selectedRowKey);
-        const isGroupColumn = column.key === 'group-header';
+        const isGroupColumn = column.key.startsWith('group-header-');
 
         if (isGroupColumn) {
           let childOffset = 0;
@@ -237,7 +226,7 @@ const VirtualTableBody = forwardRef(
     ) => {
       return freezeRightColumns.flatMap((column, freezeRightIdx) => {
         const isRowHighlighted = rowKey === String(selectedRowKey);
-        const isGroupColumn = column.key === 'group-header';
+        const isGroupColumn = column.key.startsWith('group-header-');
 
         if (isGroupColumn) {
           let childOffset = 0;
@@ -318,8 +307,9 @@ const VirtualTableBody = forwardRef(
         const isRowHighlighted = rowKey === String(selectedRowKey);
         const isFirstIndex = columnIndex === 0;
         const isLastIndex = columnIndex === columnVirtualItems.length - 1;
+        const isGroupHeader = header?.key.startsWith('group-header-');
 
-        if (header?.key === 'group-header') {
+        if (isGroupHeader) {
           const baseLeft = column.start + freezeLeftColumnsWidth;
           let childOffset = 0;
 
@@ -405,7 +395,7 @@ const VirtualTableBody = forwardRef(
         onDoubleClick={handleDoubleClickRow}
         onContextMenu={handleContextMenu}
         onChange={handleCheckboxChange}
-        style={{ position: 'relative', top: calcTopPosisition, height: calcBodyHeight }}
+        style={{ position: 'relative', top: calcHeaderTotalHeight, height: calcBodyHeight }}
       >
         <div
           className='absolute top-0 left-0 w-full'

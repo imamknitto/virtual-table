@@ -4,17 +4,15 @@ import { useVirtualizerContext } from './context/virtualizer-context';
 import { useSelectionContext } from './context/selection-context';
 import { useHeaderContext } from './context/header-context';
 import { useUIContext } from './context/ui-context';
+import { DEFAULT_SIZE, findChildRecursive } from './lib';
 import { HeaderCaption, ResizeIndicator, RowCheckbox, TableFilter, TableHead } from './components';
-import { DEFAULT_SIZE } from './lib';
 
 interface IVirtualTableHeader extends React.HTMLAttributes<HTMLDivElement> {
-  headerHeight: number;
-  filterHeight: number;
   headerMode: 'single' | 'double';
 }
 
 const VirtualTableHeader = forwardRef((props: IVirtualTableHeader, ref: React.Ref<HTMLDivElement>) => {
-  const { headerMode, headerHeight, filterHeight, className, ...propRest } = props;
+  const { headerMode, className, ...propRest } = props;
 
   const { columnVirtualizer, columnVirtualItems, containerWidth } = useVirtualizerContext();
   const {
@@ -28,7 +26,6 @@ const VirtualTableHeader = forwardRef((props: IVirtualTableHeader, ref: React.Re
     freezeRightColumns,
     freezeLeftColumnsWidth,
     freezeRightColumnsWidth,
-    getDepth,
   } = useHeaderContext();
   const { selectAll, deselectedRowKeys, toggleSelectAll } = useSelectionContext();
   const { freezeColLeftPositions, freezeColRightPositions, calcTotalTableWidth } = useUIContext();
@@ -103,8 +100,13 @@ const VirtualTableHeader = forwardRef((props: IVirtualTableHeader, ref: React.Re
         : freezeType === 'right'
         ? freezeRightColumns.find((c) => c.key === parentKey)
         : columns.find((c) => c.key === parentKey);
-    const child = parent?.children?.find((c) => c.key === childKey);
-    if (!parent || !child) return;
+
+    if (!parent) return;
+
+    // Gunakan fungsi rekursif untuk mencari child
+    const child = findChildRecursive(parent, childKey);
+
+    if (!child) return;
 
     const startChildWidth = child.width ?? 0;
     const startParentWidth = parent.width ?? 0;
@@ -143,20 +145,8 @@ const VirtualTableHeader = forwardRef((props: IVirtualTableHeader, ref: React.Re
   };
 
   const isSingleHeader = headerMode === 'single';
-  const calcFilterHeight = isFilterVisible ? filterHeight : 0;
-  const calcHeaderHeight = isSingleHeader ? headerHeight : headerHeight + calcFilterHeight;
-
+  const { calcHeaderTotalHeight } = useUIContext();
   type HeaderNode = (typeof columns)[number];
-
-  // Hitung kedalaman maksimum dari semua kolom top-level (virtual dan freeze)
-  const maxDepthTopLevel = Math.max(
-    0,
-    ...columns.map((c) => getDepth(c as HeaderNode)),
-    ...freezeLeftColumns.map((c) => getDepth(c as HeaderNode)),
-    ...freezeRightColumns.map((c) => getDepth(c as HeaderNode)),
-  );
-  // Satu tinggi global untuk seluruh header (agar rata)
-  const computedHeaderHeight = calcHeaderHeight + DEFAULT_SIZE.GROUP_HEADER_HEIGHT * maxDepthTopLevel;
 
   const renderNestedVirtualNode = (node: HeaderNode, rootTopLevelKey: string, parentVirtualIndex: number) => {
     const isLeaf = !node.children || node.children.length === 0;
@@ -189,13 +179,13 @@ const VirtualTableHeader = forwardRef((props: IVirtualTableHeader, ref: React.Re
             )}
 
             <ResizeIndicator
-              handleMouseDown={(e) =>
+              handleMouseDown={(e) => {
                 handleResizeChildColumn(e, {
                   parentKey: rootTopLevelKey,
                   childKey: node.key as string,
                   parentVirtualIndex,
-                })
-              }
+                });
+              }}
             />
           </>
         </div>
@@ -205,7 +195,10 @@ const VirtualTableHeader = forwardRef((props: IVirtualTableHeader, ref: React.Re
     return (
       <div
         key={'table-head-group-node-' + String(node.key)}
-        className='group/outer relative border-r nth-last-[1]:border-r-transparent border-gray-200 !px-0 flex flex-col h-full'
+        className={clsx(
+          'relative border-r nth-last-[1]:border-r-transparent border-gray-200 !px-0 flex flex-col h-full',
+          { 'group/outer': !node.children },
+        )}
         style={{ width: node.width! }}
       >
         <div
@@ -214,6 +207,7 @@ const VirtualTableHeader = forwardRef((props: IVirtualTableHeader, ref: React.Re
         >
           {node.caption}
         </div>
+
         <div className='flex-1 w-full flex min-h-0'>
           {node.children?.map((child) =>
             renderNestedVirtualNode(child as HeaderNode, rootTopLevelKey, parentVirtualIndex),
@@ -275,7 +269,7 @@ const VirtualTableHeader = forwardRef((props: IVirtualTableHeader, ref: React.Re
     return (
       <div
         key={'table-head-freeze-' + freezeType + '-group-node-' + String(node.key)}
-        className='group/outer relative border-r nth-last-[1]:border-r-transparent border-gray-200 !px-0 flex flex-col'
+        className='relative border-r nth-last-[1]:border-r-transparent border-gray-200 !px-0 flex flex-col'
         style={{ width: node.width! }}
       >
         <div
@@ -298,7 +292,7 @@ const VirtualTableHeader = forwardRef((props: IVirtualTableHeader, ref: React.Re
       const isCheckboxHeader = column.key === 'row-selection';
       const isExpandHeader = column.key === 'expand';
       const isActionHeader = column.key === 'action';
-      const isGroupHeader = column.key === 'group-header';
+      const isGroupHeader = column.key.startsWith('group-header-');
 
       return (
         <TableHead
@@ -312,7 +306,7 @@ const VirtualTableHeader = forwardRef((props: IVirtualTableHeader, ref: React.Re
           style={{
             position: 'absolute',
             transform: `translateX(${freezeColLeftPositions[freezeLeftIdx]}px)`,
-            height: computedHeaderHeight,
+            height: calcHeaderTotalHeight,
             width: column.width!,
             top: 0,
           }}
@@ -342,6 +336,7 @@ const VirtualTableHeader = forwardRef((props: IVirtualTableHeader, ref: React.Re
                 caption={column.caption}
                 isFilterVisible={isFilterVisible}
               />
+
               {isFilterVisible && (
                 <TableFilter
                   headerMode={headerMode}
@@ -349,6 +344,7 @@ const VirtualTableHeader = forwardRef((props: IVirtualTableHeader, ref: React.Re
                   filterSelectionOptions={column.filterSelectionOptions || []}
                 />
               )}
+
               <ResizeIndicator handleMouseDown={(e) => handleResizeColumn(e, freezeLeftIdx, 'left')} />
             </>
           )}
@@ -364,7 +360,7 @@ const VirtualTableHeader = forwardRef((props: IVirtualTableHeader, ref: React.Re
       const isCheckboxHeader = column.key === 'row-selection';
       const isExpandHeader = column.key === 'expand';
       const isActionHeader = column.key === 'action';
-      const isGroupHeader = column.key === 'group-header';
+      const isGroupHeader = column.key.startsWith('group-header-');
 
       return (
         <TableHead
@@ -378,7 +374,7 @@ const VirtualTableHeader = forwardRef((props: IVirtualTableHeader, ref: React.Re
           style={{
             position: 'absolute',
             transform: `translateX(${freezeColRightPositions[freezeRightIdx]}px)`,
-            height: computedHeaderHeight,
+            height: calcHeaderTotalHeight,
             width: column.width!,
             top: 0,
           }}
@@ -416,6 +412,7 @@ const VirtualTableHeader = forwardRef((props: IVirtualTableHeader, ref: React.Re
                   filterSelectionOptions={column.filterSelectionOptions || []}
                 />
               )}
+
               <ResizeIndicator handleMouseDown={(e) => handleResizeColumn(e, freezeRightIdx, 'right')} />
             </>
           )}
@@ -433,7 +430,7 @@ const VirtualTableHeader = forwardRef((props: IVirtualTableHeader, ref: React.Re
       const isExpandHeader = header?.key === 'expand';
       const isActionHeader = header?.key === 'action';
       const isLastIndex = columnIndex === columnVirtualItems.length - 1;
-      const isGroupHeader = header?.key === 'group-header';
+      const isGroupHeader = header?.key.startsWith('group-header-');
 
       return (
         <TableHead
@@ -448,7 +445,7 @@ const VirtualTableHeader = forwardRef((props: IVirtualTableHeader, ref: React.Re
           style={{
             position: 'absolute',
             transform: `translateX(${column.start + freezeLeftColumnsWidth}px)`,
-            height: computedHeaderHeight,
+            height: calcHeaderTotalHeight,
             width: column.size,
             top: 0,
           }}

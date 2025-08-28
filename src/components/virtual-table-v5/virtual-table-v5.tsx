@@ -1,7 +1,7 @@
 import { memo, useMemo, useRef, type ReactNode } from 'react';
 import clsx from 'clsx';
-import { DEFAULT_SIZE, type IVirtualTable } from './lib';
-import { HeaderContextProvider, type IAdjustedHeader } from './context/header-context';
+import { DEFAULT_SIZE, type IAdjustedHeader, type IVirtualTable } from './lib';
+import { HeaderContextProvider } from './context/header-context';
 import { VirtualizerContextProvider } from './context/virtualizer-context';
 import { SelectionContextProvider } from './context/selection-context';
 import { FilterContextProvider } from './context/filter-context';
@@ -50,6 +50,8 @@ function VirtualTable5<TData>(virtualTableProps: IVirtualTable<TData>) {
               filterHeight={filterHeight}
               useFooter={useFooter}
               expandedContent={(data) => onRenderExpandedContent?.(data as TData)}
+              headerMode={headerMode}
+              headerHeight={headerHeight}
             >
               <div
                 ref={scrollElementRef}
@@ -58,11 +60,7 @@ function VirtualTable5<TData>(virtualTableProps: IVirtualTable<TData>) {
                   classNameOuterTable,
                 )}
               >
-                <VirtualTableHeader
-                  headerHeight={headerHeight}
-                  filterHeight={filterHeight}
-                  headerMode={headerMode}
-                />
+                <VirtualTableHeader headerMode={headerMode} />
 
                 <VirtualTableBody
                   headerHeight={headerHeight}

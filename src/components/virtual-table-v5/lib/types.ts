@@ -28,7 +28,7 @@ export interface IVirtualTable<TData> {
 }
 
 export interface IHeader<TData> {
-  key: keyof TData | 'expand' | 'action' | 'row-selection' | 'group-header';
+  key: keyof TData | 'expand' | 'action' | 'row-selection' | string;
   caption: string;
   width?: number;
   noStretch?: boolean;
@@ -45,6 +45,10 @@ export interface IHeader<TData> {
   render?: (item: TData) => React.ReactNode;
   renderFooter?: () => React.ReactNode;
   children?: Omit<IHeader<TData>, 'freeze'>[];
+}
+
+export interface IAdjustedHeader extends IHeader<unknown> {
+  [key: string]: unknown;
 }
 
 export interface IFlattenedData<T> {

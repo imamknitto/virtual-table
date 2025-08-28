@@ -1,11 +1,7 @@
 import { createContext, useContext } from 'use-context-selector';
 import { useState, useCallback, useEffect } from 'react';
-import type { IHeader } from '../lib';
+import type { IAdjustedHeader } from '../lib';
 import { DEFAULT_SIZE } from '../lib';
-
-export interface IAdjustedHeader extends IHeader<unknown> {
-  [key: string]: unknown;
-}
 
 type IHeaderContext = {
   columns: IAdjustedHeader[];
@@ -15,9 +11,12 @@ type IHeaderContext = {
   freezeLeftColumnsWidth: number;
   freezeRightColumnsWidth: number;
   isFilterVisible: boolean;
+  toggleColumnVisibility: (key: string) => void;
+  toggleFilterVisibility: () => void;
   getLeaves: (node: IAdjustedHeader) => IAdjustedHeader[];
   getDepth: (node: IAdjustedHeader) => number;
   updateColumn: (key: string, update: Partial<IAdjustedHeader>) => void;
+  updateFreezeColumn: (key: string, freezeType: 'left' | 'right', update: Partial<IAdjustedHeader>) => void;
   updateChildColumn: (parentKey: string, childKey: string, update: Partial<IAdjustedHeader>) => void;
   updateFreezeChildColumn: (
     parentKey: string,
@@ -25,9 +24,6 @@ type IHeaderContext = {
     freezeType: 'left' | 'right',
     update: Partial<IAdjustedHeader>,
   ) => void;
-  toggleColumnVisibility: (key: string) => void;
-  toggleFilterVisibility: () => void;
-  updateFreezeColumn: (key: string, freezeType: 'left' | 'right', update: Partial<IAdjustedHeader>) => void;
 };
 
 interface IHeaderContextProvider {
@@ -145,9 +141,12 @@ function updateChildDeep(
       return sum + (child.width || DEFAULT_SIZE.COLUMN_WIDTH);
     } else {
       // Ini parent node, gunakan width dari leaves-nya
-      return sum + getLeavesOfNode(child).reduce(
-        (leafSum, leaf) => leafSum + (leaf.width || DEFAULT_SIZE.COLUMN_WIDTH),
-        0
+      return (
+        sum +
+        getLeavesOfNode(child).reduce(
+          (leafSum, leaf) => leafSum + (leaf.width || DEFAULT_SIZE.COLUMN_WIDTH),
+          0,
+        )
       );
     }
   }, 0);

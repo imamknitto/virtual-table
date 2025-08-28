@@ -25,7 +25,9 @@ const VirtualTableFooter = (props: IVirtualTableFooter) => {
 
   const renderFreezeLeftFooters = () => {
     return freezeLeftColumns.flatMap((column, freezeLeftIdx) => {
-      if (column.key === 'group-header') {
+      const isGroupHeader = column.key.startsWith('group-header-');
+
+      if (isGroupHeader) {
         let childOffset = 0;
 
         return getLeaves(column).map((leaf) => {
@@ -69,7 +71,9 @@ const VirtualTableFooter = (props: IVirtualTableFooter) => {
 
   const renderFreezeRightFooters = () => {
     return freezeRightColumns.flatMap((column, freezeRightIdx) => {
-      if (column.key === 'group-header') {
+      const isGroupHeader = column.key.startsWith('group-header-');
+
+      if (isGroupHeader) {
         let childOffset = 0;
 
         return getLeaves(column).map((leaf) => {
@@ -115,8 +119,9 @@ const VirtualTableFooter = (props: IVirtualTableFooter) => {
     return columnVirtualItems.flatMap((column, columnIndex) => {
       const header = columns?.[column.index];
       const isLastIndex = columnIndex === columnVirtualItems.length - 1;
+      const isGroupHeader = header?.key.startsWith('group-header-');
 
-      if (header?.key === 'group-header') {
+      if (isGroupHeader) {
         const baseLeft = column.start + freezeLeftColumnsWidth;
         let childOffset = 0;
 
