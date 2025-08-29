@@ -1,7 +1,7 @@
 import { createPortal } from 'react-dom';
 import { memo, useRef, useState } from 'react';
-import InputSearch from './utility/input-search';
-import FilterCard from './utility/filter-card';
+import InputSearch from './input-search';
+import FilterCard from './filter-card';
 import Icon from '../icons';
 import clsx from 'clsx';
 import { DEFAULT_SIZE } from '../lib';

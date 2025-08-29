@@ -10,6 +10,7 @@ export interface IUIContext {
   calcTotalTableWidth: number;
   useFooter: boolean;
   filterHeight: number;
+  headerMode: 'single' | 'double';
   expandedContent: (rowData: unknown) => ReactNode;
   calcHeaderTotalHeight: number;
 }
@@ -108,8 +109,9 @@ export const UIContextProvider = (props: IUIContextProviderProps) => {
         calcTotalTableWidth,
         useFooter,
         filterHeight,
-        expandedContent: expandedContent || (() => null),
+        headerMode,
         calcHeaderTotalHeight,
+        expandedContent: expandedContent || (() => null),
       }}
     >
       {children}

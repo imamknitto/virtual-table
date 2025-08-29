@@ -60,7 +60,7 @@ function VirtualTable5<TData>(virtualTableProps: IVirtualTable<TData>) {
                   classNameOuterTable,
                 )}
               >
-                <VirtualTableHeader headerMode={headerMode} />
+                <VirtualTableHeader />
 
                 <VirtualTableBody
                   headerHeight={headerHeight}

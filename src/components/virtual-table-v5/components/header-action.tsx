@@ -4,7 +4,7 @@ import { useFilterContext } from '../context/filter-context';
 import { useClickOutside } from '../hooks';
 import { DEFAULT_SIZE } from '../lib';
 import Icons from '../icons';
-import FilterCard from './utility/filter-card';
+import FilterCard from './filter-card';
 import { useHeaderContext } from '../context/header-context';
 import { useVirtualizerContext } from '../context/virtualizer-context';
 

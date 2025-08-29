@@ -19,7 +19,7 @@ export interface IUser {
   company4?: string;
 }
 
-export const dummyData: IUser[] = Array.from({ length: 1000 }, (_, index) => ({
+export const dummyData: IUser[] = Array.from({ length: 500000 }, (_, index) => ({
   id: index + 1,
   name: `User ${index + 1}`,
   email: `user${index + 1}@example.com`,
@@ -55,14 +55,16 @@ export const columns: IHeader<IUser>[] = [
   {
     key: 'email',
     caption: 'Email',
-    width: 200,
+    width: 160,
+    freeze: 'right',
     renderFooter: () => <div className='size-full bg-green-500/50 content-center px-1.5'>Footer Email</div>,
   },
   { key: 'gender', caption: 'Gender', width: 160 },
-  { key: 'phone', caption: 'Phone', width: 200 },
+  { key: 'phone', caption: 'Phone', width: 180 },
   {
     key: 'group-header-address',
     caption: 'Address',
+    freeze: 'left',
     children: [
       {
         key: 'group-header-city',
@@ -72,7 +74,7 @@ export const columns: IHeader<IUser>[] = [
           { key: 'kecamatan', caption: 'Kecamatan' },
         ],
       },
-      { key: 'country', caption: 'Country', width: 200 },
+      { key: 'country', caption: 'Country', width: 170 },
     ],
   },
   {

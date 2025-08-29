@@ -35,12 +35,6 @@ const HeaderContext = createContext<IHeaderContext | null>(null);
 
 export const useHeaderContext = () => useContext(HeaderContext)!;
 
-/**
- * Bangun daftar datar (flat) dari kolom leaf beserta informasi kedalaman (depth)
- * dan parentKey.
- * Renderer body hanya menggambar sel untuk leaf (bukan group),
- * namun butuh info depth untuk perhitungan tinggi header dan pemetaan sederhana.
- */
 function flattenHeaderLeaves(columns: IAdjustedHeader[], depth = 0, parentKey?: string) {
   let rows: { col: IAdjustedHeader; depth: number; parentKey?: string }[] = [];
 
@@ -55,13 +49,6 @@ function flattenHeaderLeaves(columns: IAdjustedHeader[], depth = 0, parentKey?: 
   return rows;
 }
 
-/**
- * Normalisasi tree kolom bertingkat:
- * - Pastikan setiap node punya nilai `visible`
- * - Pastikan setiap leaf punya `width` (fallback ke DEFAULT)
- * - Set `parentKey` pada setiap anak untuk referensi ke atas
- * - Hitung ulang `width` group sebagai jumlah lebar seluruh leaf di bawahnya
- */
 function normalizeColumnsRecursive(cols: IAdjustedHeader[]): IAdjustedHeader[] {
   return cols.map((col) => {
     const visible = col.visible ?? true;
@@ -93,31 +80,16 @@ function normalizeColumnsRecursive(cols: IAdjustedHeader[]): IAdjustedHeader[] {
   });
 }
 
-/**
- * Ambil semua leaf di bawah sebuah node (depth-first).
- * Penggambaran sel selalu per-leaf meski header berkelompok multi-level.
- */
 function getLeavesOfNode(node: IAdjustedHeader): IAdjustedHeader[] {
   if (!node.children || node.children.length === 0) return [node];
   return node.children.flatMap((c) => getLeavesOfNode(c));
 }
 
-/**
- * Ambil kedalaman maksimum mulai dari `node`.
- * Berguna untuk menghitung tinggi header gabungan (multi-baris).
- */
 function getDepthOfNode(node: IAdjustedHeader): number {
   if (!node.children || node.children.length === 0) return 0;
   return 1 + Math.max(...node.children.map((c) => getDepthOfNode(c)));
 }
 
-/**
- * Update rekursif descendant dengan `childKey` lalu hitung ulang width ancestor
- * sebagai jumlah lebar semua leaf di bawahnya.
- *
- * Perubahan resize/visibility pada child harus memperbarui seluruh ancestor
- * agar layout dan ukuran virtualizer tetap konsisten.
- */
 function updateChildDeep(
   col: IAdjustedHeader,
   childKey: string,
@@ -127,20 +99,16 @@ function updateChildDeep(
 
   const nextChildren = col.children.map((child) => {
     if (child.key === childKey) {
-      // Jika ini adalah leaf yang diupdate
       return { ...child, ...update } as IAdjustedHeader;
     }
-    // Cek child-child lainnya
     return updateChildDeep(child, childKey, update);
   });
 
   // Hitung total width dari semua leaf children
   const widthFromLeaves = nextChildren.reduce((sum, child) => {
     if (!child.children || child.children.length === 0) {
-      // Ini leaf node, gunakan width-nya
       return sum + (child.width || DEFAULT_SIZE.COLUMN_WIDTH);
     } else {
-      // Ini parent node, gunakan width dari leaves-nya
       return (
         sum +
         getLeavesOfNode(child).reduce(

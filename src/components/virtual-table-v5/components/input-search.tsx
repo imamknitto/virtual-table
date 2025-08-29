@@ -1,6 +1,6 @@
 import clsx from 'clsx';
 import { forwardRef, useCallback, useEffect, useRef, useState } from 'react';
-import IcClose from '../../icons/ic-close';
+import IcClose from '../icons/ic-close';
 
 interface ITableVirtualInput extends React.InputHTMLAttributes<HTMLInputElement> {
   onClickEnter?: () => void;

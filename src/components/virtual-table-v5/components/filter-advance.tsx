@@ -9,11 +9,11 @@ import {
 } from '../lib';
 import useOnClickOutside from '../hooks/use-click-outside';
 import FilterAction from './filter-action';
-import FilterCard from './utility/filter-card';
-import Dropdown from './utility/dropdown';
+import FilterCard from './filter-card';
+import Dropdown from './dropdown';
 import { createPortal } from 'react-dom';
 import Icon from '../icons';
-import InputSearch from './utility/input-search';
+import InputSearch from './input-search';
 
 interface IFilterAdvance {
   headerKey: string;

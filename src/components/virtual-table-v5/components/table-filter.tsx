@@ -4,7 +4,7 @@ import Icon from '../icons';
 import FilterSelection from './filter-selection';
 import FilterAdvance from './filter-advance';
 import FilterSearch from './filter-search';
-import InputSearch from './utility/input-search';
+import InputSearch from './input-search';
 import clsx from 'clsx';
 import { useUIContext } from '../context/ui-context';
 

@@ -2,13 +2,13 @@ import { useVirtualizer, Virtualizer } from '@tanstack/react-virtual';
 import { memo, useMemo, useRef, useState } from 'react';
 import clsx from 'clsx';
 import useOnClickOutside from '../hooks/use-click-outside';
-import FilterCard from './utility/filter-card';
+import FilterCard from './filter-card';
 import FilterAction from './filter-action';
 import { DEFAULT_SIZE } from '../lib';
 import { createPortal } from 'react-dom';
 import Icon from '../icons';
-import InputSearch from './utility/input-search';
-import Checkbox from './utility/checkbox';
+import InputSearch from './input-search';
+import Checkbox from './checkbox';
 
 interface IFilterSelection {
   headerKey: string;

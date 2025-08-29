@@ -12,7 +12,7 @@ const TableCell = forwardRef((props: ITableCell, ref: React.Ref<HTMLDivElement>)
     <div
       ref={ref}
       className={clsx(
-        'border-r border-b border-gray-200 px-1.5 text-xs content-center',
+        'border-b border-gray-200 px-1.5 text-xs content-center',
         className,
       )}
       {...rest}
