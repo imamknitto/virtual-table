@@ -1,20 +1,20 @@
 import { memo, useState } from 'react';
-import { useFilterContext } from '../context/filter-context';
-import Icon from '../icons';
+import { useFilterContext } from '../../context/filter-context';
+import Icon from '../../icons';
 import FilterSelection from './filter-selection';
 import FilterAdvance from './filter-advance';
 import FilterSearch from './filter-search';
-import InputSearch from './input-search';
+import InputSearch from '../input-search';
 import clsx from 'clsx';
-import { useUIContext } from '../context/ui-context';
+import { useUIContext } from '../../context/ui-context';
 
-interface ITableFilter {
+interface IHeaderFilter {
   headerKey: string;
   filterSelectionOptions: string[];
   headerMode: 'single' | 'double';
 }
 
-const TableFilter = ({ headerKey, filterSelectionOptions, headerMode }: ITableFilter) => {
+const HeaderFilter = ({ headerKey, filterSelectionOptions, headerMode }: IHeaderFilter) => {
   const { search, sort, selection, advance } = useFilterContext();
   const { filterHeight } = useUIContext();
 
@@ -76,4 +76,4 @@ const InputSearchFilter = memo(({ onApplySearch }: { onApplySearch: (value: stri
   );
 });
 
-export default memo(TableFilter);
+export default memo(HeaderFilter);

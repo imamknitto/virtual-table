@@ -1,19 +1,14 @@
 import { memo, useRef, useState } from 'react';
 import clsx from 'clsx';
 
-import {
-  DEFAULT_SIZE,
-  FILTER_ADVANCE_CONFIG,
-  getObjKeyByValue,
-  type TFilterAdvanceConfig,
-} from '../lib';
-import useOnClickOutside from '../hooks/use-click-outside';
 import FilterAction from './filter-action';
 import FilterCard from './filter-card';
-import Dropdown from './dropdown';
 import { createPortal } from 'react-dom';
-import Icon from '../icons';
-import InputSearch from './input-search';
+import { DEFAULT_SIZE, FILTER_ADVANCE_CONFIG, getObjKeyByValue, type TFilterAdvanceConfig } from '../../lib';
+import useOnClickOutside from '../../hooks/use-click-outside';
+import Dropdown from '../dropdown';
+import InputSearch from '../input-search';
+import Icons from '../../icons';
 
 interface IFilterAdvance {
   headerKey: string;
@@ -84,7 +79,7 @@ function FilterAdvance(props: IFilterAdvance) {
         {filterValue.config !== 'None' && filterValue.value.length > 0 && (
           <div className='absolute top-0 -right-1 size-2 rounded-full bg-knitto-blue-100 z-10' />
         )}
-        <Icon
+        <Icons
           name='filterAdvance'
           className={clsx(
             'shrink-0 w-5 text-gray-400 hover:text-gray-600 cursor-pointer',
@@ -103,11 +98,7 @@ function FilterAdvance(props: IFilterAdvance) {
           >
             <div className='p-1.5 w-full flex flex-col items-start space-y-1'>
               <span className='text-xs text-gray-800'>Filter dengan</span>
-              <Dropdown
-                options={CONFIG_OPTIONS}
-                value={filterValue.config}
-                onSelect={handleConfigChange}
-              />
+              <Dropdown options={CONFIG_OPTIONS} value={filterValue.config} onSelect={handleConfigChange} />
 
               {filterValue.config !== 'None' && (
                 <InputSearch

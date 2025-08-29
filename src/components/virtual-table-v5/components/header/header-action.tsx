@@ -1,12 +1,12 @@
 import { memo, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { useFilterContext } from '../context/filter-context';
-import { useClickOutside } from '../hooks';
-import { DEFAULT_SIZE } from '../lib';
-import Icons from '../icons';
+import { useHeaderContext } from '../../context/header-context';
+import { useVirtualizerContext } from '../../context/virtualizer-context';
+import { useFilterContext } from '../../context/filter-context';
+import { useClickOutside } from '../../hooks';
+import { DEFAULT_SIZE } from '../../lib';
+import Icons from '../../icons';
 import FilterCard from './filter-card';
-import { useHeaderContext } from '../context/header-context';
-import { useVirtualizerContext } from '../context/virtualizer-context';
 
 const DEFAULT_ACTIONS = [
   'Sort Ascending',
@@ -24,8 +24,7 @@ function HeaderAction({ headerKey }: IHeaderAction) {
   const cardRef = useRef<HTMLDivElement>(null);
   const [actionCard, setActionCard] = useState({ show: false, pos: { x: 0, y: 0 } });
 
-  const { toggleColumnVisibility, toggleFilterVisibility, isFilterVisible, columns } =
-    useHeaderContext();
+  const { toggleColumnVisibility, toggleFilterVisibility, isFilterVisible, columns } = useHeaderContext();
   const { columnVirtualizer } = useVirtualizerContext();
   const { sort } = useFilterContext();
 
@@ -71,11 +70,7 @@ function HeaderAction({ headerKey }: IHeaderAction) {
 
   return (
     <div className='relative'>
-      <Icons
-        name='menu'
-        className='!size-4 text-gray-500 cursor-pointer'
-        onClick={handleOpenActionCard}
-      />
+      <Icons name='menu' className='!size-4 text-gray-500 cursor-pointer' onClick={handleOpenActionCard} />
 
       {actionCard.show &&
         createPortal(

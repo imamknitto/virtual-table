@@ -2,15 +2,13 @@ import { memo } from 'react';
 import { useVirtualizerContext } from './context/virtualizer-context';
 import { useHeaderContext } from './context/header-context';
 import { useUIContext } from './context/ui-context';
-import FooterCell from './components/footer/footer-cell';
+import { FooterCell } from './components';
 
 interface IVirtualTableFooter {
   footerHeight: number;
 }
 
-const VirtualTableFooter = (props: IVirtualTableFooter) => {
-  const { footerHeight } = props;
-
+const VirtualTableFooter = ({ footerHeight }: IVirtualTableFooter) => {
   const {
     columns,
     freezeLeftColumnsWidth,

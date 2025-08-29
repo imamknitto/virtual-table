@@ -1,14 +1,14 @@
 import { useVirtualizer, Virtualizer } from '@tanstack/react-virtual';
 import { memo, useMemo, useRef, useState } from 'react';
 import clsx from 'clsx';
-import useOnClickOutside from '../hooks/use-click-outside';
-import FilterCard from './filter-card';
-import FilterAction from './filter-action';
-import { DEFAULT_SIZE } from '../lib';
+import useOnClickOutside from '../../hooks/use-click-outside';
+import { DEFAULT_SIZE } from '../../lib';
+import Icons from '../../icons';
 import { createPortal } from 'react-dom';
-import Icon from '../icons';
-import InputSearch from './input-search';
-import Checkbox from './checkbox';
+import FilterCard from './filter-card';
+import InputSearch from '../input-search';
+import FilterAction from './filter-action';
+import Checkbox from '../checkbox';
 
 interface IFilterSelection {
   headerKey: string;
@@ -100,7 +100,7 @@ function FilterSelection(props: IFilterSelection) {
         {selectedOptions.length > 0 && (
           <div className='absolute top-0 -right-1 size-2 rounded-full bg-knitto-blue-100 z-10' />
         )}
-        <Icon
+        <Icons
           name='filterMultiple'
           className={clsx(
             'shrink-0 w-3.5 text-gray-500 hover:text-gray-900 cursor-pointer',
@@ -147,15 +147,7 @@ function FilterSelection(props: IFilterSelection) {
 }
 
 const SelectionList = (props: ISelectionList) => {
-  const {
-    options,
-    headerKey,
-    rowVirtualizer,
-    isCheked,
-    isEmptyOptions,
-    onCheckboxChange,
-    scrollRef,
-  } = props;
+  const { options, headerKey, rowVirtualizer, isCheked, isEmptyOptions, onCheckboxChange, scrollRef } = props;
 
   return (
     <div

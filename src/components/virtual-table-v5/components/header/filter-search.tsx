@@ -1,12 +1,12 @@
 import { createPortal } from 'react-dom';
 import { memo, useRef, useState } from 'react';
-import InputSearch from './input-search';
 import FilterCard from './filter-card';
-import Icon from '../icons';
 import clsx from 'clsx';
-import { DEFAULT_SIZE } from '../lib';
-import { useClickOutside } from '../hooks';
 import FilterAction from './filter-action';
+import { useClickOutside } from '../../hooks';
+import { DEFAULT_SIZE } from '../../lib';
+import Icons from '../../icons';
+import InputSearch from '../input-search';
 
 interface IVirtualFilterSearchProps {
   headerKey: string;
@@ -55,7 +55,7 @@ function FilterSearch(props: IVirtualFilterSearchProps) {
   return (
     <div className='relative'>
       <div className='relative'>
-        <Icon
+        <Icons
           name='search'
           onClick={handleOpenCard}
           className={clsx(

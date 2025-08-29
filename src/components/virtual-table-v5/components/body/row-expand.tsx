@@ -1,6 +1,6 @@
 import { memo } from 'react';
-import Icons from '../icons';
 import clsx from 'clsx';
+import Icons from '../../icons';
 
 function RowExpand({ isExpanded = false }: { isExpanded?: boolean }) {
   return (

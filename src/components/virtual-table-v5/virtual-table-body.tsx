@@ -3,8 +3,7 @@ import { useVirtualizerContext } from './context/virtualizer-context';
 import { useSelectionContext } from './context/selection-context';
 import { useHeaderContext } from './context/header-context';
 import { useUIContext } from './context/ui-context';
-import { RowExpandedContent } from './components';
-import BodyCell from './components/body/body-cell';
+import { BodyCell, RowExpandedContent } from './components';
 
 interface IVirtualTableBody<TData> {
   headerHeight: number;

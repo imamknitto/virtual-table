@@ -1,7 +1,7 @@
 import { memo } from 'react';
 import clsx from 'clsx';
-import { useFilterContext } from '../context/filter-context';
-import Icons from '../icons';
+import { useFilterContext } from '../../context/filter-context';
+import Icons from '../../icons';
 import HeaderAction from './header-action';
 
 /**

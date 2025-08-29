@@ -6,11 +6,11 @@ import { useSelectionContext } from '../../context/selection-context';
 import { useHeaderContext } from '../../context/header-context';
 import { useUIContext } from '../../context/ui-context';
 import ResizeIndicator from '../resize-indicator';
-import HeaderCaption from '../header-caption';
-import RowCheckbox from '../row-checkbox';
-import TableFilter from '../table-filter';
+import RowCheckbox from '../body/row-checkbox';
+import HeaderFilter from './header-filter';
 import TableHead from '../table-head';
 import HeaderCellNested from './header-cell-nested';
+import HeaderCaption from './header-caption';
 
 interface IHeaderCell {
   headData: IAdjustedHeader;
@@ -141,7 +141,7 @@ function HeaderCell(props: IHeaderCell) {
           />
 
           {isFilterVisible && (
-            <TableFilter
+            <HeaderFilter
               headerMode={headerMode}
               headerKey={headData?.key}
               filterSelectionOptions={headData?.filterSelectionOptions || []}
