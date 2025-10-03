@@ -1,30 +1,56 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import useOnClickOutside from './use-click-outside';
-import { calculateFixedCardPosition } from '../lib';
+import { SESSION_STORAGE_KEY } from '../lib';
 
 interface ISearchTable<TDataSource> {
   data: TDataSource[];
   isResetFilter?: boolean;
   useServerSearch?: boolean;
+  useSessionFilter?: { tableKey: string };
   onChangeSearch?: (data: Record<keyof TDataSource, string>) => void;
 }
 
 export default function useFilterSearch<TDataSource>(props: ISearchTable<TDataSource>) {
-  const { data, useServerSearch, onChangeSearch, isResetFilter } = props;
+  const { data, useServerSearch, onChangeSearch, isResetFilter, useSessionFilter } = props;
 
   const searchCardRef = useRef<HTMLDivElement | null>(null);
   const [isSearchCardOpen, setIsSearchCardOpen] = useState({ show: false, key: '' });
-  const [searchCardPosition, setSearchCardPosition] = useState({ top: 0, left: 0 });
 
   const [activeSearch, seActiveSearch] = useState<Record<keyof TDataSource, string>>(
     {} as Record<keyof TDataSource, string>
   );
+
+  // reset session storage of search per column on reload page
+  useEffect(() => {
+    if (!useSessionFilter) return;
+
+    window.addEventListener('beforeunload', () => {
+      sessionStorage.removeItem('search_per_column');
+    });
+
+    return () => {
+      window.removeEventListener('beforeunload', () => {});
+    };
+  }, [useSessionFilter]);
 
   useEffect(() => {
     if (isResetFilter) seActiveSearch({} as Record<keyof TDataSource, string>);
   }, [isResetFilter]);
 
   useOnClickOutside([searchCardRef], () => setIsSearchCardOpen({ show: false, key: '' }));
+
+  const setToSessionStorage = useCallback(
+    (data: Record<keyof TDataSource, string>) => {
+      sessionStorage.setItem(
+        SESSION_STORAGE_KEY.SEARCH_PER_COLUMN,
+        JSON.stringify({
+          ...JSON.parse(sessionStorage.getItem(SESSION_STORAGE_KEY.SEARCH_PER_COLUMN) || '{}'),
+          [useSessionFilter?.tableKey || '']: data,
+        })
+      );
+    },
+    [useSessionFilter]
+  );
 
   const searchedData = useMemo(() => {
     if (!activeSearch || Object.keys(activeSearch).length === 0) return data || [];
@@ -42,17 +68,6 @@ export default function useFilterSearch<TDataSource>(props: ISearchTable<TDataSo
     );
   }, [data, activeSearch, useServerSearch]);
 
-  const handleOpenSearch = useCallback(
-    (e: React.MouseEvent<HTMLElement>, activeSearchKey: string) => {
-      const rect = e.currentTarget.getBoundingClientRect();
-      const { calculatedTop, calculatedLeft } = calculateFixedCardPosition(rect);
-
-      setSearchCardPosition({ top: calculatedTop, left: calculatedLeft });
-      setIsSearchCardOpen({ show: true, key: activeSearchKey });
-    },
-    []
-  );
-
   const updateSearch = useCallback(
     (dataKey: keyof TDataSource | string, searchValue: string) => {
       //   gridRef.current?.scrollTo({ scrollTop: 0 });
@@ -67,6 +82,7 @@ export default function useFilterSearch<TDataSource>(props: ISearchTable<TDataSo
         }
 
         onChangeSearch?.(newSearch);
+        if (useSessionFilter) setToSessionStorage(newSearch);
 
         return newSearch;
       });
@@ -90,22 +106,19 @@ export default function useFilterSearch<TDataSource>(props: ISearchTable<TDataSo
 
       seActiveSearch(newActiveSearch as Record<keyof TDataSource, string>);
       onChangeSearch?.(newActiveSearch as Record<keyof TDataSource, string>);
+      if (useSessionFilter) setToSessionStorage(newActiveSearch as Record<keyof TDataSource, string>);
+
       setIsSearchCardOpen({ show: false, key: '' });
     },
     [onChangeSearch, activeSearch]
   );
 
-  const resetAllSearch = useCallback(
-    () => seActiveSearch({} as Record<keyof TDataSource, string>),
-    []
-  );
+  const resetAllSearch = useCallback(() => seActiveSearch({} as Record<keyof TDataSource, string>), []);
 
   return {
     searchedData,
     searchCardRef,
-    searchCardPosition,
     isSearchCardOpen,
-    handleOpenSearch,
     updateSearch,
     resetSearch,
     activeSearch,

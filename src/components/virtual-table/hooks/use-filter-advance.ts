@@ -1,37 +1,57 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import useOnClickOutside from './use-click-outside';
-import { calculateFixedCardPosition } from '../lib/utils';
-import type { TFilterAdvanceConfig } from '../lib';
+import { SESSION_STORAGE_KEY, type TFilterAdvanceConfig } from '../lib';
 
-type IActiveAdvanceFilters<T> = Record<
-  keyof T,
-  { config_name: TFilterAdvanceConfig; value: string }
->;
+type IActiveAdvanceFilters<T> = Record<keyof T, { config_name: TFilterAdvanceConfig; value: string }>;
 
 interface IAdvanceFilterTable<TDataSource> {
   data: TDataSource[];
   useServerAdvanceFilter?: boolean;
   isResetFilter?: boolean;
+  useSessionFilter?: { tableKey: string };
   onChangeAdvanceFilter?: (data: IActiveAdvanceFilters<TDataSource>) => void;
 }
 
 export default function useFilterAdvance<TDataSource>(props: IAdvanceFilterTable<TDataSource>) {
-  const { data, isResetFilter, onChangeAdvanceFilter, useServerAdvanceFilter = false } = props;
+  const { data, isResetFilter, onChangeAdvanceFilter, useServerAdvanceFilter = false, useSessionFilter } = props;
 
   const filterAdvanceCardRef = useRef<HTMLDivElement | null>(null);
   const [isFilterAdvanceCardOpen, setIsFilterAdvanceCardOpen] = useState({ show: false, key: '' });
-  const [filterAdvanceCardPosition, setFilterAdvanceCardPosition] = useState({ top: 0, left: 0 });
-  const [activeAdvanceFilters, setActiveAdvanceFilters] = useState<
-    IActiveAdvanceFilters<TDataSource>
-  >({} as IActiveAdvanceFilters<TDataSource>);
+  const [activeAdvanceFilters, setActiveAdvanceFilters] = useState<IActiveAdvanceFilters<TDataSource>>(
+    {} as IActiveAdvanceFilters<TDataSource>
+  );
 
   useEffect(() => {
     if (isResetFilter) setActiveAdvanceFilters({} as IActiveAdvanceFilters<TDataSource>);
   }, [isResetFilter]);
 
-  useOnClickOutside([filterAdvanceCardRef], () =>
-    setIsFilterAdvanceCardOpen({ show: false, key: '' }),
+  // reset session storage of filter advance per column on reload page
+  useEffect(() => {
+    if (!useSessionFilter) return;
+
+    window.addEventListener('beforeunload', () => {
+      sessionStorage.removeItem(SESSION_STORAGE_KEY.FILTER_ADVANCE_PER_COLUMN);
+    });
+
+    return () => {
+      window.removeEventListener('beforeunload', () => {});
+    };
+  }, [useSessionFilter]);
+
+  useOnClickOutside([filterAdvanceCardRef], () => setIsFilterAdvanceCardOpen({ show: false, key: '' }));
+
+  const setToSessionStorage = useCallback(
+    (data: Record<keyof TDataSource, { config_name: TFilterAdvanceConfig; value: string }>) => {
+      sessionStorage.setItem(
+        SESSION_STORAGE_KEY.FILTER_ADVANCE_PER_COLUMN,
+        JSON.stringify({
+          ...JSON.parse(sessionStorage.getItem(SESSION_STORAGE_KEY.FILTER_ADVANCE_PER_COLUMN) || '{}'),
+          [useSessionFilter?.tableKey || '']: data,
+        })
+      );
+    },
+    [useSessionFilter]
   );
 
   const filteredAdvanceData = useMemo(() => {
@@ -63,18 +83,7 @@ export default function useFilterAdvance<TDataSource>(props: IAdvanceFilterTable
     });
   }, [data, activeAdvanceFilters, useServerAdvanceFilter]);
 
-  const handleOpenAdvanceFilter = useCallback(
-    (e: React.MouseEvent<HTMLElement>, activeFilterKey: string) => {
-      const rect = e.currentTarget.getBoundingClientRect();
-      const { calculatedTop, calculatedLeft } = calculateFixedCardPosition(rect);
-
-      setFilterAdvanceCardPosition({ top: calculatedTop, left: calculatedLeft });
-      setIsFilterAdvanceCardOpen({ show: true, key: activeFilterKey });
-    },
-    [],
-  );
-
-  const applyAdvanceFilter = useCallback(
+  const updateAdvanceFilter = useCallback(
     (dataKey: keyof TDataSource | string, config_name: TFilterAdvanceConfig, value: string) => {
       setActiveAdvanceFilters((prev) => {
         const newFilters = {
@@ -83,12 +92,13 @@ export default function useFilterAdvance<TDataSource>(props: IAdvanceFilterTable
         };
 
         onChangeAdvanceFilter?.(newFilters);
+        if (useSessionFilter) setToSessionStorage(newFilters);
 
         return newFilters;
       });
       setIsFilterAdvanceCardOpen({ show: false, key: '' });
     },
-    [onChangeAdvanceFilter],
+    [onChangeAdvanceFilter]
   );
 
   const resetAdvanceFilter = useCallback(
@@ -96,22 +106,23 @@ export default function useFilterAdvance<TDataSource>(props: IAdvanceFilterTable
       setActiveAdvanceFilters((prev) => {
         const newFilters = { ...prev };
         delete newFilters[dataKey as keyof TDataSource];
+
         onChangeAdvanceFilter?.(newFilters);
+        if (useSessionFilter) setToSessionStorage(newFilters);
+
         return newFilters;
       });
       setIsFilterAdvanceCardOpen({ show: false, key: '' });
     },
-    [onChangeAdvanceFilter],
+    [onChangeAdvanceFilter]
   );
 
   return {
     filteredAdvanceData,
-    filterAdvanceCardPosition,
     filterAdvanceCardRef,
     isFilterAdvanceCardOpen,
     setIsFilterAdvanceCardOpen,
-    handleOpenAdvanceFilter,
-    applyAdvanceFilter,
+    updateAdvanceFilter,
     resetAdvanceFilter,
     activeAdvanceFilters,
   };

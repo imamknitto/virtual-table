@@ -1,5 +1,5 @@
 import clsx from 'clsx';
-import type { ReactNode } from 'react';
+import { memo, type ReactNode } from 'react';
 
 interface CheckboxProps extends React.ComponentPropsWithoutRef<'input'> {
   checked: boolean;
@@ -8,7 +8,7 @@ interface CheckboxProps extends React.ComponentPropsWithoutRef<'input'> {
   classNameLabel?: string;
 }
 
-export default function Checkbox(props: CheckboxProps) {
+function Checkbox(props: CheckboxProps) {
   const { checked, onChecked, label, classNameLabel, ...propRest } = props;
 
   return (
@@ -22,20 +22,17 @@ export default function Checkbox(props: CheckboxProps) {
           {...propRest}
         />
         <div
-          className={clsx(
-            'size-4 flex justify-center items-center border border-gray-400 rounded-xs absolute',
-            {
-              'bg-blue-950': checked,
-              'bg-white': !checked,
-            }
-          )}
+          className={clsx('size-4 flex justify-center items-center border border-gray-400 rounded-xs absolute', {
+            'bg-blue-950': checked,
+            'bg-white': !checked,
+          })}
         >
           {checked && <CheckedIcon />}
         </div>
       </div>
 
       {typeof label === 'string' ? (
-        <span className={clsx('text-xs font-normal line-clamp-1', classNameLabel)}>{label}</span>
+        <span className={clsx('text-xs font-normal truncate', classNameLabel)}>{label}</span>
       ) : (
         label
       )}
@@ -50,3 +47,5 @@ function CheckedIcon() {
     </svg>
   );
 }
+
+export default memo(Checkbox);

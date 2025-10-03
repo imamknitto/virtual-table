@@ -1,195 +1,150 @@
+import { useMemo, useRef, useEffect, forwardRef } from 'react';
+import AutoSizer from 'react-virtualized-auto-sizer';
 import clsx from 'clsx';
-import { useMemo, useCallback } from 'react';
-import { TableProvider } from './context/table-context';
+
+import { useScrollBottomDetection } from './hooks';
+import { DEFAULT_SIZE, type IAdjustedHeader, type IVirtualTable } from './lib';
+import { HeaderContextProvider } from './context/header-context';
+import { VirtualizerContextProvider } from './context/virtualizer-context';
+import { SelectionContextProvider } from './context/selection-context';
+import EmptyDataIndicator from './components/empty-data-indicator';
+import { FilterContextProvider } from './context/filter-context';
+import LoadingIndicator from './components/loading-indicator';
+import VirtualTableHeader from './virtual-table-header';
+import VirtualTableFooter from './virtual-table-footer';
+import UIContextProvider from './context/ui-context';
+import VirtualTableBody from './virtual-table-body';
 import './lib/style.css';
-import { DEFAULT_SIZE, type IHeader, type IVirtualTable } from './lib';
-import { useVirtualTableState } from './hooks/use-virtual-table-state';
-import VirtualTableHeaderItem from './virtual-table-header-item';
-import VirtualTableCell from './virtual-table-cell';
 
-export default function VirtualTable<TData>(virtualTableProps: IVirtualTable<TData>) {
+function VirtualTableInner<TData>(virtualTableProps: IVirtualTable<TData>, ref: React.ForwardedRef<HTMLDivElement>) {
   const {
-    scrollElementRef,
-    columnVirtualizer,
-    rowVirtualizer,
-    flattenedData,
-    tableProviderValue,
-    handleScroll,
-    tableBodyTopPosition,
-    regularHeaders,
-    stickyHeaders,
-    sumHeaderWidth,
-    outerTableWidth,
-    scrollbarWidth,
-    expandedContentHeight,
-    renderExpandedRow,
-    sumHeaderStickyRightWidth,
-  } = useVirtualTableState({ ...virtualTableProps });
+    rowKey,
+    data,
+    headers,
+    headerMode = 'double',
+    rowHeight = DEFAULT_SIZE.ROW_HEIGHT,
+    headerHeight = DEFAULT_SIZE.HEADER_HEIGTH,
+    filterHeight = DEFAULT_SIZE.FILTER_HEIGHT,
+    footerHeight = DEFAULT_SIZE.FOOTER_HEIGHT,
+    isLoading = false,
+    isResetFilter = false,
+    useFooter = false,
+    useAutoSizer = true,
+    useSessionFilter,
+    useServerFilter = { sort: false, search: false, selection: false, advance: false },
+    classNameOuterTable,
+    classNameCell,
+    onClickRow,
+    onDoubleClickRow,
+    onRightClickRow,
+    onChangeCheckboxRowSelection,
+    onRenderExpandedContent,
+    onChangeFilter,
+    onScroll,
+    onScrollTouchBottom,
+  } = virtualTableProps;
 
-  const stickyLeftHeaders = useMemo(() => 
-    stickyHeaders.filter((h) => h.sticky === 'left'),
-    [stickyHeaders]
-  );
-  
-  const stickyRightHeaders = useMemo(() => 
-    stickyHeaders.filter((h) => h.sticky === 'right'),
-    [stickyHeaders]
-  );
+  // Ref lokal untuk elemen scrollable
+  const scrollElementRef = useRef<HTMLDivElement | null>(null);
 
-  // Memoize position calculation functions
-  const getLeftPosition = useCallback((headers: typeof stickyHeaders, index: number) => {
-    return headers
-      .slice(0, index)
-      .reduce((acc, curr) => acc + (curr.width || DEFAULT_SIZE.COLUMN_WIDTH), 0);
-  }, []);
+  // Attach ke ref dari forwardRef jika ada
+  useEffect(() => {
+    if (!scrollElementRef.current) return;
 
-  const getRightPosition = useCallback((key: string | number) => {
-    const index = stickyRightHeaders.findIndex((h) => h.key === key);
-    return stickyRightHeaders
-      .slice(0, index)
-      .reduce(
-        (acc, curr) => acc + (curr.width || DEFAULT_SIZE.COLUMN_WIDTH),
-        outerTableWidth - sumHeaderStickyRightWidth - scrollbarWidth,
-      );
-  }, [stickyRightHeaders, outerTableWidth, sumHeaderStickyRightWidth, scrollbarWidth]);
+    if (typeof ref === 'function') {
+      ref(scrollElementRef.current);
+    } else if (ref) {
+      (ref as React.MutableRefObject<HTMLDivElement | null>).current = scrollElementRef.current;
+    }
+  }, [ref, scrollElementRef.current]);
 
-  // Memoize table styles
-  const tableStyle = useMemo(() => ({ width: sumHeaderWidth }), [sumHeaderWidth]);
-  
-  const tbodyStyle = useMemo(() => ({
-    position: 'relative' as const,
-    height: rowVirtualizer.getTotalSize(),
-    top: tableBodyTopPosition,
-  }), [rowVirtualizer.getTotalSize(), tableBodyTopPosition]);
+  useScrollBottomDetection(scrollElementRef, {
+    threshold: 100, // Trigger when 100px from bottom
+    throttleMs: 100, // Throttle to 100ms for performance
+    onScrollTouchBottom: onScrollTouchBottom || (() => {}),
+  });
 
-  // Memoize total sticky width calculation
-  const totalStickyWidth = useMemo(() => 
-    stickyLeftHeaders.reduce(
-      (acc, curr) => acc + (curr.width || DEFAULT_SIZE.COLUMN_WIDTH),
-      0,
-    ),
-    [stickyLeftHeaders]
-  );
+  const modifiedHeaders = useMemo(() => {
+    return headers.map((header) => ({
+      ...header,
+      visible: true,
+      width: header.width || DEFAULT_SIZE.COLUMN_WIDTH,
+    }));
+  }, [headers]);
 
-  return (
-    <TableProvider {...tableProviderValue}>
-      <div
-        ref={scrollElementRef}
-        onScroll={handleScroll}
-        className={clsx(
-          'w-full h-full overflow-auto relative border border-gray-200',
-          virtualTableProps.classNameOuterTable,
-        )}
+  const renderTableContent = (width?: number, height?: number) => (
+    <HeaderContextProvider initialColumns={modifiedHeaders as IAdjustedHeader[]}>
+      <FilterContextProvider
+        dataSource={data}
+        useServerFilter={useServerFilter}
+        onChangeFilter={onChangeFilter}
+        isResetFilter={isResetFilter}
+        useSessionFilter={useSessionFilter}
       >
-        <table style={tableStyle}>
-          <thead className='sticky top-0 z-10'>
-            <tr style={{ position: 'relative' }}>
-              {stickyHeaders.map((header, index) => {
-                const leftPosition =
-                  header.sticky === 'left'
-                    ? getLeftPosition(stickyLeftHeaders, index)
-                    : getRightPosition(header.key.toString());
+        <VirtualizerContextProvider rowKey={rowKey} scrollElementRef={scrollElementRef}>
+          <SelectionContextProvider onChangeCheckboxRowSelection={onChangeCheckboxRowSelection}>
+            <UIContextProvider
+              filterHeight={filterHeight}
+              useFooter={useFooter}
+              expandedContent={(data) => onRenderExpandedContent?.(data as TData)}
+              headerMode={headerMode}
+              headerHeight={headerHeight}
+              classNameCell={classNameCell}
+            >
+              <div
+                ref={scrollElementRef}
+                data-table-container
+                className={clsx(
+                  'w-full h-full overflow-auto relative border border-[#8E8F93]',
+                  isLoading && 'pointer-events-none',
+                  classNameOuterTable
+                )}
+                // style={useAutoSizer && width && height ? { width, height } : undefined}
+                style={{
+                  ...(useAutoSizer && width && height ? { width, height } : {}),
+                  scrollbarGutter: 'stable',
+                  overflowAnchor: 'none'
+                }}
+                onScroll={(e) => onScroll?.(e.currentTarget.scrollTop, e.currentTarget.scrollLeft)}
+              >
+                <VirtualTableHeader />
 
-                return (
-                  <VirtualTableHeaderItem
-                    key={`sticky-${String(header.key)}`}
-                    position='sticky'
-                    header={header}
-                    headerWidth={header.width || DEFAULT_SIZE.COLUMN_WIDTH}
-                    leftPosition={leftPosition}
-                    headerIndex={index}
-                  />
-                );
-              })}
+                <VirtualTableBody
+                  headerHeight={headerHeight}
+                  footerHeight={footerHeight}
+                  filterHeight={filterHeight}
+                  rowHeight={rowHeight}
+                  headerMode={headerMode}
+                  onClickRowToParent={onClickRow}
+                  onDoubleClickRowToParent={onDoubleClickRow}
+                  onRightClickRowToParent={onRightClickRow}
+                />
 
-              {columnVirtualizer.getVirtualItems().map((virtualColumn) => {
-                return (
-                  <VirtualTableHeaderItem
-                    key={virtualColumn.key}
-                    position='absolute'
-                    headerIndex={virtualColumn.index}
-                    header={regularHeaders[virtualColumn.index]}
-                    headerWidth={virtualColumn.size}
-                    leftPosition={virtualColumn.start + totalStickyWidth}
-                  />
-                );
-              })}
-            </tr>
-          </thead>
-
-          <tbody style={tbodyStyle}>
-            {rowVirtualizer.getVirtualItems().map((virtualRow) => {
-              const { item, type } = flattenedData[virtualRow.index];
-              const isExpandRow = type === 'expanded';
-
-              const rowStyle = {
-                position: 'absolute' as const,
-                height: virtualRow.size,
-                transform: `translateY(${virtualRow.start}px)`,
-                ...(!isExpandRow && { width: sumHeaderWidth }),
-              };
-
-              return (
-                <tr
-                  key={virtualRow.key}
-                  className='group/body-row'
-                  style={rowStyle}
-                >
-                  {!isExpandRow ? (
-                    <>
-                      {stickyHeaders.map((header, index) => {
-                        const leftPosition =
-                          header.sticky === 'left'
-                            ? getLeftPosition(stickyLeftHeaders, index)
-                            : getRightPosition(header.key.toString());
-
-                        return (
-                          <VirtualTableCell
-                            key={`td-sticky-${index}`}
-                            position='sticky'
-                            rowData={item}
-                            rowIndex={virtualRow.index}
-                            columnWidth={header.width || DEFAULT_SIZE.COLUMN_WIDTH}
-                            columnHeight={virtualRow.size}
-                            leftPosition={leftPosition}
-                            header={header as IHeader<TData>}
-                            zIndexColumn={1000 - index}
-                          />
-                        );
-                      })}
-
-                      {columnVirtualizer.getVirtualItems().map((virtualColumn) => {
-                        return (
-                          <VirtualTableCell
-                            key={'td-regular' + virtualColumn.key}
-                            position='absolute'
-                            rowData={item}
-                            rowIndex={virtualRow.index}
-                            columnWidth={virtualColumn.size}
-                            columnHeight={virtualRow.size}
-                            leftPosition={virtualColumn.start + totalStickyWidth}
-                            header={regularHeaders[virtualColumn.index]}
-                            zIndexColumn={800 - virtualColumn.index}
-                          />
-                        );
-                      })}
-                    </>
-                  ) : (
-                    <td
-                      colSpan={[...stickyHeaders, ...regularHeaders].length}
-                      className='border-b border-gray-200 bg-white'
-                    >
-                      <div style={{ height: expandedContentHeight, width: sumHeaderWidth }}>
-                        {renderExpandedRow?.(item as TData)}
-                      </div>
-                    </td>
-                  )}
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
-    </TableProvider>
+                {useFooter && <VirtualTableFooter footerHeight={footerHeight} />}
+                {!isLoading && <EmptyDataIndicator />}
+              </div>
+            </UIContextProvider>
+          </SelectionContextProvider>
+        </VirtualizerContextProvider>
+      </FilterContextProvider>
+    </HeaderContextProvider>
   );
+
+  if (useAutoSizer) {
+    return (
+      <div className="w-full h-full relative">
+        <AutoSizer>{({ width, height }) => renderTableContent(width, height)}</AutoSizer>
+
+        {isLoading && <LoadingIndicator />}
+      </div>
+    );
+  }
+
+  return renderTableContent();
 }
+
+const VirtualTable = forwardRef(VirtualTableInner) as <TData>(
+  props: IVirtualTable<TData> & { ref?: React.ForwardedRef<HTMLDivElement> }
+) => ReturnType<typeof VirtualTableInner>;
+
+export default VirtualTable;

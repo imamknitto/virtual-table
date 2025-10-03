@@ -1,17 +1,18 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
-import { calculateFixedCardPosition } from '../lib/utils';
 import useOnClickOutside from './use-click-outside';
+import { SESSION_STORAGE_KEY } from '../lib';
 
 interface IFilterTable<TDataSource> {
   data: TDataSource[];
   isResetFilter?: boolean;
   useServerFilter?: boolean;
+  useSessionFilter?: { tableKey: string };
   onChangeFilter?: (data: Record<keyof TDataSource, string[]>) => void;
 }
 
 export default function useFilterSelection<TDataSource>(props: IFilterTable<TDataSource>) {
-  const { data, isResetFilter, onChangeFilter, useServerFilter = false } = props;
+  const { data, isResetFilter, onChangeFilter, useServerFilter = false, useSessionFilter } = props;
 
   const filterCardRef = useRef<HTMLDivElement | null>(null);
   const [activeFilters, setActiveFilters] = useState<Record<keyof TDataSource, string[]>>(
@@ -19,13 +20,40 @@ export default function useFilterSelection<TDataSource>(props: IFilterTable<TDat
   );
 
   const [isFilterCardOpen, setIsFilterCardOpen] = useState({ show: false, key: '' });
-  const [filterCardPosition, setFilterCardPosition] = useState({ top: 0, left: 0 });
+
+  const resetAllFilter = useCallback(() => setActiveFilters({} as Record<keyof TDataSource, string[]>), []);
 
   useEffect(() => {
     if (isResetFilter) resetAllFilter();
   }, [isResetFilter]);
 
+  // reset session storage of filter selection per column on reload page
+  useEffect(() => {
+    if (!useSessionFilter) return;
+
+    window.addEventListener('beforeunload', () => {
+      sessionStorage.removeItem(SESSION_STORAGE_KEY.FILTER_SELECTION_PER_COLUMN);
+    });
+
+    return () => {
+      window.removeEventListener('beforeunload', () => {});
+    };
+  }, [useSessionFilter]);
+
   useOnClickOutside([filterCardRef], () => setIsFilterCardOpen({ show: false, key: '' }));
+
+  const setToSessionStorage = useCallback(
+    (data: Record<keyof TDataSource, string[]>) => {
+      sessionStorage.setItem(
+        SESSION_STORAGE_KEY.FILTER_SELECTION_PER_COLUMN,
+        JSON.stringify({
+          ...JSON.parse(sessionStorage.getItem(SESSION_STORAGE_KEY.FILTER_SELECTION_PER_COLUMN) || '{}'),
+          [useSessionFilter?.tableKey || '']: data,
+        })
+      );
+    },
+    [useSessionFilter]
+  );
 
   const filteredData = useMemo(() => {
     if (Object.keys(activeFilters).length === 0) return data;
@@ -43,17 +71,6 @@ export default function useFilterSelection<TDataSource>(props: IFilterTable<TDat
     });
   }, [data, activeFilters, useServerFilter]);
 
-  const handleOpenFilter = useCallback(
-    (e: React.MouseEvent<HTMLElement>, activeFilterKey: string) => {
-      const rect = e.currentTarget.getBoundingClientRect();
-      const { calculatedTop, calculatedLeft } = calculateFixedCardPosition(rect);
-
-      setFilterCardPosition({ top: calculatedTop, left: calculatedLeft });
-      setIsFilterCardOpen({ show: true, key: activeFilterKey });
-    },
-    []
-  );
-
   const updateFilter = useCallback(
     (dataKey: keyof TDataSource | string, filterValues: string[]) => {
       setActiveFilters((prev) => {
@@ -66,6 +83,7 @@ export default function useFilterSelection<TDataSource>(props: IFilterTable<TDat
         }
 
         onChangeFilter?.(newFilters);
+        if (useSessionFilter) setToSessionStorage(newFilters);
 
         return newFilters;
       });
@@ -81,6 +99,7 @@ export default function useFilterSelection<TDataSource>(props: IFilterTable<TDat
         const newFilters = { ...prev };
         delete newFilters[dataKey as keyof TDataSource];
         onChangeFilter?.(newFilters);
+        if (useSessionFilter) setToSessionStorage(newFilters);
         return newFilters;
       });
       setIsFilterCardOpen({ show: false, key: '' });
@@ -88,17 +107,10 @@ export default function useFilterSelection<TDataSource>(props: IFilterTable<TDat
     [onChangeFilter]
   );
 
-  const resetAllFilter = useCallback(
-    () => setActiveFilters({} as Record<keyof TDataSource, string[]>),
-    []
-  );
-
   return {
     filteredData,
     filterCardRef,
-    filterCardPosition,
     isFilterCardOpen,
-    handleOpenFilter,
     updateFilter,
     resetFilter,
     activeFilters,

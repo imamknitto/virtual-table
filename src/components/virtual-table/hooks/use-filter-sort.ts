@@ -3,9 +3,9 @@ import type { TSortOrder } from '../lib';
 
 interface ISortTable<TDataSource> {
   data: TDataSource[];
-  onChangeSort?: (sortKey: string, sortBy: TSortOrder) => void;
   useServerSort?: boolean;
   isResetFilter?: boolean;
+  onChangeSort?: (sortKey: string, sortBy: TSortOrder) => void;
 }
 
 export default function useFilterSort<TDataSource>(props: ISortTable<TDataSource>) {
@@ -26,10 +26,8 @@ export default function useFilterSort<TDataSource>(props: ISortTable<TDataSource
     if (useServerSort) return data;
 
     const sorted = [...data].sort((a, b) => {
-      if (a[sortKey as keyof TDataSource] < b[sortKey as keyof TDataSource])
-        return sortBy === 'asc' ? -1 : 1;
-      if (a[sortKey as keyof TDataSource] > b[sortKey as keyof TDataSource])
-        return sortBy === 'asc' ? 1 : -1;
+      if (a[sortKey as keyof TDataSource] < b[sortKey as keyof TDataSource]) return sortBy === 'asc' ? -1 : 1;
+      if (a[sortKey as keyof TDataSource] > b[sortKey as keyof TDataSource]) return sortBy === 'asc' ? 1 : -1;
       return 0;
     });
 
@@ -39,14 +37,7 @@ export default function useFilterSort<TDataSource>(props: ISortTable<TDataSource
   const handleSort = useCallback(
     (key: string) => {
       setSortKey((prevKey) => {
-        const newSortBy =
-          prevKey === key
-            ? sortBy === 'asc'
-              ? 'desc'
-              : sortBy === 'desc'
-              ? 'unset'
-              : 'asc'
-            : 'asc';
+        const newSortBy = prevKey === key ? (sortBy === 'asc' ? 'desc' : sortBy === 'desc' ? 'unset' : 'asc') : 'asc';
 
         setSortBy(newSortBy);
         onChangeSort?.(key, newSortBy);
@@ -54,7 +45,7 @@ export default function useFilterSort<TDataSource>(props: ISortTable<TDataSource
         return newSortBy === 'unset' ? null : key;
       });
     },
-    [sortBy, onChangeSort],
+    [sortBy, onChangeSort]
   );
 
   const handleSpecificSort = useCallback(
@@ -63,7 +54,7 @@ export default function useFilterSort<TDataSource>(props: ISortTable<TDataSource
       setSortBy(sortBy);
       onChangeSort?.(key, sortBy);
     },
-    [onChangeSort],
+    [onChangeSort]
   );
 
   return { sortedData, handleSort, handleSpecificSort, sortKey, sortBy };
