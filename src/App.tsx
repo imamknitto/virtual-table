@@ -17,6 +17,11 @@ const CustomCellPage = lazy(() => import('./pages/examples-page/custom-cell-page
 const ClickRowActionPage = lazy(() => import('./pages/examples-page/click-row-action-page'));
 const FreezeColumnPage = lazy(() => import('./pages/examples-page/freeze-column-page'));
 const ExpandRowPage = lazy(() => import('./pages/examples-page/expand-row-page'));
+const FooterPage = lazy(() => import('./pages/examples-page/footer-page'));
+const ComparationPage = lazy(() => import('./pages/examples-page/comparation-page'));
+const ServerFilterPage = lazy(() => import('./pages/examples-page/server-filter-page'));
+const HeaderGroupingPage = lazy(() => import('./pages/examples-page/header-grouping-page'));
+const LargeDatasetPage = lazy(() => import('./pages/examples-page/large-dataset-page'));
 
 const router = createBrowserRouter([
   {
@@ -39,6 +44,11 @@ const router = createBrowserRouter([
       { path: 'docs/examples/click-row-action', element: <ClickRowActionPage /> },
       { path: 'docs/examples/freeze-column', element: <FreezeColumnPage /> },
       { path: 'docs/examples/expand-row', element: <ExpandRowPage /> },
+      { path: 'docs/examples/footer', element: <FooterPage /> },
+      { path: 'docs/examples/comparation', element: <ComparationPage /> },
+      { path: 'docs/examples/server-filter', element: <ServerFilterPage /> },
+      { path: 'docs/examples/header-grouping', element: <HeaderGroupingPage /> },
+      { path: 'docs/examples/large-dataset', element: <LargeDatasetPage /> },
       { path: 'docs/api/props', element: <PropsPage /> },
       { path: 'docs/api/methods', element: <MethodsPage /> },
       { path: 'blog', element: <BlogPage /> },
