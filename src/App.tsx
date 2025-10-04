@@ -16,6 +16,7 @@ const CheckboxSelectionPage = lazy(() => import('./pages/examples-page/checkbox-
 const CustomCellPage = lazy(() => import('./pages/examples-page/custom-cell-page'));
 const ClickRowActionPage = lazy(() => import('./pages/examples-page/click-row-action-page'));
 const FreezeColumnPage = lazy(() => import('./pages/examples-page/freeze-column-page'));
+const ExpandRowPage = lazy(() => import('./pages/examples-page/expand-row-page'));
 
 const router = createBrowserRouter([
   {
@@ -37,6 +38,7 @@ const router = createBrowserRouter([
       { path: 'docs/examples/custom-render-cell', element: <CustomCellPage /> },
       { path: 'docs/examples/click-row-action', element: <ClickRowActionPage /> },
       { path: 'docs/examples/freeze-column', element: <FreezeColumnPage /> },
+      { path: 'docs/examples/expand-row', element: <ExpandRowPage /> },
       { path: 'docs/api/props', element: <PropsPage /> },
       { path: 'docs/api/methods', element: <MethodsPage /> },
       { path: 'blog', element: <BlogPage /> },
