@@ -8,11 +8,12 @@ import { NotFoundPage } from './pages/not-found-page';
 import { lazy } from 'react';
 
 const BasicUsagePage = lazy(() => import('./pages/examples-page/basic-usage-page'));
+const HeaderCustomizationPage = lazy(() => import('./pages/examples-page/header-customization-page'));
 const ExamplesPage = lazy(() => import('./pages/examples-page/index'));
 const PropsPage = lazy(() => import('./pages/api-reference-page/props-page'));
 const MethodsPage = lazy(() => import('./pages/api-reference-page/methods-page'));
 const CheckboxSelectionPage = lazy(() => import('./pages/examples-page/checkbox-selection-page'));
-const FilterVisibilityPage = lazy(() => import('./pages/examples-page/filter-visibility-page'));
+const CustomCellPage = lazy(() => import('./pages/examples-page/custom-cell-page'));
 
 const router = createBrowserRouter([
   {
@@ -29,8 +30,9 @@ const router = createBrowserRouter([
       { path: 'docs/quick-start', element: <QuickStartPage /> },
       { path: 'docs/examples', element: <ExamplesPage /> },
       { path: 'docs/examples/basic-usage', element: <BasicUsagePage /> },
+      { path: 'docs/examples/header-customization', element: <HeaderCustomizationPage /> },
       { path: 'docs/examples/checkbox-selection', element: <CheckboxSelectionPage /> },
-      { path: 'docs/examples/filter-visibility', element: <FilterVisibilityPage /> },
+      { path: 'docs/examples/custom-render-cell', element: <CustomCellPage /> },
       { path: 'docs/api/props', element: <PropsPage /> },
       { path: 'docs/api/methods', element: <MethodsPage /> },
       { path: 'blog', element: <BlogPage /> },

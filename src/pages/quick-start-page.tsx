@@ -6,7 +6,7 @@ export const QuickStartPage = () => {
       <div>
         <h1 className='text-4xl font-bold tracking-tight'>Quick Start</h1>
         <p className='text-xl text-muted-foreground mt-4'>
-          Learn how to use Knitto Virtual Table in your project with a simple example.
+          Learn how to use Knitto Table in your project with a simple example.
         </p>
       </div>
 
@@ -14,7 +14,7 @@ export const QuickStartPage = () => {
         <section>
           <h2 className='text-2xl font-semibold tracking-tight'>Basic Usage</h2>
           <p className='text-muted-foreground mt-2'>
-            Here's a simple example of how to use Knitto Virtual Table:
+            Here's a simple example of how to use Knitto Table:
           </p>
 
           <div className='mt-4'>
@@ -186,7 +186,7 @@ function App() {
       <div className='rounded-lg border bg-muted/50 p-6'>
         <h3 className='font-semibold text-lg mb-2'>💡 Pro Tip</h3>
         <p className='text-sm text-muted-foreground'>
-          For large datasets (10,000+ rows), Knitto Virtual Table automatically handles virtualization to
+          For large datasets (10,000+ rows), Knitto Table automatically handles virtualization to
           ensure smooth scrolling and optimal performance. Built-in filtering, sorting, and row selection work
           seamlessly with virtualized data!
         </p>

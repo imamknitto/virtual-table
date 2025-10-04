@@ -6,15 +6,15 @@ export const IntroductionPage = () => {
       <div>
         <h1 className='text-4xl font-bold tracking-tight'>Introduction</h1>
         <p className='text-xl text-muted-foreground mt-4'>
-          Welcome to the official documentation for Knitto Virtual Table.
+          Welcome to the official documentation for Knitto Table.
         </p>
       </div>
 
       <div className='space-y-6'>
         <section>
-          <h2 className='text-2xl font-semibold tracking-tight'>What is Knitto Virtual Table?</h2>
+          <h2 className='text-2xl font-semibold tracking-tight'>What is Knitto Table?</h2>
           <p className='text-muted-foreground mt-2'>
-            Knitto Virtual Table is a high-performance, feature-rich virtual table component for React
+            Knitto Table is a high-performance, feature-rich virtual table component for React
             applications. Built with TypeScript and powered by @tanstack/react-virtual, it's designed to
             efficiently render massive datasets by only rendering the rows and columns visible in the
             viewport, providing smooth scrolling and optimal performance even with millions of rows.
@@ -165,7 +165,7 @@ export const IntroductionPage = () => {
       <div className='rounded-lg border bg-muted/50 p-6'>
         <h3 className='font-semibold text-lg mb-2'>🚀 Ready to get started?</h3>
         <p className='text-sm text-muted-foreground mb-4'>
-          Follow our installation guide to add Knitto Virtual Table to your project and start building
+          Follow our installation guide to add Knitto Table to your project and start building
           high-performance data tables.
         </p>
         <Link

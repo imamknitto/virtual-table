@@ -6,7 +6,7 @@ export const InstallationPage = () => {
       <div>
         <h1 className='text-4xl font-bold tracking-tight'>Installation</h1>
         <p className='text-xl text-muted-foreground mt-4'>
-          Get started with Knitto Virtual Table in your project.
+          Get started with Knitto Table in your project.
         </p>
       </div>
 
@@ -78,7 +78,7 @@ export const InstallationPage = () => {
       <div className='rounded-lg border bg-muted/50 p-6'>
         <h3 className='font-semibold text-lg mb-2'>Peer Dependencies</h3>
         <p className='text-sm text-muted-foreground mb-4'>
-          Knitto Virtual Table requires the following peer dependencies:
+          Knitto Table requires the following peer dependencies:
         </p>
         <ul className='space-y-2 text-sm'>
           <li className='flex items-center'>

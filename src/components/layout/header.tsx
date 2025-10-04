@@ -11,7 +11,7 @@ export const Header = ({ onMenuToggle }: HeaderProps) => {
         {/* Left side - Logo and Navigation */}
         <div className='flex items-center'>
           <Link to='/' className='mr-8 flex items-center space-x-2'>
-            <span className='font-bold text-lg'>Knitto Virtual Table</span>
+            <span className='font-bold text-lg'>Knitto Table</span>
           </Link>
 
           {/* Desktop Navigation */}

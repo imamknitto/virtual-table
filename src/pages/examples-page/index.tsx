@@ -6,7 +6,7 @@ const ExamplesPage = () => {
       <div>
         <h1 className='text-4xl font-bold tracking-tight'>Examples</h1>
         <p className='text-xl text-muted-foreground mt-4'>
-          Explore real-world examples and use cases for Knitto Virtual Table.
+          Explore real-world examples and use cases for Knitto Table.
         </p>
       </div>
 

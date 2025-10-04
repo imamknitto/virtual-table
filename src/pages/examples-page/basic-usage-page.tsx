@@ -96,7 +96,7 @@ const MyTable = () => {
       <div>
         <h1 className='text-4xl font-bold tracking-tight'>Basic Usage</h1>
         <p className='text-xl text-muted-foreground mt-4'>
-          Here's a simple example of how to use Knitto Virtual Table with sample data.
+          Here's a simple example of how to use Knitto Table with sample data.
         </p>
       </div>
 
