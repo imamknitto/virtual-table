@@ -1,11 +1,13 @@
-import { createBrowserRouter, RouterProvider, Outlet } from 'react-router-dom';
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { DocumentationLayout } from './components/layout/documentation-layout';
 import { IntroductionPage } from './pages/introduction-page';
 import { InstallationPage } from './pages/installation-page';
 import { QuickStartPage } from './pages/quick-start-page';
 import { BlogPage } from './pages/blog-page';
 import { NotFoundPage } from './pages/not-found-page';
-import { lazy } from 'react';
+import { lazy, Suspense } from 'react';
+import ContentLoading from './components/content-loading';
+import { useRoutePreloader } from './hooks/use-route-preloader';
 
 const BasicUsagePage = lazy(() => import('./pages/examples-page/basic-usage-page'));
 const HeaderCustomizationPage = lazy(() => import('./pages/examples-page/header-customization-page'));
@@ -18,7 +20,6 @@ const ClickRowActionPage = lazy(() => import('./pages/examples-page/click-row-ac
 const FreezeColumnPage = lazy(() => import('./pages/examples-page/freeze-column-page'));
 const ExpandRowPage = lazy(() => import('./pages/examples-page/expand-row-page'));
 const FooterPage = lazy(() => import('./pages/examples-page/footer-page'));
-const ComparationPage = lazy(() => import('./pages/examples-page/comparation-page'));
 const ServerFilterPage = lazy(() => import('./pages/examples-page/server-filter-page'));
 const HeaderGroupingPage = lazy(() => import('./pages/examples-page/header-grouping-page'));
 const LargeDatasetPage = lazy(() => import('./pages/examples-page/large-dataset-page'));
@@ -27,9 +28,9 @@ const router = createBrowserRouter([
   {
     path: '/',
     element: (
-      <DocumentationLayout>
-        <Outlet />
-      </DocumentationLayout>
+      <Suspense fallback={<ContentLoading />}>
+        <DocumentationLayout />
+      </Suspense>
     ),
     children: [
       { index: true, element: <IntroductionPage /> },
@@ -45,7 +46,6 @@ const router = createBrowserRouter([
       { path: 'docs/examples/freeze-column', element: <FreezeColumnPage /> },
       { path: 'docs/examples/expand-row', element: <ExpandRowPage /> },
       { path: 'docs/examples/footer', element: <FooterPage /> },
-      { path: 'docs/examples/comparation', element: <ComparationPage /> },
       { path: 'docs/examples/server-filter', element: <ServerFilterPage /> },
       { path: 'docs/examples/header-grouping', element: <HeaderGroupingPage /> },
       { path: 'docs/examples/large-dataset', element: <LargeDatasetPage /> },
@@ -58,6 +58,22 @@ const router = createBrowserRouter([
 ]);
 
 const App = () => {
+  // Define routes to preload
+  const routesToPreload = {
+    'basic-usage': () => import('./pages/examples-page/basic-usage-page'),
+    'examples-index': () => import('./pages/examples-page/index'),
+    'props-page': () => import('./pages/api-reference-page/props-page'),
+    'methods-page': () => import('./pages/api-reference-page/methods-page'),
+    'header-customization': () => import('./pages/examples-page/header-customization-page'),
+    'checkbox-selection': () => import('./pages/examples-page/checkbox-selection-page'),
+  };
+
+  // Use route preloader hook
+  useRoutePreloader(routesToPreload, {
+    delay: 1500,
+    preloadOnHover: true,
+  });
+
   return <RouterProvider router={router} />;
 };
 

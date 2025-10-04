@@ -47,7 +47,7 @@ export interface IVirtualTable<TData> {
 }
 
 export interface IHeader<TData> {
-  key: keyof TData | 'expand' | 'action' | 'row-selection' | (string & object);
+  key: keyof TData | 'expand' | 'action' | 'row-selection' | string;
   caption: string;
   width?: number;
   noStretch?: boolean;

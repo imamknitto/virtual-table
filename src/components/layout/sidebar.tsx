@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, memo, useCallback } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 
 type SidebarProps = {
@@ -26,6 +26,7 @@ const navigation: NavItem[] = [
     items: [
       { title: 'Basic Usage', href: '/docs/examples/basic-usage' },
       { title: 'Header Customization', href: '/docs/examples/header-customization' },
+      { title: 'Header Grouping', href: '/docs/examples/header-grouping' },
       { title: 'Custom Render Cell', href: '/docs/examples/custom-render-cell' },
       { title: 'Checkbox Selection', href: '/docs/examples/checkbox-selection' },
       { title: 'Click Row Action', href: '/docs/examples/click-row-action' },
@@ -33,9 +34,7 @@ const navigation: NavItem[] = [
       { title: 'Expand Row', href: '/docs/examples/expand-row' },
       { title: 'Footer', href: '/docs/examples/footer' },
       { title: 'Server Filter', href: '/docs/examples/server-filter' },
-      { title: 'Header Grouping', href: '/docs/examples/header-grouping' },
       { title: 'Large Dataset', href: '/docs/examples/large-dataset' },
-      { title: 'Comparison', href: '/docs/examples/comparison' },
     ],
   },
   {
@@ -47,9 +46,38 @@ const navigation: NavItem[] = [
   },
 ];
 
-export const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
+const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
   const [expandedItems, setExpandedItems] = useState<string[]>(['Getting Started']);
   const location = useLocation();
+
+  // Preload route on hover
+  const handleMouseEnter = useCallback((href: string) => {
+    // Map href to import function
+    const routeMap: Record<string, () => Promise<{ default: React.ComponentType }>> = {
+      '/docs/examples/basic-usage': () => import('../../pages/examples-page/basic-usage-page'),
+      '/docs/examples/header-customization': () =>
+        import('../../pages/examples-page/header-customization-page'),
+      '/docs/examples/header-grouping': () => import('../../pages/examples-page/header-grouping-page'),
+      '/docs/examples/custom-render-cell': () => import('../../pages/examples-page/custom-cell-page'),
+      '/docs/examples/checkbox-selection': () => import('../../pages/examples-page/checkbox-selection-page'),
+      '/docs/examples/click-row-action': () => import('../../pages/examples-page/click-row-action-page'),
+      '/docs/examples/freeze-column': () => import('../../pages/examples-page/freeze-column-page'),
+      '/docs/examples/expand-row': () => import('../../pages/examples-page/expand-row-page'),
+      '/docs/examples/footer': () => import('../../pages/examples-page/footer-page'),
+      '/docs/examples/server-filter': () => import('../../pages/examples-page/server-filter-page'),
+      '/docs/examples/large-dataset': () => import('../../pages/examples-page/large-dataset-page'),
+      '/docs/api/props': () => import('../../pages/api-reference-page/props-page'),
+      '/docs/api/methods': () => import('../../pages/api-reference-page/methods-page'),
+      '/docs/examples': () => import('../../pages/examples-page/index'),
+    };
+
+    const preloadFn = routeMap[href];
+    if (preloadFn) {
+      preloadFn().catch(() => {
+        // Silently fail if preload fails
+      });
+    }
+  }, []);
 
   // Auto-expand section based on current route
   useEffect(() => {
@@ -123,6 +151,7 @@ export const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
                                 : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
                             }`}
                             onClick={onClose}
+                            onMouseEnter={() => item.href && handleMouseEnter(item.href)}
                           >
                             {item.title}
                           </Link>
@@ -156,3 +185,5 @@ export const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
     </>
   );
 };
+
+export default memo(Sidebar);
