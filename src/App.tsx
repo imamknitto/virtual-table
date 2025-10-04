@@ -14,6 +14,7 @@ const PropsPage = lazy(() => import('./pages/api-reference-page/props-page'));
 const MethodsPage = lazy(() => import('./pages/api-reference-page/methods-page'));
 const CheckboxSelectionPage = lazy(() => import('./pages/examples-page/checkbox-selection-page'));
 const CustomCellPage = lazy(() => import('./pages/examples-page/custom-cell-page'));
+const ClickRowActionPage = lazy(() => import('./pages/examples-page/click-row-action-page'));
 
 const router = createBrowserRouter([
   {
@@ -33,6 +34,7 @@ const router = createBrowserRouter([
       { path: 'docs/examples/header-customization', element: <HeaderCustomizationPage /> },
       { path: 'docs/examples/checkbox-selection', element: <CheckboxSelectionPage /> },
       { path: 'docs/examples/custom-render-cell', element: <CustomCellPage /> },
+      { path: 'docs/examples/click-row-action', element: <ClickRowActionPage /> },
       { path: 'docs/api/props', element: <PropsPage /> },
       { path: 'docs/api/methods', element: <MethodsPage /> },
       { path: 'blog', element: <BlogPage /> },
