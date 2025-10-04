@@ -30,7 +30,6 @@ const navigation: NavItem[] = [
       { title: 'Checkbox Selection', href: '/docs/examples/checkbox-selection' },
       { title: 'Click Row Action', href: '/docs/examples/click-row-action' },
       { title: 'Freeze Column', href: '/docs/examples/freeze-column' },
-      { title: 'Auto Stretch', href: '/docs/examples/auto-stretch' },
       { title: 'Expand Row', href: '/docs/examples/expand-row' },
       { title: 'Footer', href: '/docs/examples/footer' },
       { title: 'Server Filter', href: '/docs/examples/server-filter' },
@@ -80,7 +79,7 @@ export const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
           isOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
-        <div className='flex h-full flex-col overflow-y-auto p-4 scrollbar-thin scrollbar-thumb-muted-foreground/20 scrollbar-track-transparent'>
+        <div className='flex h-full flex-col overflow-y-auto p-4 scrollbar-thin scrollbar-thumb-muted-foreground/20 scrollbar-track-transparent hover:scrollbar-thumb-muted-foreground/30'>
           <nav className='space-y-1'>
             {navigation.map((section) => (
               <div key={section.title} className='space-y-1'>
@@ -103,8 +102,10 @@ export const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
                 </button>
 
                 <div
-                  className={`overflow-hidden transition-all duration-200 ease-in-out ${
-                    expandedItems.includes(section.title) ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
+                  className={`transition-all duration-200 ease-in-out ${
+                    expandedItems.includes(section.title)
+                      ? 'max-h-none opacity-100'
+                      : 'max-h-0 opacity-0 overflow-hidden'
                   }`}
                 >
                   {section.items && (
