@@ -54,14 +54,14 @@ export const FilterContextProvider = <T,>(props: IFilterContextProvider<T>) => {
   const { children, dataSource, isResetFilter, useServerFilter, onChangeFilter, useSessionFilter } = props;
 
   const { sortKey, sortBy, handleSort, sortedData, handleSpecificSort } = useFilterSort({
-    data: dataSource,
+    data: dataSource || [],
     isResetFilter,
     useServerSort: useServerFilter?.sort,
     onChangeSort: onChangeFilter?.sort as (key: string, sortBy: TSortOrder) => void,
   });
 
   const { searchedData, activeSearch, updateSearch, resetSearch } = useFilterSearch({
-    data: sortedData,
+    data: sortedData || [],
     isResetFilter,
     useSessionFilter,
     useServerSearch: useServerFilter?.search,
@@ -69,7 +69,7 @@ export const FilterContextProvider = <T,>(props: IFilterContextProvider<T>) => {
   });
 
   const { filteredData, updateFilter, resetFilter } = useFilterSelection({
-    data: searchedData,
+    data: searchedData || [],
     isResetFilter,
     useSessionFilter,
     useServerFilter: useServerFilter?.selection,
@@ -77,7 +77,7 @@ export const FilterContextProvider = <T,>(props: IFilterContextProvider<T>) => {
   });
 
   const { filteredAdvanceData, updateAdvanceFilter, resetAdvanceFilter } = useFilterAdvance({
-    data: filteredData,
+    data: filteredData || [],
     isResetFilter,
     useSessionFilter,
     useServerAdvanceFilter: useServerFilter?.advance,
