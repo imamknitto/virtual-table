@@ -44,8 +44,6 @@ const generateMediumDataset = (count: number = 10000) => {
 const LargeDatasetsPage = () => {
   const [showCode1, setShowCode1] = useState(false);
   const [showCode2, setShowCode2] = useState(false);
-  const [showCode3, setShowCode3] = useState(false);
-  const [showCode4, setShowCode4] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
 
   // Memoized data generation to avoid regenerating on every render
@@ -176,73 +174,6 @@ const filteredData = useMemo(() => {
     item.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 }, [data, searchTerm]);`;
-
-  const codeExample3 = `// Memory management for very large datasets
-
-// 1. Lazy loading approach
-const [data, setData] = useState([]);
-const [isLoading, setIsLoading] = useState(false);
-
-const loadData = async (page: number, pageSize: number) => {
-  setIsLoading(true);
-  const newData = await fetchData(page, pageSize);
-  setData(prev => [...prev, ...newData]);
-  setIsLoading(false);
-};
-
-// 2. Virtual scrolling with windowing
-<VirtualTable
-  data={data}
-  rowHeight={32}
-  // Virtual scrolling handles large datasets automatically
-  // Only renders visible rows + buffer
-/>
-
-// 3. Efficient search with debouncing
-const [searchTerm, setSearchTerm] = useState('');
-const debouncedSearch = useDebounce(searchTerm, 300);
-
-const filteredData = useMemo(() => {
-  if (!debouncedSearch) return data;
-  return data.filter(item => 
-    item.name.toLowerCase().includes(debouncedSearch.toLowerCase())
-  );
-}, [data, debouncedSearch]);`;
-
-  const codeExample4 = `// Advanced features for large datasets
-
-// 1. Server-side pagination
-const [currentPage, setCurrentPage] = useState(1);
-const [totalPages, setTotalPages] = useState(0);
-
-const fetchPageData = async (page: number) => {
-  const response = await fetch(\`/api/data?page=\${page}&size=1000\`);
-  const result = await response.json();
-  setData(result.data);
-  setTotalPages(result.totalPages);
-};
-
-// 2. Progressive loading
-const [loadedData, setLoadedData] = useState([]);
-const [hasMore, setHasMore] = useState(true);
-
-const loadMore = async () => {
-  if (!hasMore) return;
-  
-  const newData = await fetchMoreData(loadedData.length);
-  setLoadedData(prev => [...prev, ...newData]);
-  setHasMore(newData.length > 0);
-};
-
-// 3. Background data processing
-const processDataInBackground = useCallback(async () => {
-  const worker = new Worker('/data-processor.js');
-  worker.postMessage({ data: rawData });
-  
-  worker.onmessage = (e) => {
-    setProcessedData(e.data);
-  };
-}, [rawData]);`;
 
   return (
     <div className='space-y-8'>
@@ -382,12 +313,6 @@ const processDataInBackground = useCallback(async () => {
       <section>
         <div className='flex items-center justify-between mb-4'>
           <h2 className='text-2xl font-semibold tracking-tight'>Memory Management</h2>
-          <button
-            onClick={() => setShowCode3(!showCode3)}
-            className='inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground shadow hover:bg-primary/90 h-9 px-4 py-2'
-          >
-            {showCode3 ? 'Hide Code' : 'Show Code'}
-          </button>
         </div>
 
         <div className='mb-4 p-4 bg-purple-50 border border-purple-200 rounded-lg'>
@@ -419,29 +344,12 @@ const processDataInBackground = useCallback(async () => {
             </ul>
           </div>
         </div>
-
-        {showCode3 && (
-          <div className='mt-4 border rounded-lg overflow-hidden'>
-            <div className='bg-muted px-4 py-2 border-b'>
-              <span className='text-sm font-medium'>Memory Management Techniques</span>
-            </div>
-            <pre className='p-4 overflow-x-auto bg-background'>
-              <code className='text-sm'>{codeExample3}</code>
-            </pre>
-          </div>
-        )}
       </section>
 
       {/* Advanced Features */}
       <section>
         <div className='flex items-center justify-between mb-4'>
           <h2 className='text-2xl font-semibold tracking-tight'>Advanced Features</h2>
-          <button
-            onClick={() => setShowCode4(!showCode4)}
-            className='inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground shadow hover:bg-primary/90 h-9 px-4 py-2'
-          >
-            {showCode4 ? 'Hide Code' : 'Show Code'}
-          </button>
         </div>
 
         <div className='mb-4 p-4 bg-indigo-50 border border-indigo-200 rounded-lg'>
@@ -471,17 +379,6 @@ const processDataInBackground = useCallback(async () => {
             </p>
           </div>
         </div>
-
-        {showCode4 && (
-          <div className='mt-4 border rounded-lg overflow-hidden'>
-            <div className='bg-muted px-4 py-2 border-b'>
-              <span className='text-sm font-medium'>Advanced Implementation Patterns</span>
-            </div>
-            <pre className='p-4 overflow-x-auto bg-background'>
-              <code className='text-sm'>{codeExample4}</code>
-            </pre>
-          </div>
-        )}
       </section>
 
       {/* Best Practices */}

@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react';
 import { VirtualTable, type IHeader, useClickOutside } from '../../components/virtual-table';
 import { faker } from '@faker-js/faker';
+import { createPortal } from 'react-dom';
 
 // Sample data type
 type Product = {
@@ -86,6 +87,8 @@ const ClickRowActionPage = () => {
   };
 
   const handleRightClickRow = (item: Product, position: { x: number; y: number }) => {
+    console.log({ position });
+
     setSelectedRow(item);
     setContextMenuRow(item);
     setContextMenuPosition(position);
@@ -294,42 +297,45 @@ const ProductTable = () => {
       </section>
 
       {/* Context Menu */}
-      {showContextMenu && contextMenuPosition && (
-        <div
-          ref={contextMenuRef}
-          className='fixed z-50 bg-white border border-gray-200 rounded-lg shadow-lg py-2 min-w-48'
-          style={{
-            left: contextMenuPosition.x,
-            top: contextMenuPosition.y,
-          }}
-        >
-          <button
-            className='w-full px-4 py-2 text-left hover:bg-gray-100 text-sm'
-            onClick={() => handleContextMenuAction('Edit')}
+      {showContextMenu &&
+        contextMenuPosition &&
+        createPortal(
+          <div
+            ref={contextMenuRef}
+            className='fixed z-50 bg-white border border-gray-200 rounded-lg shadow-lg py-2 min-w-48'
+            style={{
+              left: contextMenuPosition.x,
+              top: contextMenuPosition.y,
+            }}
           >
-            ✏️ Edit Product
-          </button>
-          <button
-            className='w-full px-4 py-2 text-left hover:bg-gray-100 text-sm'
-            onClick={() => handleContextMenuAction('Duplicate')}
-          >
-            📋 Duplicate
-          </button>
-          <button
-            className='w-full px-4 py-2 text-left hover:bg-gray-100 text-sm'
-            onClick={() => handleContextMenuAction('View Details')}
-          >
-            👁️ View Details
-          </button>
-          <hr className='my-1' />
-          <button
-            className='w-full px-4 py-2 text-left hover:bg-red-50 text-red-600 text-sm'
-            onClick={() => handleContextMenuAction('Delete')}
-          >
-            🗑️ Delete
-          </button>
-        </div>
-      )}
+            <button
+              className='w-full px-4 py-2 text-left hover:bg-gray-100 text-sm'
+              onClick={() => handleContextMenuAction('Edit')}
+            >
+              ✏️ Edit Product
+            </button>
+            <button
+              className='w-full px-4 py-2 text-left hover:bg-gray-100 text-sm'
+              onClick={() => handleContextMenuAction('Duplicate')}
+            >
+              📋 Duplicate
+            </button>
+            <button
+              className='w-full px-4 py-2 text-left hover:bg-gray-100 text-sm'
+              onClick={() => handleContextMenuAction('View Details')}
+            >
+              👁️ View Details
+            </button>
+            <hr className='my-1' />
+            <button
+              className='w-full px-4 py-2 text-left hover:bg-red-50 text-red-600 text-sm'
+              onClick={() => handleContextMenuAction('Delete')}
+            >
+              🗑️ Delete
+            </button>
+          </div>,
+          document.body,
+        )}
 
       {/* Code Section */}
       {showCode && (

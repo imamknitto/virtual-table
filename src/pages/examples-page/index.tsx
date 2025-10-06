@@ -69,35 +69,6 @@ const ExamplesPage = () => {
           </Link>
         </div>
 
-        {/* Custom Styling Example */}
-        <div className='rounded-lg border bg-card p-6'>
-          <div className='flex items-center space-x-2 mb-4'>
-            <div className='w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center'>
-              <svg className='w-4 h-4 text-primary' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                <path
-                  strokeLinecap='round'
-                  strokeLinejoin='round'
-                  strokeWidth='2'
-                  d='M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zM21 5a2 2 0 00-2-2h-4a2 2 0 00-2 2v12a4 4 0 004 4h4a2 2 0 002-2V5z'
-                />
-              </svg>
-            </div>
-            <h3 className='text-lg font-semibold'>Custom Styling</h3>
-          </div>
-          <p className='text-sm text-muted-foreground mb-4'>
-            Customize appearance with themes, colors, and custom components.
-          </p>
-          <Link
-            to='/docs/examples/custom-styling'
-            className='inline-flex items-center text-sm font-medium text-primary hover:underline'
-          >
-            View Example
-            <svg className='ml-1 w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-              <path strokeLinecap='round' strokeLinejoin='round' strokeWidth='2' d='M9 5l7 7-7 7' />
-            </svg>
-          </Link>
-        </div>
-
         {/* Sorting & Filtering Example */}
         <div className='rounded-lg border bg-card p-6'>
           <div className='flex items-center space-x-2 mb-4'>
@@ -117,36 +88,7 @@ const ExamplesPage = () => {
             Advanced data manipulation with sorting and filtering capabilities.
           </p>
           <Link
-            to='/docs/examples/sorting-filtering'
-            className='inline-flex items-center text-sm font-medium text-primary hover:underline'
-          >
-            View Example
-            <svg className='ml-1 w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-              <path strokeLinecap='round' strokeLinejoin='round' strokeWidth='2' d='M9 5l7 7-7 7' />
-            </svg>
-          </Link>
-        </div>
-
-        {/* Performance Benchmark Example */}
-        <div className='rounded-lg border bg-card p-6'>
-          <div className='flex items-center space-x-2 mb-4'>
-            <div className='w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center'>
-              <svg className='w-4 h-4 text-primary' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                <path
-                  strokeLinecap='round'
-                  strokeLinejoin='round'
-                  strokeWidth='2'
-                  d='M13 10V3L4 14h7v7l9-11h-7z'
-                />
-              </svg>
-            </div>
-            <h3 className='text-lg font-semibold'>Performance Benchmark</h3>
-          </div>
-          <p className='text-sm text-muted-foreground mb-4'>
-            Compare performance with traditional tables and see the difference.
-          </p>
-          <Link
-            to='/docs/examples/performance'
+            to='/docs/examples/header-customization'
             className='inline-flex items-center text-sm font-medium text-primary hover:underline'
           >
             View Example
