@@ -105,7 +105,7 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
 
       {/* Sidebar */}
       <aside
-        className={`fixed left-0 top-14 z-50 h-[calc(100vh-3.5rem)] w-64 transform border-r bg-white transition-transform duration-300 ease-in-out md:sticky md:top-14 md:h-[calc(100vh-3.5rem)] md:translate-x-0 ${
+        className={`fixed left-0 top-14 z-50 h-[calc(100vh-3.5rem)] w-64 transform border-r bg-background transition-transform duration-300 ease-in-out md:sticky md:top-14 md:h-[calc(100vh-3.5rem)] md:translate-x-0 ${
           isOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
@@ -149,7 +149,7 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
                             to={item.href}
                             className={`block w-full text-left rounded-md px-3 py-2 text-sm transition-colors ${
                               location.pathname === item.href
-                                ? 'bg-blue-900 text-white font-medium'
+                                ? 'bg-blue-600 dark:bg-blue-100 text-white dark:text-black font-medium shadow-sm'
                                 : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
                             }`}
                             onClick={onClose}

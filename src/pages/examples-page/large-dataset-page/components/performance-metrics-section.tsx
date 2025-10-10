@@ -2,7 +2,7 @@ import { memo } from 'react';
 
 const PerformanceMetricsSection = () => {
   return (
-    <section>
+    <section className='mb-8'>
       <h2 className='text-2xl font-semibold tracking-tight mb-4'>Performance Metrics</h2>
       <div className='border rounded-lg overflow-hidden'>
         <div className='bg-muted px-4 py-2 border-b'>

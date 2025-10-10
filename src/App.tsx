@@ -8,6 +8,7 @@ import { NotFoundPage } from './pages/not-found-page';
 import { lazy, Suspense } from 'react';
 import ContentLoading from './components/content-loading';
 import { useRoutePreloader } from './hooks/use-route-preloader';
+import { ErrorFallback } from './components/error-boundary';
 
 const BasicUsagePage = lazy(() => import('./pages/examples-page/basic-usage-page'));
 const HeaderCustomizationPage = lazy(() => import('./pages/examples-page/header-customization-page'));
@@ -33,6 +34,7 @@ const router = createBrowserRouter([
         <DocumentationLayout />
       </Suspense>
     ),
+    errorElement: <ErrorFallback />,
     children: [
       { index: true, element: <IntroductionPage /> },
       { path: 'docs/introduction', element: <IntroductionPage /> },

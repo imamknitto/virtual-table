@@ -18,7 +18,7 @@ const LargeDatasetSection = () => {
   }, []);
 
   return (
-    <section>
+    <section className='mb-8'>
       <div className='flex items-center justify-between mb-4'>
         <h2 className='text-2xl font-semibold tracking-tight'>Large Dataset (100,000 records)</h2>
         <button

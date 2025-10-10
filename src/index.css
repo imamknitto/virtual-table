@@ -1,12 +1,16 @@
 @import 'tailwindcss';
 
-/* Font configuration */
-:root {
-  font-family: 'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',
+/* Tailwind v4 Dark Mode Configuration using data-theme attribute */
+@variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+/* Tailwind v4 Theme Configuration */
+@theme {
+  /* Font family */
+  --font-sans: 'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',
     'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
 }
 
-/* CSS Variables for shadcn-like color scheme */
+/* Light mode CSS variables */
 :root {
   --background: 0 0% 100%;
   --foreground: 222.2 84% 4.9%;
@@ -30,7 +34,8 @@
   --radius: 0.5rem;
 }
 
-.dark {
+/* Dark mode CSS variables */
+[data-theme="dark"] {
   --background: 222.2 84% 4.9%;
   --foreground: 210 40% 98%;
   --card: 222.2 84% 4.9%;
@@ -57,18 +62,18 @@
   border-color: hsl(var(--border));
 }
 
+html {
+  font-family: var(--font-sans);
+}
+
 body {
   background-color: hsl(var(--background));
   color: hsl(var(--foreground));
-  font-family: 'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',
-    'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
 }
 
 /* Custom styles for documentation */
 .prose {
   color: hsl(var(--foreground));
-  font-family: 'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',
-    'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
 }
 
 .prose h1,
@@ -130,61 +135,10 @@ html {
   scroll-behavior: smooth;
 }
 
-/* Optimize scrolling performance */
-* {
-  scroll-behavior: smooth;
-}
-
 /* GPU acceleration for better performance */
 [data-table-container] {
   transform: translateZ(0);
   will-change: scroll-position;
-}
-
-/* Loading animations for better UX */
-@keyframes fade-in {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes slide-in-right {
-  from {
-    opacity: 0;
-    transform: translateX(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-.animate-fade-in {
-  animation: fade-in 0.3s ease-out;
-}
-
-.animate-slide-in-right {
-  animation: slide-in-right 0.3s ease-out;
-}
-
-/* Page transition optimizations */
-.page-transition {
-  transition: opacity 0.2s ease-in-out, transform 0.2s ease-in-out;
-}
-
-.page-transition-entering {
-  opacity: 0;
-  transform: translateY(10px);
-}
-
-.page-transition-entered {
-  opacity: 1;
-  transform: translateY(0);
 }
 
 /* Optimize for reduced motion */

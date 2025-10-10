@@ -10,7 +10,7 @@ const performanceHeaders: IHeader<(typeof PERFORMANCE_DATA)[0]>[] = [
 
 const PerformanceOverview = () => {
   return (
-    <section>
+    <section className='mb-8'>
       <h2 className='text-2xl font-semibold tracking-tight mb-4'>Performance Overview</h2>
       <div className='mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg'>
         <p className='text-sm text-blue-800'>

@@ -2,7 +2,7 @@ import { memo } from 'react';
 
 const AdvancedFeaturesSection = () => {
   return (
-    <section>
+    <section className='mb-8'>
       <div className='flex items-center justify-between mb-4'>
         <h2 className='text-2xl font-semibold tracking-tight'>Advanced Features</h2>
       </div>

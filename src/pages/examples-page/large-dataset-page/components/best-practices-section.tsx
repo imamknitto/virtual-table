@@ -2,7 +2,7 @@ import { memo } from 'react';
 
 const BestPracticesSection = () => {
   return (
-    <section>
+    <section className='mb-8'>
       <h2 className='text-2xl font-semibold tracking-tight mb-4'>Best Practices</h2>
       <div className='grid gap-4 md:grid-cols-2'>
         <div className='border rounded-lg p-4'>
