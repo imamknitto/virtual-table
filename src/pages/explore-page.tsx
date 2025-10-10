@@ -16,20 +16,31 @@ interface User {
   department: string;
 }
 
-const generateFakeUser = (id: number): User => ({
-  id,
-  name: faker.person.fullName(),
-  email: faker.internet.email(),
-  username: faker.internet.username(),
-  phone: faker.phone.number(),
-  company: faker.company.name(),
-  jobTitle: faker.person.jobTitle(),
-  city: faker.location.city(),
-  country: faker.location.country(),
-  status: faker.helpers.arrayElement(['Active', 'Inactive', 'Pending']),
-  salary: faker.finance.amount({ min: 30000, max: 150000, dec: 0 }),
-  department: faker.commerce.department(),
-});
+const generateFakeUser = (id: number): User => {
+  // Create some rows with longer content to test dynamic height
+  const hasLongContent = id % 3 === 0;
+
+  return {
+    id,
+    name: faker.person.fullName(),
+    email: hasLongContent
+      ? `${faker.person.fullName().toLowerCase().replace(/\s/g, '.')}@${faker.company.buzzNoun()}.com`
+      : faker.internet.email(),
+    username: faker.internet.username(),
+    phone: faker.phone.number(),
+    company: hasLongContent ? `${faker.company.name()} Corporation` : faker.company.name(),
+    jobTitle: hasLongContent
+      ? `${faker.person.jobTitle()} - ${faker.person.jobArea()}`
+      : faker.person.jobTitle(),
+    city: faker.location.city(),
+    country: faker.location.country(),
+    status: faker.helpers.arrayElement(['Active', 'Inactive', 'Pending']),
+    salary: faker.finance.amount({ min: 30000, max: 150000, dec: 0 }),
+    department: hasLongContent
+      ? `${faker.commerce.department()} & ${faker.commerce.department()}`
+      : faker.commerce.department(),
+  };
+};
 
 const ExplorePage = () => {
   const data: User[] = Array.from({ length: 1000 }, (_, i) => generateFakeUser(i + 1));
@@ -78,10 +89,10 @@ const ExplorePage = () => {
         },
       ],
     },
-    
+
     // Regular Column (scrollable)
     { key: 'salary', caption: 'Salary', width: 120 },
-    
+
     // Freeze Right
     { key: 'status', caption: 'Status', width: 100, freeze: 'right' },
   ];
@@ -89,16 +100,22 @@ const ExplorePage = () => {
   return (
     <div className='flex flex-col gap-y-8'>
       <div className='flex flex-col gap-y-4 w-full h-[500px]'>
-        <h4>Kolom tidak di-virtualisasi</h4>
+        <h4>Fixed Row Height (Default)</h4>
         <div className='flex-1'>
           <VirtualTable data={data} headers={headers} rowKey={'id'} enableColumnVirtualization={false} />
         </div>
       </div>
 
       <div className='flex flex-col gap-y-4 w-full h-[500px]'>
-        <h4>Kolom di-virtualisasi</h4>
+        <h4>Dynamic Row Height</h4>
         <div className='flex-1'>
-          <VirtualTable data={data} headers={headers} rowKey={'id'} enableColumnVirtualization={true} />
+          <VirtualTable
+            data={data}
+            headers={headers}
+            rowKey={'id'}
+            enableColumnVirtualization={false}
+            dynamicRowHeight={true}
+          />
         </div>
       </div>
     </div>

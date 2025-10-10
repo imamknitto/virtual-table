@@ -20,6 +20,7 @@ export interface IVirtualTable<TData> {
     advance?: boolean;
   };
   enableColumnVirtualization?: boolean;
+  dynamicRowHeight?: boolean;
   rowHeight?: number;
   headerHeight?: number;
   filterHeight?: number;

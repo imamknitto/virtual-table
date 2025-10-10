@@ -37,6 +37,7 @@ const VirtualTableBody = forwardRef(
       columnVirtualItems,
       containerWidth,
       enableColumnVirtualization,
+      dynamicRowHeight,
     } = useVirtualizerContext();
     const {
       selectAll,
@@ -186,7 +187,7 @@ const VirtualTableBody = forwardRef(
                 rowIndex={rowIndex}
                 columnIndex={childIdx}
                 position={{
-                  left,
+                  left: dynamicRowHeight ? 0 : left,
                   width: child.width!,
                   height: rowHeight,
                 }}
@@ -209,7 +210,7 @@ const VirtualTableBody = forwardRef(
             rowIndex={rowIndex}
             columnIndex={freezeLeftIdx}
             position={{
-              left: freezeColLeftPositions[freezeLeftIdx],
+              left: dynamicRowHeight ? 0 : freezeColLeftPositions[freezeLeftIdx],
               width: column.width!,
               height: rowHeight,
             }}
@@ -252,7 +253,7 @@ const VirtualTableBody = forwardRef(
                 rowIndex={rowIndex}
                 columnIndex={childIdx}
                 position={{
-                  left,
+                  left: dynamicRowHeight ? 0 : left,
                   width: child.width!,
                   height: rowHeight,
                 }}
@@ -276,7 +277,7 @@ const VirtualTableBody = forwardRef(
             rowIndex={rowIndex}
             columnIndex={freezeRightIdx}
             position={{
-              left: freezeColRightPositions[freezeRightIdx],
+              left: dynamicRowHeight ? 0 : freezeColRightPositions[freezeRightIdx],
               width: column.width!,
               height: rowHeight,
             }}
@@ -346,7 +347,7 @@ const VirtualTableBody = forwardRef(
                 isLastIndex={isLastIndex}
                 rowIndex={rowIndex}
                 columnIndex={childIdx}
-                position={{ left, width: childWidth, height: rowHeight }}
+                position={{ left: dynamicRowHeight ? 0 : left, width: childWidth, height: rowHeight }}
                 freezeLeftColumnsWidth={freezeLeftColumnsWidth}
                 freezeRightColumnsWidth={freezeRightColumnsWidth}
               />
@@ -424,7 +425,7 @@ const VirtualTableBody = forwardRef(
                 isLastIndex={columnIndex === columns.length - 1 && childIdx === leaves.length - 1}
                 rowIndex={rowIndex}
                 columnIndex={childIdx}
-                position={{ left, width: childWidth, height: rowHeight }}
+                position={{ left: dynamicRowHeight ? 0 : left, width: childWidth, height: rowHeight }}
                 freezeLeftColumnsWidth={freezeLeftColumnsWidth}
                 freezeRightColumnsWidth={freezeRightColumnsWidth}
               />
@@ -455,7 +456,7 @@ const VirtualTableBody = forwardRef(
             isLastIndex={columnIndex === columns.length - 1}
             rowIndex={rowIndex}
             columnIndex={columnIndex}
-            position={{ left, width: columnWidth, height: rowHeight }}
+            position={{ left: dynamicRowHeight ? 0 : left, width: columnWidth, height: rowHeight }}
             freezeLeftColumnsWidth={freezeLeftColumnsWidth}
             freezeRightColumnsWidth={freezeRightColumnsWidth}
           />,

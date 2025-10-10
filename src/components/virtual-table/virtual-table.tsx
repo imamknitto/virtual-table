@@ -33,6 +33,7 @@ function VirtualTableInner<TData>(virtualTableProps: IVirtualTable<TData>, ref: 
     useSessionFilter,
     useServerFilter = { sort: false, search: false, selection: false, advance: false },
     enableColumnVirtualization = true,
+    dynamicRowHeight = false,
     classNameOuterTable,
     classNameCell,
     onClickRow,
@@ -86,6 +87,7 @@ function VirtualTableInner<TData>(virtualTableProps: IVirtualTable<TData>, ref: 
           rowKey={rowKey} 
           scrollElementRef={scrollElementRef}
           enableColumnVirtualization={enableColumnVirtualization}
+          dynamicRowHeight={dynamicRowHeight}
         >
           <SelectionContextProvider onChangeCheckboxRowSelection={onChangeCheckboxRowSelection}>
             <UIContextProvider
