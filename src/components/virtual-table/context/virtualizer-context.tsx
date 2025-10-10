@@ -17,12 +17,14 @@ type IVirtualizerContext = {
   containerWidth: number;
   containerHeight: number;
   toggleExpandRow: (key: string) => void;
+  enableColumnVirtualization: boolean;
 };
 
 interface IVirtualizerContextProvider<T> {
   children: React.ReactNode;
   rowKey: keyof T | ((data: T, index: number) => string);
   scrollElementRef: React.RefObject<HTMLDivElement | null>;
+  enableColumnVirtualization?: boolean;
 }
 
 const VirtualizerContext = createContext<IVirtualizerContext | null>(null);
@@ -30,7 +32,7 @@ const VirtualizerContext = createContext<IVirtualizerContext | null>(null);
 export const useVirtualizerContext = () => useContext(VirtualizerContext)!;
 
 export const VirtualizerContextProvider = <T,>(props: IVirtualizerContextProvider<T>) => {
-  const { children, scrollElementRef, rowKey } = props;
+  const { children, scrollElementRef, rowKey, enableColumnVirtualization = true } = props;
   const [containerWidth, setContainerWidth] = useState<number>(0);
   const [containerHeight, setContainerHeight] = useState<number>(0);
 
@@ -47,15 +49,15 @@ export const VirtualizerContextProvider = <T,>(props: IVirtualizerContextProvide
       observer.observe(scrollElementRef.current);
     }
     return () => observer.disconnect();
-  }, []);
+  }, [scrollElementRef]);
 
   const { flattenedData, toggleExpand, expandedKeys } = useFlattenedDataIncremental(filteredData as T[], rowKey);
 
   const columnVirtualizer = useVirtualizer({
     horizontal: true,
-    count: columns.length,
+    count: enableColumnVirtualization ? columns.length : 0,
     getScrollElement: () => scrollElementRef.current,
-    estimateSize: (index) => columns[index].width!,
+    estimateSize: (index) => columns[index]?.width || DEFAULT_SIZE.COLUMN_WIDTH,
     overscan: 5,
   });
 
@@ -69,8 +71,12 @@ export const VirtualizerContextProvider = <T,>(props: IVirtualizerContextProvide
   useAutoStretchColumn({
     containerWidth,
     columns,
-    columnVirtualizer,
+    columnVirtualizer: enableColumnVirtualization ? columnVirtualizer : null,
   });
+
+  const columnVirtualItems = enableColumnVirtualization
+    ? columnVirtualizer.getVirtualItems()
+    : [];
 
   return (
     <VirtualizerContext.Provider
@@ -81,9 +87,10 @@ export const VirtualizerContextProvider = <T,>(props: IVirtualizerContextProvide
         containerWidth,
         containerHeight,
         rowVirtualItems: rowVirtualizer.getVirtualItems(),
-        columnVirtualItems: columnVirtualizer.getVirtualItems(),
+        columnVirtualItems,
         toggleExpandRow: toggleExpand,
         expandedRows: expandedKeys,
+        enableColumnVirtualization,
       }}
     >
       {children}

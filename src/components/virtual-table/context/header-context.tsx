@@ -22,7 +22,7 @@ type IHeaderContext = {
     parentKey: string,
     childKey: string,
     freezeType: 'left' | 'right',
-    update: Partial<IAdjustedHeader>
+    update: Partial<IAdjustedHeader>,
   ) => void;
 };
 
@@ -61,7 +61,7 @@ function normalizeColumnsRecursive(cols: IAdjustedHeader[]): IAdjustedHeader[] {
 
       const widthFromLeaves = getLeavesOfNode({ ...col, children: normalizedChildren }).reduce(
         (sum, leaf) => sum + (leaf.width || DEFAULT_SIZE.COLUMN_WIDTH),
-        0
+        0,
       );
 
       return {
@@ -90,7 +90,11 @@ function getDepthOfNode(node: IAdjustedHeader): number {
   return 1 + Math.max(...node.children.map((c) => getDepthOfNode(c)));
 }
 
-function updateChildDeep(col: IAdjustedHeader, childKey: string, update: Partial<IAdjustedHeader>): IAdjustedHeader {
+function updateChildDeep(
+  col: IAdjustedHeader,
+  childKey: string,
+  update: Partial<IAdjustedHeader>,
+): IAdjustedHeader {
   if (!col.children || col.children.length === 0) return col;
 
   const nextChildren = col.children.map((child) => {
@@ -106,7 +110,11 @@ function updateChildDeep(col: IAdjustedHeader, childKey: string, update: Partial
       return sum + (child.width || DEFAULT_SIZE.COLUMN_WIDTH);
     } else {
       return (
-        sum + getLeavesOfNode(child).reduce((leafSum, leaf) => leafSum + (leaf.width || DEFAULT_SIZE.COLUMN_WIDTH), 0)
+        sum +
+        getLeavesOfNode(child).reduce(
+          (leafSum, leaf) => leafSum + (leaf.width || DEFAULT_SIZE.COLUMN_WIDTH),
+          0,
+        )
       );
     }
   }, 0);
@@ -125,9 +133,9 @@ export const HeaderContextProvider = ({ initialColumns, children }: IHeaderConte
   const [freezeLeftColumnsWidth, setFreezeLeftColumnsWidth] = useState(0);
   const [freezeRightColumnsWidth, setFreezeRightColumnsWidth] = useState(0);
   const [isFilterVisible, setIsFilterVisible] = useState(true);
-  const [flattenColumns, setFlattenColumns] = useState<{ col: IAdjustedHeader; depth: number; parentKey?: string }[]>(
-    []
-  );
+  const [flattenColumns, setFlattenColumns] = useState<
+    { col: IAdjustedHeader; depth: number; parentKey?: string }[]
+  >([]);
 
   useEffect(() => {
     if (!initialColumns.length) return;
@@ -159,15 +167,18 @@ export const HeaderContextProvider = ({ initialColumns, children }: IHeaderConte
     setColumns((prev) => prev.map((col) => (col.key === key ? { ...col, ...update } : col)));
   }, []);
 
-  const updateChildColumn = useCallback((parentKey: string, childKey: string, update: Partial<IAdjustedHeader>) => {
-    // Update child bertingkat pada kolom non-freeze dan propagasi perubahan width ke ancestor
-    setColumns((prev) =>
-      prev.map((col) => {
-        if (col.key !== parentKey) return col;
-        return updateChildDeep(col, childKey, update);
-      })
-    );
-  }, []);
+  const updateChildColumn = useCallback(
+    (parentKey: string, childKey: string, update: Partial<IAdjustedHeader>) => {
+      // Update child bertingkat pada kolom non-freeze dan propagasi perubahan width ke ancestor
+      setColumns((prev) =>
+        prev.map((col) => {
+          if (col.key !== parentKey) return col;
+          return updateChildDeep(col, childKey, update);
+        }),
+      );
+    },
+    [],
+  );
 
   const updateFreezeColumn = useCallback(
     (key: string, freezeType: 'left' | 'right', update: Partial<IAdjustedHeader>) => {
@@ -177,7 +188,7 @@ export const HeaderContextProvider = ({ initialColumns, children }: IHeaderConte
         setFreezeRightColumns((prev) => prev.map((col) => (col.key === key ? { ...col, ...update } : col)));
       }
     },
-    []
+    [],
   );
 
   const updateFreezeChildColumn = useCallback(
@@ -195,14 +206,14 @@ export const HeaderContextProvider = ({ initialColumns, children }: IHeaderConte
         setFreezeRightColumns(updateFn);
       }
     },
-    []
+    [],
   );
 
   const toggleColumnVisibility = useCallback(
     (key: string) => {
       updateColumn(key, { visible: !columns.find((col) => col.key === key)?.visible });
     },
-    [columns, updateColumn]
+    [columns, updateColumn],
   );
 
   const toggleFilterVisibility = useCallback(() => setIsFilterVisible((prev) => !prev), []);

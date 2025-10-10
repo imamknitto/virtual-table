@@ -25,6 +25,7 @@ const ServerFilterPage = lazy(() => import('./pages/examples-page/server-filter-
 const HeaderGroupingPage = lazy(() => import('./pages/examples-page/header-grouping-page'));
 const LargeDatasetPage = lazy(() => import('./pages/examples-page/large-dataset-page'));
 const ScrollingPage = lazy(() => import('./pages/examples-page/scrolling-page'));
+const ExplorePage = lazy(() => import('./pages/explore-page'));
 
 const router = createBrowserRouter([
   {
@@ -56,6 +57,7 @@ const router = createBrowserRouter([
       { path: 'docs/api/props', element: <PropsPage /> },
       { path: 'docs/api/methods', element: <MethodsPage /> },
       { path: 'blog', element: <BlogPage /> },
+      { path: 'explore', element: <ExplorePage /> },
       { path: '*', element: <NotFoundPage /> },
     ],
   },

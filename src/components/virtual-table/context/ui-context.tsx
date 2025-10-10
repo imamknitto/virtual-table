@@ -45,8 +45,17 @@ export const UIContextProvider = <TData = unknown,>(props: IUIContextProviderPro
 
   const { columns, freezeLeftColumns, freezeLeftColumnsWidth, freezeRightColumns, freezeRightColumnsWidth, getDepth } =
     useHeaderContext();
-  const { columnVirtualizer } = useVirtualizerContext();
-  const virtualizedColumnsWidth = columnVirtualizer?.getTotalSize() || 0;
+  const { columnVirtualizer, enableColumnVirtualization } = useVirtualizerContext();
+  
+  // Calculate virtualized columns width
+  const virtualizedColumnsWidth = useMemo(() => {
+    if (enableColumnVirtualization && columnVirtualizer) {
+      return columnVirtualizer.getTotalSize();
+    }
+    
+    // For non-virtualized mode, calculate manually from columns
+    return columns.reduce((sum, col) => sum + (col.width || 0), 0);
+  }, [enableColumnVirtualization, columnVirtualizer, columns]);
 
   // Note: Hitung posisi left absolute dari kolom yang freeze di kiri.
   const freezeColLeftPositions = useMemo<number[]>(() => {

@@ -32,6 +32,7 @@ function VirtualTableInner<TData>(virtualTableProps: IVirtualTable<TData>, ref: 
     useAutoSizer = true,
     useSessionFilter,
     useServerFilter = { sort: false, search: false, selection: false, advance: false },
+    enableColumnVirtualization = true,
     classNameOuterTable,
     classNameCell,
     onClickRow,
@@ -81,7 +82,11 @@ function VirtualTableInner<TData>(virtualTableProps: IVirtualTable<TData>, ref: 
         isResetFilter={isResetFilter}
         useSessionFilter={useSessionFilter}
       >
-        <VirtualizerContextProvider rowKey={rowKey} scrollElementRef={scrollElementRef}>
+        <VirtualizerContextProvider 
+          rowKey={rowKey} 
+          scrollElementRef={scrollElementRef}
+          enableColumnVirtualization={enableColumnVirtualization}
+        >
           <SelectionContextProvider onChangeCheckboxRowSelection={onChangeCheckboxRowSelection}>
             <UIContextProvider
               filterHeight={filterHeight}

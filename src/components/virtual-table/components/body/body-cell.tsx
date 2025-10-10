@@ -50,7 +50,10 @@ function BodyCell<TData>(bodyCellProps: IBodyCell<TData>) {
   const isCheckboxColumn = column?.key === 'row-selection';
   const isExpandColumn = column?.key === 'expand';
 
-  const cellValue = useMemo(() => String(rowData[column?.key as keyof typeof rowData] || ''), [rowData, column?.key]);
+  const cellValue = useMemo(
+    () => String(rowData[column?.key as keyof typeof rowData] || ''),
+    [rowData, column?.key],
+  );
   const cellRender = column?.renderCell;
   const cellExpandToggle = column?.renderExpandToggle;
 
@@ -67,18 +70,26 @@ function BodyCell<TData>(bodyCellProps: IBodyCell<TData>) {
     };
 
     if (freezeMode === 'left') {
-      return clsx('table-cell border-r bg-white/50 dark:bg-black/50 backdrop-blur-lg truncate', customClassName, {
-        ...baseClasses,
-        '!border-b !border-l !border-t !border-y-[#2F3574] nth-[1]:border-l-[#2F3574]': isRowHighlighted,
-      });
+      return clsx(
+        'table-cell border-r bg-white/50 dark:bg-black/50 backdrop-blur-lg truncate',
+        customClassName,
+        {
+          ...baseClasses,
+          '!border-b !border-l !border-t !border-y-[#2F3574] nth-[1]:border-l-[#2F3574]': isRowHighlighted,
+        },
+      );
     }
 
     if (freezeMode === 'right') {
-      return clsx('table-cell border-l bg-white/50 dark:bg-black/50 backdrop-blur-lg truncate', customClassName, {
-        ...baseClasses,
-        '!border-y !border-y-[#2F3574]': isRowHighlighted,
-        '!border-r !border-r-[#2F3574]': isRowHighlighted && isLastIndex,
-      });
+      return clsx(
+        'table-cell border-l bg-white/50 dark:bg-black/50 backdrop-blur-lg truncate',
+        customClassName,
+        {
+          ...baseClasses,
+          '!border-y !border-y-[#2F3574]': isRowHighlighted,
+          '!border-r !border-r-[#2F3574]': isRowHighlighted && isLastIndex,
+        },
+      );
     }
 
     return clsx('table-cell border-r truncate', customClassName, {
@@ -100,17 +111,16 @@ function BodyCell<TData>(bodyCellProps: IBodyCell<TData>) {
     customClassName,
   ]);
 
-  const cellStyle = useMemo(
-    () => ({
+  const cellStyle = useMemo(() => {
+    return {
       position: 'absolute' as const,
       minHeight: position.height,
       transform: `translateX(${position.left}px)`,
       minWidth: position.width,
       width: position.width,
       top: 0,
-    }),
-    [position.height, position.left, position.width]
-  );
+    };
+  }, [position.height, position.left, position.width]);
 
   const cellContent = useMemo(() => {
     if (isCheckboxColumn) return <RowCheckbox checked={isRowChecked} />;
@@ -127,7 +137,16 @@ function BodyCell<TData>(bodyCellProps: IBodyCell<TData>) {
     }
 
     return cellRender?.(rowData) || cellValue || '';
-  }, [isCheckboxColumn, isExpandColumn, isRowChecked, isRowExpanded, cellRender, rowData, cellValue, cellExpandToggle]);
+  }, [
+    isCheckboxColumn,
+    isExpandColumn,
+    isRowChecked,
+    isRowExpanded,
+    cellRender,
+    rowData,
+    cellValue,
+    cellExpandToggle,
+  ]);
 
   return (
     <TableCell

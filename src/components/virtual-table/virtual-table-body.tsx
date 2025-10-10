@@ -30,8 +30,14 @@ const VirtualTableBody = forwardRef(
       columns,
       getLeaves,
     } = useHeaderContext();
-    const { flattenedData, rowVirtualizer, rowVirtualItems, columnVirtualItems, containerWidth } =
-      useVirtualizerContext();
+    const {
+      flattenedData,
+      rowVirtualizer,
+      rowVirtualItems,
+      columnVirtualItems,
+      containerWidth,
+      enableColumnVirtualization,
+    } = useVirtualizerContext();
     const {
       selectAll,
       onClickRow,
@@ -381,6 +387,82 @@ const VirtualTableBody = forwardRef(
       });
     };
 
+    const renderRegularColumns = (
+      rowKey: string,
+      rowData: TData,
+      isRowChecked: boolean,
+      isRowExpanded: boolean,
+      rowIndex: number,
+    ) => {
+      let accumulatedLeft = freezeLeftColumnsWidth;
+
+      return columns.flatMap((column, columnIndex) => {
+        const isRowHighlighted = rowKey === String(selectedRowKey);
+        const isGroupHeader = column.key.startsWith('group-header-');
+
+        if (isGroupHeader) {
+          const baseLeft = accumulatedLeft;
+          let childOffset = 0;
+          const leaves = getLeaves(column);
+
+          const groupChildren = leaves.map((child, childIdx) => {
+            const childWidth = child.width || 0;
+            const left = baseLeft + childOffset;
+            childOffset += childWidth;
+
+            const result = (
+              <BodyCell
+                key={'table-cell-regular-group-child-' + String(column.key) + '-' + String(child.key)}
+                rowKey={rowKey}
+                rowData={rowData}
+                isRowChecked={isRowChecked}
+                isRowExpanded={isRowExpanded}
+                column={child}
+                isVisible={child.visible}
+                isRowHighlighted={isRowHighlighted}
+                isFirstIndex={columnIndex === 0 && childIdx === 0}
+                isLastIndex={columnIndex === columns.length - 1 && childIdx === leaves.length - 1}
+                rowIndex={rowIndex}
+                columnIndex={childIdx}
+                position={{ left, width: childWidth, height: rowHeight }}
+                freezeLeftColumnsWidth={freezeLeftColumnsWidth}
+                freezeRightColumnsWidth={freezeRightColumnsWidth}
+              />
+            );
+
+            return result;
+          });
+
+          accumulatedLeft += column.width || 0;
+          return groupChildren;
+        }
+
+        const left = accumulatedLeft;
+        const columnWidth = column.width || 0;
+        accumulatedLeft += columnWidth;
+
+        return [
+          <BodyCell
+            key={'table-cell-regular-' + String(column.key)}
+            rowKey={rowKey}
+            rowData={rowData}
+            isRowChecked={isRowChecked}
+            isRowExpanded={isRowExpanded}
+            column={column}
+            isVisible={column.visible}
+            isRowHighlighted={isRowHighlighted}
+            isFirstIndex={columnIndex === 0}
+            isLastIndex={columnIndex === columns.length - 1}
+            rowIndex={rowIndex}
+            columnIndex={columnIndex}
+            position={{ left, width: columnWidth, height: rowHeight }}
+            freezeLeftColumnsWidth={freezeLeftColumnsWidth}
+            freezeRightColumnsWidth={freezeRightColumnsWidth}
+          />,
+        ];
+      });
+    };
+
     return (
       <div
         ref={ref}
@@ -433,13 +515,15 @@ const VirtualTableBody = forwardRef(
                       )}
                     </div>
 
-                    {renderVirtualizedColumns(
-                      resolvedRowKey,
-                      rowData,
-                      isRowChecked,
-                      isRowExpanded,
-                      row.index,
-                    )}
+                    {enableColumnVirtualization
+                      ? renderVirtualizedColumns(
+                          resolvedRowKey,
+                          rowData,
+                          isRowChecked,
+                          isRowExpanded,
+                          row.index,
+                        )
+                      : renderRegularColumns(resolvedRowKey, rowData, isRowChecked, isRowExpanded, row.index)}
                   </div>
                 </div>
 

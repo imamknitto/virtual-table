@@ -14,7 +14,7 @@ const VirtualTableHeaderV2 = forwardRef(
 
     const { columns, freezeLeftColumns, freezeRightColumns, freezeLeftColumnsWidth, freezeRightColumnsWidth } =
       useHeaderContext();
-    const { columnVirtualItems, containerWidth } = useVirtualizerContext();
+    const { columnVirtualItems, containerWidth, enableColumnVirtualization } = useVirtualizerContext();
     const { selectAll, toggleSelectAll } = useSelectionContext();
     const { freezeColLeftPositions, freezeColRightPositions, calcTotalTableWidth } = useUIContext();
 
@@ -101,6 +101,58 @@ const VirtualTableHeaderV2 = forwardRef(
       });
     };
 
+    const renderRegularColumns = () => {
+      let accumulatedLeft = freezeLeftColumnsWidth;
+
+      return columns.flatMap((column, columnIndex) => {
+        const hasChildren = column?.children;
+        const isGroupHeader = column.key.startsWith('group-header-');
+        const isLastColumn = columnIndex === columns.length - 1;
+
+        if (isGroupHeader && hasChildren) {
+          const left = accumulatedLeft;
+          const columnWidth = column.width || 0;
+          accumulatedLeft += columnWidth;
+
+          return [
+            <HeaderCell
+              key={'table-head-regular-group-' + String(column.key)}
+              headData={column as IAdjustedHeader}
+              headVirtualIndex={columnIndex}
+              cellStyles={{
+                position: 'absolute',
+                transform: `translateX(${left}px)`,
+                height: calcHeaderTotalHeight,
+                width: columnWidth,
+                top: 0,
+              }}
+              cellClassName={clsx('border-r')}
+            />,
+          ];
+        }
+
+        const left = accumulatedLeft;
+        const columnWidth = column.width || 0;
+        accumulatedLeft += columnWidth;
+
+        return [
+          <HeaderCell
+            key={'table-head-regular-' + String(column.key)}
+            headData={column as IAdjustedHeader}
+            headVirtualIndex={columnIndex}
+            cellStyles={{
+              position: 'absolute',
+              transform: `translateX(${left}px)`,
+              height: calcHeaderTotalHeight,
+              width: columnWidth,
+              top: 0,
+            }}
+            cellClassName={clsx(!hasChildren && 'border-r', isLastColumn && 'border-r-transparent')}
+          />,
+        ];
+      });
+    };
+
     return (
       <div
         className={clsx('sticky top-0 z-10', className)}
@@ -117,7 +169,7 @@ const VirtualTableHeaderV2 = forwardRef(
             {renderFreezeRightColumns()}
           </div>
 
-          {renderVirtualizedColumns()}
+          {enableColumnVirtualization ? renderVirtualizedColumns() : renderRegularColumns()}
 
           <ResizeLine />
         </div>

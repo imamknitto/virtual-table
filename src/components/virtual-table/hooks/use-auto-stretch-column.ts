@@ -5,14 +5,14 @@ import { DEFAULT_SIZE, type IHeader } from '../lib';
 interface IAutoStretchColumn {
   containerWidth: number;
   columns: IHeader<unknown>[];
-  columnVirtualizer: Virtualizer<HTMLDivElement, Element>;
+  columnVirtualizer: Virtualizer<HTMLDivElement, Element> | null;
 }
 
 export function useAutoStretchColumn(props: IAutoStretchColumn) {
   const { containerWidth, columns, columnVirtualizer } = props;
 
   useEffect(() => {
-    if (containerWidth === 0) return;
+    if (containerWidth === 0 || !columnVirtualizer) return;
 
     // Get all visible columns that can be stretched
     const visibleColumns = columns.filter((column) => column.visible && !column.noStretch);
