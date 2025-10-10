@@ -1,13 +1,28 @@
-import { memo } from 'react';
+import { memo, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import SearchDialog from './search-dialog';
 
 type HeaderProps = {
   onMenuToggle: () => void;
 };
 
 const Header = ({ onMenuToggle }: HeaderProps) => {
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+
+  // Keyboard shortcut handler
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        setIsSearchOpen(true);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
   return (
-    <header className='sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60'>
+    <header className='sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-background/60'>
       <div className='container flex h-14 max-w-screen-2xl items-center px-4 sm:px-6 lg:px-8'>
         {/* Left side - Logo and Navigation */}
         <div className='flex items-center'>
@@ -57,7 +72,10 @@ const Header = ({ onMenuToggle }: HeaderProps) => {
         <div className='flex flex-1 items-center justify-end gap-2'>
           {/* Search Button */}
           <div className='hidden sm:block'>
-            <button className='inline-flex items-center justify-center rounded-md border border-input bg-background px-3 py-2 text-sm font-medium text-muted-foreground shadow-sm hover:bg-accent hover:text-accent-foreground transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50'>
+            <button
+              className='inline-flex items-center justify-center rounded-md border border-input bg-background px-3 py-2 text-sm font-medium text-muted-foreground shadow-sm hover:bg-accent hover:text-accent-foreground transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50'
+              onClick={() => setIsSearchOpen(true)}
+            >
               <svg
                 className='mr-2 h-4 w-4'
                 fill='none'
@@ -98,6 +116,9 @@ const Header = ({ onMenuToggle }: HeaderProps) => {
           </a>
         </div>
       </div>
+
+      {/* Search Dialog */}
+      <SearchDialog isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
     </header>
   );
 };
