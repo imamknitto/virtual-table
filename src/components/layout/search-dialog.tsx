@@ -200,7 +200,7 @@ const SearchDialog = ({ isOpen, onClose }: SearchDialogProps) => {
       onClick={onClose}
     >
       <div
-        className='w-full max-w-2xl mx-4 bg-background rounded-lg shadow-2xl border overflow-hidden animate-in fade-in slide-in-from-top-4 duration-200'
+        className='w-full max-w-2xl mx-4 bg-white dark:bg-black/50 rounded-lg shadow-2xl border overflow-hidden animate-in fade-in slide-in-from-top-4 duration-200'
         onClick={(e) => e.stopPropagation()}
       >
         {/* Search Input */}

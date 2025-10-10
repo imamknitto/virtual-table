@@ -67,14 +67,14 @@ function BodyCell<TData>(bodyCellProps: IBodyCell<TData>) {
     };
 
     if (freezeMode === 'left') {
-      return clsx('table-cell border-r bg-white truncate', customClassName, {
+      return clsx('table-cell border-r bg-white/50 dark:bg-black/50 backdrop-blur-lg truncate', customClassName, {
         ...baseClasses,
         '!border-b !border-l !border-t !border-y-[#2F3574] nth-[1]:border-l-[#2F3574]': isRowHighlighted,
       });
     }
 
     if (freezeMode === 'right') {
-      return clsx('table-cell border-l bg-white truncate', customClassName, {
+      return clsx('table-cell border-l bg-white/50 dark:bg-black/50 backdrop-blur-lg truncate', customClassName, {
         ...baseClasses,
         '!border-y !border-y-[#2F3574]': isRowHighlighted,
         '!border-r !border-r-[#2F3574]': isRowHighlighted && isLastIndex,
