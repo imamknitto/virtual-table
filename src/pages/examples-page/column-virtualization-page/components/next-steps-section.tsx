@@ -12,15 +12,9 @@ const NextStepsSection = () => {
         <div className='flex flex-wrap gap-2'>
           <Link
             className='inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground h-8 px-3'
-            to='/docs/examples/column-virtualization'
+            to='/docs/examples/large-dataset'
           >
-            Column Virtualization
-          </Link>
-          <Link
-            className='inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground h-8 px-3'
-            to='/docs/examples/header-grouping'
-          >
-            Header Grouping
+            Large Dataset
           </Link>
         </div>
       </div>

@@ -69,6 +69,35 @@ const ExamplesPage = () => {
           </Link>
         </div>
 
+        {/* Column Virtualization Example */}
+        <div className='rounded-lg border bg-card p-6'>
+          <div className='flex items-center space-x-2 mb-4'>
+            <div className='w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center'>
+              <svg className='w-4 h-4 text-primary' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                <path
+                  strokeLinecap='round'
+                  strokeLinejoin='round'
+                  strokeWidth='2'
+                  d='M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2h2a2 2 0 002-2z'
+                />
+              </svg>
+            </div>
+            <h3 className='text-lg font-semibold'>Column Virtualization</h3>
+          </div>
+          <p className='text-sm text-muted-foreground mb-4'>
+            Enable or disable column virtualization to optimize performance and enable advanced features.
+          </p>
+          <Link
+            to='/docs/examples/column-virtualization'
+            className='inline-flex items-center text-sm font-medium text-primary hover:underline'
+          >
+            View Example
+            <svg className='ml-1 w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+              <path strokeLinecap='round' strokeLinejoin='round' strokeWidth='2' d='M9 5l7 7-7 7' />
+            </svg>
+          </Link>
+        </div>
+
         {/* Sorting & Filtering Example */}
         <div className='rounded-lg border bg-card p-6'>
           <div className='flex items-center space-x-2 mb-4'>

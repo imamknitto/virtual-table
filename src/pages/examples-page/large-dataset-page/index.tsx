@@ -5,7 +5,6 @@ import {
   LargeDatasetSection,
   MediumDatasetSection,
   MemoryManagementSection,
-  NextStepsSection,
   PerformanceMetricsSection,
   PerformanceOverview,
 } from './components';
@@ -37,7 +36,6 @@ const LargeDatasetPage = () => {
     <AdvancedFeaturesSection />,
     <BestPracticesSection />,
     <PerformanceMetricsSection />,
-    <NextStepsSection />,
   ];
 
   return (

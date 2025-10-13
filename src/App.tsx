@@ -26,6 +26,7 @@ const HeaderGroupingPage = lazy(() => import('./pages/examples-page/header-group
 const LargeDatasetPage = lazy(() => import('./pages/examples-page/large-dataset-page'));
 const ScrollingPage = lazy(() => import('./pages/examples-page/scrolling-page'));
 const ExplorePage = lazy(() => import('./pages/explore-page'));
+const ColumnVirtualizationPage = lazy(() => import('./pages/examples-page/column-virtualization-page'));
 
 const router = createBrowserRouter([
   {
@@ -54,6 +55,7 @@ const router = createBrowserRouter([
       { path: 'docs/examples/header-grouping', element: <HeaderGroupingPage /> },
       { path: 'docs/examples/large-dataset', element: <LargeDatasetPage /> },
       { path: 'docs/examples/scrolling', element: <ScrollingPage /> },
+      { path: 'docs/examples/column-virtualization', element: <ColumnVirtualizationPage /> },
       { path: 'docs/api/props', element: <PropsPage /> },
       { path: 'docs/api/methods', element: <MethodsPage /> },
       { path: 'blog', element: <BlogPage /> },

@@ -35,6 +35,7 @@ const navigation: NavItem[] = [
       { title: 'Footer', href: '/docs/examples/footer' },
       { title: 'Scrolling', href: '/docs/examples/scrolling' },
       { title: 'Server Filter', href: '/docs/examples/server-filter' },
+      { title: 'Column Virtualization', href: '/docs/examples/column-virtualization' },
       { title: 'Large Dataset', href: '/docs/examples/large-dataset' },
     ],
   },
@@ -68,6 +69,8 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
       '/docs/examples/scrolling': () => import('../../pages/examples-page/scrolling-page'),
       '/docs/examples/server-filter': () => import('../../pages/examples-page/server-filter-page'),
       '/docs/examples/large-dataset': () => import('../../pages/examples-page/large-dataset-page'),
+      '/docs/examples/column-virtualization': () =>
+        import('../../pages/examples-page/column-virtualization-page'),
       '/docs/api/props': () => import('../../pages/api-reference-page/props-page'),
       '/docs/api/methods': () => import('../../pages/api-reference-page/methods-page'),
       '/docs/examples': () => import('../../pages/examples-page/index'),
