@@ -1,8 +1,9 @@
-import { createContext, useContext } from 'use-context-selector';
-import { useState, useCallback, useEffect } from 'react';
+import { createContext, useContextSelector } from 'use-context-selector';
+import { useReducer, useMemo, useCallback, useEffect } from 'react';
 import type { IAdjustedHeader } from '../lib';
 import { DEFAULT_SIZE } from '../lib';
 
+// ==================== Types ====================
 type IHeaderContext = {
   columns: IAdjustedHeader[];
   flattenColumns: { col: IAdjustedHeader; depth: number; parentKey?: string }[];
@@ -26,16 +27,41 @@ type IHeaderContext = {
   ) => void;
 };
 
-interface IHeaderContextProvider {
+type IHeaderContextProvider = {
   initialColumns: IAdjustedHeader[];
   children: React.ReactNode;
-}
+};
 
-const HeaderContext = createContext<IHeaderContext | null>(null);
+type HeaderState = {
+  columns: IAdjustedHeader[];
+  freezeLeftColumns: IAdjustedHeader[];
+  freezeRightColumns: IAdjustedHeader[];
+  isFilterVisible: boolean;
+};
 
-export const useHeaderContext = () => useContext(HeaderContext)!;
+type HeaderAction =
+  | {
+      type: 'INITIALIZE';
+      payload: { columns: IAdjustedHeader[]; freezeLeft: IAdjustedHeader[]; freezeRight: IAdjustedHeader[] };
+    }
+  | { type: 'UPDATE_COLUMN'; payload: { key: string; update: Partial<IAdjustedHeader> } }
+  | { type: 'UPDATE_CHILD_COLUMN'; payload: { parentKey: string; childKey: string; update: Partial<IAdjustedHeader> } }
+  | {
+      type: 'UPDATE_FREEZE_COLUMN';
+      payload: { key: string; freezeType: 'left' | 'right'; update: Partial<IAdjustedHeader> };
+    }
+  | {
+      type: 'UPDATE_FREEZE_CHILD_COLUMN';
+      payload: { parentKey: string; childKey: string; freezeType: 'left' | 'right'; update: Partial<IAdjustedHeader> };
+    }
+  | { type: 'TOGGLE_FILTER_VISIBILITY' };
 
-function flattenHeaderLeaves(columns: IAdjustedHeader[], depth = 0, parentKey?: string) {
+// ==================== Utils ====================
+const flattenHeaderLeaves = (
+  columns: IAdjustedHeader[],
+  depth = 0,
+  parentKey?: string,
+): { col: IAdjustedHeader; depth: number; parentKey?: string }[] => {
   let rows: { col: IAdjustedHeader; depth: number; parentKey?: string }[] = [];
 
   columns.forEach((col) => {
@@ -47,9 +73,23 @@ function flattenHeaderLeaves(columns: IAdjustedHeader[], depth = 0, parentKey?: 
   });
 
   return rows;
-}
+};
 
-function normalizeColumnsRecursive(cols: IAdjustedHeader[]): IAdjustedHeader[] {
+const getLeavesOfNode = (node: IAdjustedHeader): IAdjustedHeader[] => {
+  if (!node.children || node.children.length === 0) return [node];
+  return node.children.flatMap((c) => getLeavesOfNode(c));
+};
+
+const getDepthOfNode = (node: IAdjustedHeader): number => {
+  if (!node.children || node.children.length === 0) return 0;
+  return 1 + Math.max(...node.children.map((c) => getDepthOfNode(c)));
+};
+
+const calculateWidthFromLeaves = (node: IAdjustedHeader): number => {
+  return getLeavesOfNode(node).reduce((sum, leaf) => sum + (leaf.width || DEFAULT_SIZE.COLUMN_WIDTH), 0);
+};
+
+const normalizeColumnsRecursive = (cols: IAdjustedHeader[]): IAdjustedHeader[] => {
   return cols.map((col) => {
     const visible = col.visible ?? true;
 
@@ -59,42 +99,16 @@ function normalizeColumnsRecursive(cols: IAdjustedHeader[]): IAdjustedHeader[] {
         parentKey: col.key,
       }));
 
-      const widthFromLeaves = getLeavesOfNode({ ...col, children: normalizedChildren }).reduce(
-        (sum, leaf) => sum + (leaf.width || DEFAULT_SIZE.COLUMN_WIDTH),
-        0,
-      );
+      const widthFromLeaves = calculateWidthFromLeaves({ ...col, children: normalizedChildren });
 
-      return {
-        ...col,
-        visible,
-        children: normalizedChildren,
-        width: widthFromLeaves,
-      };
+      return { ...col, visible, children: normalizedChildren, width: widthFromLeaves };
     }
 
-    return {
-      ...col,
-      visible,
-      width: col.width || DEFAULT_SIZE.COLUMN_WIDTH,
-    };
+    return { ...col, visible, width: col.width || DEFAULT_SIZE.COLUMN_WIDTH };
   });
-}
+};
 
-function getLeavesOfNode(node: IAdjustedHeader): IAdjustedHeader[] {
-  if (!node.children || node.children.length === 0) return [node];
-  return node.children.flatMap((c) => getLeavesOfNode(c));
-}
-
-function getDepthOfNode(node: IAdjustedHeader): number {
-  if (!node.children || node.children.length === 0) return 0;
-  return 1 + Math.max(...node.children.map((c) => getDepthOfNode(c)));
-}
-
-function updateChildDeep(
-  col: IAdjustedHeader,
-  childKey: string,
-  update: Partial<IAdjustedHeader>,
-): IAdjustedHeader {
+const updateChildDeep = (col: IAdjustedHeader, childKey: string, update: Partial<IAdjustedHeader>): IAdjustedHeader => {
   if (!col.children || col.children.length === 0) return col;
 
   const nextChildren = col.children.map((child) => {
@@ -104,19 +118,11 @@ function updateChildDeep(
     return updateChildDeep(child, childKey, update);
   });
 
-  // Hitung total width dari semua leaf children
   const widthFromLeaves = nextChildren.reduce((sum, child) => {
     if (!child.children || child.children.length === 0) {
       return sum + (child.width || DEFAULT_SIZE.COLUMN_WIDTH);
-    } else {
-      return (
-        sum +
-        getLeavesOfNode(child).reduce(
-          (leafSum, leaf) => leafSum + (leaf.width || DEFAULT_SIZE.COLUMN_WIDTH),
-          0,
-        )
-      );
     }
+    return sum + calculateWidthFromLeaves(child);
   }, 0);
 
   return {
@@ -124,19 +130,114 @@ function updateChildDeep(
     children: nextChildren,
     width: widthFromLeaves,
   } as IAdjustedHeader;
-}
+};
 
-export const HeaderContextProvider = ({ initialColumns, children }: IHeaderContextProvider) => {
-  const [columns, setColumns] = useState<IAdjustedHeader[]>([]);
-  const [freezeLeftColumns, setFreezeLeftColumns] = useState<IAdjustedHeader[]>([]);
-  const [freezeRightColumns, setFreezeRightColumns] = useState<IAdjustedHeader[]>([]);
-  const [freezeLeftColumnsWidth, setFreezeLeftColumnsWidth] = useState(0);
-  const [freezeRightColumnsWidth, setFreezeRightColumnsWidth] = useState(0);
-  const [isFilterVisible, setIsFilterVisible] = useState(true);
-  const [flattenColumns, setFlattenColumns] = useState<
-    { col: IAdjustedHeader; depth: number; parentKey?: string }[]
-  >([]);
+const calculateTotalWidth = (columns: IAdjustedHeader[]): number => {
+  return columns.reduce((acc, col) => acc + (col.width || 0), 0);
+};
 
+// ==================== Reducer ====================
+const headerReducer = (state: HeaderState, action: HeaderAction): HeaderState => {
+  switch (action.type) {
+    case 'INITIALIZE': {
+      const { columns, freezeLeft, freezeRight } = action.payload;
+      return { ...state, columns, freezeLeftColumns: freezeLeft, freezeRightColumns: freezeRight };
+    }
+
+    case 'UPDATE_COLUMN': {
+      const { key, update } = action.payload;
+      return {
+        ...state,
+        columns: state.columns.map((col) => (col.key === key ? { ...col, ...update } : col)),
+      };
+    }
+
+    case 'UPDATE_CHILD_COLUMN': {
+      const { parentKey, childKey, update } = action.payload;
+      return {
+        ...state,
+        columns: state.columns.map((col) => {
+          if (col.key !== parentKey) return col;
+          return updateChildDeep(col, childKey, update);
+        }),
+      };
+    }
+
+    case 'UPDATE_FREEZE_COLUMN': {
+      const { key, freezeType, update } = action.payload;
+      if (freezeType === 'left') {
+        return {
+          ...state,
+          freezeLeftColumns: state.freezeLeftColumns.map((col) => (col.key === key ? { ...col, ...update } : col)),
+        };
+      }
+      return {
+        ...state,
+        freezeRightColumns: state.freezeRightColumns.map((col) => (col.key === key ? { ...col, ...update } : col)),
+      };
+    }
+
+    case 'UPDATE_FREEZE_CHILD_COLUMN': {
+      const { parentKey, childKey, freezeType, update } = action.payload;
+      const updateFn = (cols: IAdjustedHeader[]) =>
+        cols.map((col) => {
+          if (col.key !== parentKey) return col;
+          return updateChildDeep(col, childKey, update);
+        });
+
+      if (freezeType === 'left') {
+        return {
+          ...state,
+          freezeLeftColumns: updateFn(state.freezeLeftColumns),
+        };
+      }
+      return {
+        ...state,
+        freezeRightColumns: updateFn(state.freezeRightColumns),
+      };
+    }
+
+    case 'TOGGLE_FILTER_VISIBILITY':
+      return {
+        ...state,
+        isFilterVisible: !state.isFilterVisible,
+      };
+
+    default:
+      return state;
+  }
+};
+
+// ==================== Context ====================
+const HeaderCtx = createContext<IHeaderContext | null>(null);
+
+export const useColumns = () => useContextSelector(HeaderCtx, (ctx) => ctx?.columns ?? []);
+export const useFlattenColumns = () => useContextSelector(HeaderCtx, (ctx) => ctx?.flattenColumns ?? []);
+export const useFreezeLeftColumns = () => useContextSelector(HeaderCtx, (ctx) => ctx?.freezeLeftColumns ?? []);
+export const useFreezeRightColumns = () => useContextSelector(HeaderCtx, (ctx) => ctx?.freezeRightColumns ?? []);
+export const useFreezeLeftColumnsWidth = () => useContextSelector(HeaderCtx, (ctx) => ctx?.freezeLeftColumnsWidth ?? 0);
+export const useFreezeRightColumnsWidth = () =>
+  useContextSelector(HeaderCtx, (ctx) => ctx?.freezeRightColumnsWidth ?? 0);
+export const useGetDepth = () => useContextSelector(HeaderCtx, (ctx) => ctx?.getDepth)!;
+export const useGetLeaves = () => useContextSelector(HeaderCtx, (ctx) => ctx?.getLeaves)!;
+export const useIsFilterVisible = () => useContextSelector(HeaderCtx, (ctx) => ctx?.isFilterVisible)!;
+export const useToggleColumnVisibility = () => useContextSelector(HeaderCtx, (ctx) => ctx?.toggleColumnVisibility)!;
+export const useToggleFilterVisibility = () => useContextSelector(HeaderCtx, (ctx) => ctx?.toggleFilterVisibility)!;
+export const useUpdateColumn = () => useContextSelector(HeaderCtx, (ctx) => ctx?.updateColumn)!;
+export const useUpdateFreezeColumn = () => useContextSelector(HeaderCtx, (ctx) => ctx?.updateFreezeColumn)!;
+export const useUpdateChildColumn = () => useContextSelector(HeaderCtx, (ctx) => ctx?.updateChildColumn)!;
+export const useUpdateFreezeChildColumn = () => useContextSelector(HeaderCtx, (ctx) => ctx?.updateFreezeChildColumn)!;
+
+// ==================== Provider ====================
+export const HeaderContextProvider = ({ initialColumns, children }: IHeaderContextProvider): React.ReactElement => {
+  const [state, dispatch] = useReducer(headerReducer, {
+    columns: [],
+    freezeLeftColumns: [],
+    freezeRightColumns: [],
+    isFilterVisible: true,
+  });
+
+  // Initialize columns when initialColumns change
   useEffect(() => {
     if (!initialColumns.length) return;
 
@@ -145,100 +246,104 @@ export const HeaderContextProvider = ({ initialColumns, children }: IHeaderConte
     const freezeLeft = processedColumns.filter((col) => col.freeze === 'left');
     const freezeRight = processedColumns.filter((col) => col.freeze === 'right');
 
-    setFlattenColumns(flattenHeaderLeaves(virtualized));
-    setColumns(virtualized);
-    setFreezeLeftColumns(freezeLeft);
-    setFreezeRightColumns(freezeRight);
+    dispatch({
+      type: 'INITIALIZE',
+      payload: { columns: virtualized, freezeLeft, freezeRight },
+    });
   }, [initialColumns]);
 
-  // Note: Update total lebar dari kolom yang freeze kiri jika ada perubahan.
-  useEffect(() => {
-    const newWidth = freezeLeftColumns.reduce((acc, col) => acc + (col.width || 0), 0);
-    setFreezeLeftColumnsWidth(newWidth);
-  }, [freezeLeftColumns]);
+  // Memoized flatten columns
+  const flattenColumns = useMemo(() => flattenHeaderLeaves(state.columns), [state.columns]);
 
-  // Note: Update total lebar dari kolom yang freeze kanan jika ada perubahan.
-  useEffect(() => {
-    const newWidth = freezeRightColumns.reduce((acc, col) => acc + (col.width || 0), 0);
-    setFreezeRightColumnsWidth(newWidth);
-  }, [freezeRightColumns]);
+  // Memoized freeze widths
+  const freezeLeftColumnsWidth = useMemo(() => calculateTotalWidth(state.freezeLeftColumns), [state.freezeLeftColumns]);
 
+  const freezeRightColumnsWidth = useMemo(
+    () => calculateTotalWidth(state.freezeRightColumns),
+    [state.freezeRightColumns],
+  );
+
+  // Memoized utility functions (static)
+  const getLeaves = useCallback(getLeavesOfNode, []);
+  const getDepth = useCallback(getDepthOfNode, []);
+
+  // Memoized action dispatchers
   const updateColumn = useCallback((key: string, update: Partial<IAdjustedHeader>) => {
-    setColumns((prev) => prev.map((col) => (col.key === key ? { ...col, ...update } : col)));
+    dispatch({ type: 'UPDATE_COLUMN', payload: { key, update } });
   }, []);
 
-  const updateChildColumn = useCallback(
-    (parentKey: string, childKey: string, update: Partial<IAdjustedHeader>) => {
-      // Update child bertingkat pada kolom non-freeze dan propagasi perubahan width ke ancestor
-      setColumns((prev) =>
-        prev.map((col) => {
-          if (col.key !== parentKey) return col;
-          return updateChildDeep(col, childKey, update);
-        }),
-      );
-    },
-    [],
-  );
+  const updateChildColumn = useCallback((parentKey: string, childKey: string, update: Partial<IAdjustedHeader>) => {
+    dispatch({ type: 'UPDATE_CHILD_COLUMN', payload: { parentKey, childKey, update } });
+  }, []);
 
   const updateFreezeColumn = useCallback(
     (key: string, freezeType: 'left' | 'right', update: Partial<IAdjustedHeader>) => {
-      if (freezeType === 'left') {
-        setFreezeLeftColumns((prev) => prev.map((col) => (col.key === key ? { ...col, ...update } : col)));
-      } else {
-        setFreezeRightColumns((prev) => prev.map((col) => (col.key === key ? { ...col, ...update } : col)));
-      }
+      dispatch({ type: 'UPDATE_FREEZE_COLUMN', payload: { key, freezeType, update } });
     },
     [],
   );
 
   const updateFreezeChildColumn = useCallback(
     (parentKey: string, childKey: string, freezeType: 'left' | 'right', update: Partial<IAdjustedHeader>) => {
-      // Update child bertingkat pada kolom freeze (kiri/kanan) dan propagasi perubahan width ke ancestor
-      const updateFn = (prev: IAdjustedHeader[]) =>
-        prev.map((col) => {
-          if (col.key !== parentKey) return col;
-          return updateChildDeep(col, childKey, update);
-        });
-
-      if (freezeType === 'left') {
-        setFreezeLeftColumns(updateFn);
-      } else {
-        setFreezeRightColumns(updateFn);
-      }
+      dispatch({
+        type: 'UPDATE_FREEZE_CHILD_COLUMN',
+        payload: { parentKey, childKey, freezeType, update },
+      });
     },
     [],
   );
 
   const toggleColumnVisibility = useCallback(
     (key: string) => {
-      updateColumn(key, { visible: !columns.find((col) => col.key === key)?.visible });
+      const column = state.columns.find((col) => col.key === key);
+      if (column) {
+        updateColumn(key, { visible: !column.visible });
+      }
     },
-    [columns, updateColumn],
+    [state.columns, updateColumn],
   );
 
-  const toggleFilterVisibility = useCallback(() => setIsFilterVisible((prev) => !prev), []);
+  const toggleFilterVisibility = useCallback(() => {
+    dispatch({ type: 'TOGGLE_FILTER_VISIBILITY' });
+  }, []);
 
-  return (
-    <HeaderContext.Provider
-      value={{
-        columns,
-        flattenColumns,
-        freezeLeftColumns,
-        freezeRightColumns,
-        freezeLeftColumnsWidth,
-        freezeRightColumnsWidth,
-        isFilterVisible,
-        getLeaves: getLeavesOfNode,
-        getDepth: getDepthOfNode,
-        updateColumn,
-        updateChildColumn,
-        updateFreezeChildColumn,
-        updateFreezeColumn,
-        toggleColumnVisibility,
-        toggleFilterVisibility,
-      }}
-    >
-      {children}
-    </HeaderContext.Provider>
+  // Memoized context value
+  const contextValue = useMemo<IHeaderContext>(
+    () => ({
+      columns: state.columns,
+      flattenColumns,
+      freezeLeftColumns: state.freezeLeftColumns,
+      freezeRightColumns: state.freezeRightColumns,
+      freezeLeftColumnsWidth,
+      freezeRightColumnsWidth,
+      isFilterVisible: state.isFilterVisible,
+      getLeaves,
+      getDepth,
+      updateColumn,
+      updateChildColumn,
+      updateFreezeChildColumn,
+      updateFreezeColumn,
+      toggleColumnVisibility,
+      toggleFilterVisibility,
+    }),
+    [
+      state.columns,
+      state.freezeLeftColumns,
+      state.freezeRightColumns,
+      state.isFilterVisible,
+      flattenColumns,
+      freezeLeftColumnsWidth,
+      freezeRightColumnsWidth,
+      getLeaves,
+      getDepth,
+      updateColumn,
+      updateChildColumn,
+      updateFreezeChildColumn,
+      updateFreezeColumn,
+      toggleColumnVisibility,
+      toggleFilterVisibility,
+    ],
   );
+
+  return <HeaderCtx.Provider value={contextValue}>{children}</HeaderCtx.Provider>;
 };

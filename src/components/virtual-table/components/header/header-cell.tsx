@@ -1,16 +1,23 @@
 import { useCallback, type CSSProperties } from 'react';
 import clsx from 'clsx';
 import { DEFAULT_SIZE, type IAdjustedHeader } from '../../lib';
-import { useVirtualizerContext } from '../../context/virtualizer-context';
-import { useSelectionContext } from '../../context/selection-context';
-import { useHeaderContext } from '../../context/header-context';
-import { useUIContext } from '../../context/ui-context';
 import ResizeIndicator from '../resize-indicator';
 import RowCheckbox from '../body/row-checkbox';
 import HeaderFilter from './header-filter';
 import TableHead from '../table-head';
 import HeaderCellNested from './header-cell-nested';
 import HeaderCaption from './header-caption';
+import {
+  useColumns,
+  useFreezeLeftColumns,
+  useFreezeRightColumns,
+  useIsFilterVisible,
+  useUpdateColumn,
+  useUpdateFreezeColumn,
+} from '../../context/header-context';
+import { useColumnVirtualizer } from '../../context/virtualizer-context';
+import { useDeselectedRowKeys, useSelectAll } from '../../context/selection-context';
+import { useHeaderMode } from '../../context/ui-context';
 
 interface IHeaderCell {
   headData: IAdjustedHeader;
@@ -22,11 +29,19 @@ interface IHeaderCell {
 
 function HeaderCell(props: IHeaderCell) {
   const { headData, headVirtualIndex, cellStyles, cellClassName, freezeType } = props;
-  const { isFilterVisible, freezeLeftColumns, freezeRightColumns, columns, updateColumn, updateFreezeColumn } =
-    useHeaderContext();
-  const { selectAll, deselectedRowKeys } = useSelectionContext();
-  const { columnVirtualizer } = useVirtualizerContext();
-  const { headerMode } = useUIContext();
+
+  const isFilterVisible = useIsFilterVisible();
+  const freezeLeftColumns = useFreezeLeftColumns();
+  const freezeRightColumns = useFreezeRightColumns();
+  const columns = useColumns();
+  const updateColumn = useUpdateColumn();
+  const updateFreezeColumn = useUpdateFreezeColumn();
+
+  const selectAll = useSelectAll();
+  const deselectedRowKeys = useDeselectedRowKeys();
+
+  const columnVirtualizer = useColumnVirtualizer();
+  const headerMode = useHeaderMode();
 
   const isCheckboxHeader = headData?.key === 'row-selection';
   const isExpandHeader = headData?.key === 'expand';
@@ -84,7 +99,7 @@ function HeaderCell(props: IHeaderCell) {
       window.addEventListener('mousemove', onMouseMove);
       window.addEventListener('mouseup', onMouseUp);
     },
-    [freezeLeftColumns, freezeRightColumns, columns, updateFreezeColumn, updateColumn, columnVirtualizer]
+    [freezeLeftColumns, freezeRightColumns, columns, updateFreezeColumn, updateColumn, columnVirtualizer],
   );
 
   return (
@@ -98,7 +113,7 @@ function HeaderCell(props: IHeaderCell) {
           'flex-row justify-between items-center': isSingleHeader && !isGroupHeader,
           'flex-col justify-between items-start !px-0': !isSingleHeader && !isGroupHeader,
         },
-        cellClassName
+        cellClassName,
       )}
     >
       {isGroupHeader && (
@@ -107,13 +122,13 @@ function HeaderCell(props: IHeaderCell) {
             style={{ height: DEFAULT_SIZE.GROUP_HEADER_HEIGHT }}
             className={clsx(
               'w-full border-b border-gray-200 text-center content-center',
-              freezeType === 'right' ? 'border-l' : 'border-r'
+              freezeType === 'right' ? 'border-l' : 'border-r',
             )}
           >
             {headData?.caption}
           </div>
 
-          <div className="flex-1 w-full flex min-h-0">
+          <div className='flex-1 w-full flex min-h-0'>
             {headData?.children?.map((child) => (
               <HeaderCellNested
                 key={'header-cell-nested-' + freezeType + '-' + child.key}

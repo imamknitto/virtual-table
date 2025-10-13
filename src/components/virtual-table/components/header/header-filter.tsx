@@ -1,12 +1,19 @@
 import { memo } from 'react';
-import { useFilterContext } from '../../context/filter-context';
 import Icon from '../../icons';
 import FilterSelection from './filter-selection';
 import FilterAdvance from './filter-advance';
 import FilterSearch from './filter-search';
 import clsx from 'clsx';
-import { useUIContext } from '../../context/ui-context';
 import { type IHeader, type TFilterAdvanceConfig } from '../../lib';
+import {
+  useAdvance,
+  useIsResetFilter,
+  useSearch,
+  useSelection,
+  useSort,
+  useTableKey,
+} from '../../context/filter-context';
+import { useFilterHeight } from '../../context/ui-context';
 
 interface IHeaderFilter {
   headerKey: string;
@@ -16,8 +23,14 @@ interface IHeaderFilter {
 }
 
 const HeaderFilter = ({ headerKey, filterSelectionOptions, headerMode, hideFilter }: IHeaderFilter) => {
-  const { tableKey, search, sort, selection, advance, isResetFilter } = useFilterContext();
-  const { filterHeight } = useUIContext();
+  const tableKey = useTableKey();
+  const search = useSearch();
+  const sort = useSort();
+  const selection = useSelection();
+  const advance = useAdvance();
+  const isResetFilter = useIsResetFilter();
+
+  const filterHeight = useFilterHeight();
 
   const isSingleHeader = headerMode === 'single';
   const calcFilterHeight = isSingleHeader ? 'auto' : filterHeight;
@@ -83,8 +96,8 @@ const HeaderFilter = ({ headerKey, filterSelectionOptions, headerMode, hideFilte
 
       {isSingleHeader && !isHideFilterSort && (
         <Icon
-          name="sort"
-          className="cursor-pointer"
+          name='sort'
+          className='cursor-pointer'
           sort={headerKey === sort.sortKey ? sort.sortBy : 'unset'}
           onClick={() => sort.onChangeSort(headerKey.toString())}
         />

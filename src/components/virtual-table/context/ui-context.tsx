@@ -1,10 +1,18 @@
 import { useMemo, type ReactNode } from 'react';
-import { createContext, useContext } from 'use-context-selector';
-import { useHeaderContext } from './header-context';
-import { useVirtualizerContext } from './virtualizer-context';
+import { createContext, useContextSelector } from 'use-context-selector';
 import { DEFAULT_SIZE } from '../lib';
+import {
+  useColumns,
+  useFreezeLeftColumns,
+  useFreezeLeftColumnsWidth,
+  useFreezeRightColumns,
+  useFreezeRightColumnsWidth,
+  useGetDepth,
+} from './header-context';
+import { useColumnVirtualizer, useEnableColumnVirtualization } from './virtualizer-context';
 
-export interface IUIContext {
+// ==================== Types ====================
+export type IUIContext = {
   freezeColLeftPositions: number[];
   freezeColRightPositions: number[];
   calcTotalTableWidth: number;
@@ -14,13 +22,9 @@ export interface IUIContext {
   expandedContent: (rowData: unknown) => ReactNode;
   calcHeaderTotalHeight: number;
   classNameCell?: (data: unknown, rowIndex: number, columnIndex: number) => string;
-}
+};
 
-const UIContext = createContext<IUIContext | null>(null);
-
-export const useUIContext = () => useContext(UIContext)!;
-
-interface IUIContextProviderProps<TData = unknown> {
+type IUIContextProviderProps<TData = unknown> = {
   children: ReactNode;
   filterHeight: number;
   useFooter: boolean;
@@ -29,9 +33,33 @@ interface IUIContextProviderProps<TData = unknown> {
   headerHeight: number;
   isFilterVisible?: boolean;
   classNameCell?: (data: TData, rowIndex: number, columnIndex: number) => string;
-}
+};
 
-export const UIContextProvider = <TData = unknown,>(props: IUIContextProviderProps<TData>) => {
+// ==================== Context ====================
+const UICtx = createContext<IUIContext | null>(null);
+
+// ==================== Hooks ====================
+export const useFreezeColLeftPositions = () => useContextSelector(UICtx, (ctx) => ctx?.freezeColLeftPositions ?? []);
+
+export const useFreezeColRightPositions = () => useContextSelector(UICtx, (ctx) => ctx?.freezeColRightPositions ?? []);
+
+export const useCalcTotalTableWidth = () => useContextSelector(UICtx, (ctx) => ctx?.calcTotalTableWidth ?? 0);
+
+export const useUseFooter = () => useContextSelector(UICtx, (ctx) => ctx?.useFooter ?? false);
+
+export const useFilterHeight = () =>
+  useContextSelector(UICtx, (ctx) => ctx?.filterHeight ?? DEFAULT_SIZE.FILTER_HEIGHT);
+
+export const useHeaderMode = () => useContextSelector(UICtx, (ctx) => ctx?.headerMode ?? 'double');
+
+export const useExpandedContent = () => useContextSelector(UICtx, (ctx) => ctx?.expandedContent ?? (() => null));
+
+export const useCalcHeaderTotalHeight = () => useContextSelector(UICtx, (ctx) => ctx?.calcHeaderTotalHeight ?? 0);
+
+export const useClassNameCell = () => useContextSelector(UICtx, (ctx) => ctx?.classNameCell);
+
+// ==================== Provider ====================
+export const UIContextProvider = <TData = unknown,>(props: IUIContextProviderProps<TData>): React.ReactElement => {
   const {
     children,
     filterHeight,
@@ -43,16 +71,22 @@ export const UIContextProvider = <TData = unknown,>(props: IUIContextProviderPro
     classNameCell,
   } = props;
 
-  const { columns, freezeLeftColumns, freezeLeftColumnsWidth, freezeRightColumns, freezeRightColumnsWidth, getDepth } =
-    useHeaderContext();
-  const { columnVirtualizer, enableColumnVirtualization } = useVirtualizerContext();
-  
+  const columns = useColumns();
+  const freezeLeftColumns = useFreezeLeftColumns();
+  const freezeRightColumns = useFreezeRightColumns();
+  const freezeLeftColumnsWidth = useFreezeLeftColumnsWidth();
+  const freezeRightColumnsWidth = useFreezeRightColumnsWidth();
+  const getDepth = useGetDepth();
+
+  const columnVirtualizer = useColumnVirtualizer();
+  const enableColumnVirtualization = useEnableColumnVirtualization();
+
   // Calculate virtualized columns width
   const virtualizedColumnsWidth = useMemo(() => {
     if (enableColumnVirtualization && columnVirtualizer) {
       return columnVirtualizer.getTotalSize();
     }
-    
+
     // For non-virtualized mode, calculate manually from columns
     return columns.reduce((sum, col) => sum + (col.width || 0), 0);
   }, [enableColumnVirtualization, columnVirtualizer, columns]);
@@ -87,7 +121,7 @@ export const UIContextProvider = <TData = unknown,>(props: IUIContextProviderPro
       0,
       ...columns.map((c) => getDepth(c as HeaderNode)),
       ...freezeLeftColumns.map((c) => getDepth(c as HeaderNode)),
-      ...freezeRightColumns.map((c) => getDepth(c as HeaderNode))
+      ...freezeRightColumns.map((c) => getDepth(c as HeaderNode)),
     );
 
     // Hitung tinggi header berdasarkan mode dan filter
@@ -107,23 +141,40 @@ export const UIContextProvider = <TData = unknown,>(props: IUIContextProviderPro
     getDepth,
   ]);
 
-  return (
-    <UIContext.Provider
-      value={{
-        freezeColLeftPositions,
-        freezeColRightPositions,
-        calcTotalTableWidth,
-        useFooter,
-        filterHeight,
-        headerMode,
-        calcHeaderTotalHeight,
-        expandedContent: expandedContent || (() => null),
-        classNameCell: classNameCell as ((data: unknown, rowIndex: number, columnIndex: number) => string) | undefined,
-      }}
-    >
-      {children}
-    </UIContext.Provider>
-  );
-};
+  // Memoize expandedContent function
+  const memoizedExpandedContent = useMemo(() => expandedContent || (() => null), [expandedContent]);
 
-export default UIContextProvider;
+  // Memoize classNameCell function
+  const memoizedClassNameCell = useMemo(
+    () => classNameCell as ((data: unknown, rowIndex: number, columnIndex: number) => string) | undefined,
+    [classNameCell],
+  );
+
+  // Memoize context value
+  const contextValue = useMemo<IUIContext>(
+    () => ({
+      freezeColLeftPositions,
+      freezeColRightPositions,
+      calcTotalTableWidth,
+      useFooter,
+      filterHeight,
+      headerMode,
+      calcHeaderTotalHeight,
+      expandedContent: memoizedExpandedContent,
+      classNameCell: memoizedClassNameCell,
+    }),
+    [
+      freezeColLeftPositions,
+      freezeColRightPositions,
+      calcTotalTableWidth,
+      useFooter,
+      filterHeight,
+      headerMode,
+      calcHeaderTotalHeight,
+      memoizedExpandedContent,
+      memoizedClassNameCell,
+    ],
+  );
+
+  return <UICtx.Provider value={contextValue}>{children}</UICtx.Provider>;
+};

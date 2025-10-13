@@ -1,12 +1,19 @@
 import { memo, type CSSProperties } from 'react';
 import clsx from 'clsx';
 import { DEFAULT_SIZE, findChildRecursive, type IHeader, type IAdjustedHeader } from '../../lib';
-import { useVirtualizerContext } from '../../context/virtualizer-context';
-import { useHeaderContext } from '../../context/header-context';
-import { useUIContext } from '../../context/ui-context';
 import ResizeIndicator from '../resize-indicator';
 import HeaderCaption from './header-caption';
 import HeaderFilter from './header-filter';
+import {
+  useColumns,
+  useFreezeLeftColumns,
+  useFreezeRightColumns,
+  useIsFilterVisible,
+  useUpdateChildColumn,
+  useUpdateFreezeChildColumn,
+} from '../../context/header-context';
+import { useColumnVirtualizer } from '../../context/virtualizer-context';
+import { useHeaderMode } from '../../context/ui-context';
 
 interface INestedHeaderCell {
   headData: IAdjustedHeader;
@@ -26,16 +33,16 @@ interface IResizeChildColumnArgs {
 
 function HeaderCellNested(props: INestedHeaderCell) {
   const { headData, parentKey, parentVirtualIndex, cellClassName, cellStyles, freezeType } = props;
-  const {
-    isFilterVisible,
-    freezeLeftColumns,
-    freezeRightColumns,
-    columns,
-    updateFreezeChildColumn,
-    updateChildColumn,
-  } = useHeaderContext();
-  const { columnVirtualizer } = useVirtualizerContext();
-  const { headerMode } = useUIContext();
+
+  const isFilterVisible = useIsFilterVisible();
+  const freezeLeftColumns = useFreezeLeftColumns();
+  const freezeRightColumns = useFreezeRightColumns();
+  const columns = useColumns();
+  const updateFreezeChildColumn = useUpdateFreezeChildColumn();
+  const updateChildColumn = useUpdateChildColumn();
+
+  const columnVirtualizer = useColumnVirtualizer();
+  const headerMode = useHeaderMode();
 
   const handleResizeChildColumn = (e: React.MouseEvent, args: IResizeChildColumnArgs) => {
     e.preventDefault();
@@ -47,8 +54,8 @@ function HeaderCellNested(props: INestedHeaderCell) {
       freezeType === 'left'
         ? freezeLeftColumns.find((c: IHeader<unknown>) => c.key === parentKey)
         : freezeType === 'right'
-          ? freezeRightColumns.find((c: IHeader<unknown>) => c.key === parentKey)
-          : columns.find((c: IHeader<unknown>) => c.key === parentKey);
+        ? freezeRightColumns.find((c: IHeader<unknown>) => c.key === parentKey)
+        : columns.find((c: IHeader<unknown>) => c.key === parentKey);
 
     if (!parent) return;
 
@@ -104,8 +111,8 @@ function HeaderCellNested(props: INestedHeaderCell) {
       freezeType === 'left'
         ? freezeLeftColumns.find((col: IHeader<unknown>) => col.key === parentKey)
         : freezeType === 'right'
-          ? freezeRightColumns.find((col: IHeader<unknown>) => col.key === parentKey)
-          : columns.find((col: IHeader<unknown>) => col.key === parentKey);
+        ? freezeRightColumns.find((col: IHeader<unknown>) => col.key === parentKey)
+        : columns.find((col: IHeader<unknown>) => col.key === parentKey);
 
     if (!parent?.width) return childWidth;
 
@@ -133,7 +140,7 @@ function HeaderCellNested(props: INestedHeaderCell) {
           'group/outer relative border-gray-200 flex h-full',
           freezeType === 'right' ? 'border-l' : 'border-r',
           isSingleHeader ? 'flex-row justify-between items-center px-1' : 'flex-col justify-between items-start',
-          cellClassName
+          cellClassName,
         )}
         style={{ minWidth: scaledWidth, width: scaledWidth, ...cellStyles }}
       >
@@ -188,13 +195,13 @@ function HeaderCellNested(props: INestedHeaderCell) {
         style={{ minHeight: DEFAULT_SIZE.GROUP_HEADER_HEIGHT }}
         className={clsx(
           'w-full border-b border-gray-200 text-center content-center flex items-center justify-center',
-          freezeType === 'right' && 'border-l'
+          freezeType === 'right' && 'border-l',
         )}
       >
         {headData.caption}
       </div>
 
-      <div className="flex-1 w-full flex min-h-0">
+      <div className='flex-1 w-full flex min-h-0'>
         {headData.children?.map((child) => (
           <HeaderCellNested
             key={'nested-header-cell-' + child.key}

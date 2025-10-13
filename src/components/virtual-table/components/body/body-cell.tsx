@@ -1,9 +1,9 @@
 import { memo, useMemo } from 'react';
 import clsx from 'clsx';
 import { RowCheckbox, RowExpand, TableCell } from '..';
-import { useUIContext } from '../../context/ui-context';
 import type { IAdjustedHeader } from '../../lib';
-import { useVirtualizerContext } from '../../context/virtualizer-context';
+import { useUseDynamicRowHeight } from '../../context/virtualizer-context';
+import { useClassNameCell } from '../../context/ui-context';
 
 interface IBodyCell<TData> {
   rowKey: string;
@@ -47,16 +47,13 @@ function BodyCell<TData>(bodyCellProps: IBodyCell<TData>) {
     columnIndex = 0,
   } = bodyCellProps;
 
-  const { classNameCell } = useUIContext();
-  const { useDynamicRowHeight } = useVirtualizerContext();
+  const classNameCell = useClassNameCell();
+  const useDynamicRowHeight = useUseDynamicRowHeight();
 
   const isCheckboxColumn = column?.key === 'row-selection';
   const isExpandColumn = column?.key === 'expand';
 
-  const cellValue = useMemo(
-    () => String(rowData[column?.key as keyof typeof rowData] || ''),
-    [rowData, column?.key],
-  );
+  const cellValue = useMemo(() => String(rowData[column?.key as keyof typeof rowData] || ''), [rowData, column?.key]);
   const cellRender = column?.renderCell;
   const cellExpandToggle = column?.renderExpandToggle;
 
@@ -73,28 +70,20 @@ function BodyCell<TData>(bodyCellProps: IBodyCell<TData>) {
     };
 
     if (freezeMode === 'left') {
-      return clsx(
-        'table-cell border-r bg-white/50 dark:bg-black/50 backdrop-blur-lg break-words',
-        customClassName,
-        {
-          ...baseClasses,
-          truncate: !useDynamicRowHeight,
-          '!border-b !border-l !border-t !border-y-[#2F3574] nth-[1]:border-l-[#2F3574]': isRowHighlighted,
-        },
-      );
+      return clsx('table-cell border-r bg-white dark:bg-black/50 backdrop-blur-2xl break-words', customClassName, {
+        ...baseClasses,
+        truncate: !useDynamicRowHeight,
+        '!border-b !border-l !border-t !border-y-[#2F3574] nth-[1]:border-l-[#2F3574]': isRowHighlighted,
+      });
     }
 
     if (freezeMode === 'right') {
-      return clsx(
-        'table-cell border-l bg-white/50 dark:bg-black/50 backdrop-blur-lg break-words',
-        customClassName,
-        {
-          ...baseClasses,
-          truncate: !useDynamicRowHeight,
-          '!border-y !border-y-[#2F3574]': isRowHighlighted,
-          '!border-r !border-r-[#2F3574]': isRowHighlighted && isLastIndex,
-        },
-      );
+      return clsx('table-cell border-l bg-white dark:bg-black/50 backdrop-blur-2xl break-words', customClassName, {
+        ...baseClasses,
+        truncate: !useDynamicRowHeight,
+        '!border-y !border-y-[#2F3574]': isRowHighlighted,
+        '!border-r !border-r-[#2F3574]': isRowHighlighted && isLastIndex,
+      });
     }
 
     return clsx('table-cell border-r break-words', customClassName, {
@@ -156,16 +145,7 @@ function BodyCell<TData>(bodyCellProps: IBodyCell<TData>) {
     }
 
     return cellRender?.(rowData) || cellValue || '';
-  }, [
-    isCheckboxColumn,
-    isExpandColumn,
-    isRowChecked,
-    isRowExpanded,
-    cellRender,
-    rowData,
-    cellValue,
-    cellExpandToggle,
-  ]);
+  }, [isCheckboxColumn, isExpandColumn, isRowChecked, isRowExpanded, cellRender, rowData, cellValue, cellExpandToggle]);
 
   return (
     <TableCell

@@ -1,22 +1,45 @@
 import { forwardRef, memo, type ReactNode } from 'react';
 import clsx from 'clsx';
 import { type IAdjustedHeader } from './lib';
-import { useVirtualizerContext } from './context/virtualizer-context';
-import { useSelectionContext } from './context/selection-context';
-import { useHeaderContext } from './context/header-context';
-import { useUIContext } from './context/ui-context';
 import { HeaderCell } from './components';
 import ResizeLine from './components/resize-line';
+import {
+  useColumns,
+  useFreezeLeftColumns,
+  useFreezeLeftColumnsWidth,
+  useFreezeRightColumns,
+  useFreezeRightColumnsWidth,
+} from './context/header-context';
+import { useColumnVirtualItems, useContainerWidth, useEnableColumnVirtualization } from './context/virtualizer-context';
+import { useSelectAll, useToggleSelectAll } from './context/selection-context';
+import {
+  useCalcHeaderTotalHeight,
+  useCalcTotalTableWidth,
+  useFreezeColLeftPositions,
+  useFreezeColRightPositions,
+} from './context/ui-context';
 
 const VirtualTableHeaderV2 = forwardRef(
   (props: React.HTMLAttributes<HTMLDivElement>, ref: React.Ref<HTMLDivElement>) => {
     const { className, ...propRest } = props;
 
-    const { columns, freezeLeftColumns, freezeRightColumns, freezeLeftColumnsWidth, freezeRightColumnsWidth } =
-      useHeaderContext();
-    const { columnVirtualItems, containerWidth, enableColumnVirtualization } = useVirtualizerContext();
-    const { selectAll, toggleSelectAll } = useSelectionContext();
-    const { freezeColLeftPositions, freezeColRightPositions, calcTotalTableWidth } = useUIContext();
+    const columns = useColumns();
+    const freezeLeftColumns = useFreezeLeftColumns();
+    const freezeRightColumns = useFreezeRightColumns();
+    const freezeLeftColumnsWidth = useFreezeLeftColumnsWidth();
+    const freezeRightColumnsWidth = useFreezeRightColumnsWidth();
+
+    const columnVirtualItems = useColumnVirtualItems();
+    const containerWidth = useContainerWidth();
+    const enableColumnVirtualization = useEnableColumnVirtualization();
+
+    const selectAll = useSelectAll();
+    const toggleSelectAll = useToggleSelectAll();
+
+    const freezeColLeftPositions = useFreezeColLeftPositions();
+    const freezeColRightPositions = useFreezeColRightPositions();
+    const calcTotalTableWidth = useCalcTotalTableWidth();
+    const calcHeaderTotalHeight = useCalcHeaderTotalHeight();
 
     const handleCheckboxChange = (e: React.ChangeEvent<HTMLTableSectionElement>): void => {
       const target = e.target as HTMLElement | null;
@@ -29,8 +52,6 @@ const VirtualTableHeaderV2 = forwardRef(
       toggleSelectAll(!selectAll);
     };
 
-    const { calcHeaderTotalHeight } = useUIContext();
-
     const renderFreezeLeftColumns = () => {
       return freezeLeftColumns.map((column, freezeLeftIdx) => {
         const hasChildren = column?.children;
@@ -38,7 +59,7 @@ const VirtualTableHeaderV2 = forwardRef(
         return (
           <HeaderCell
             key={'table-head-freeze-left-' + column.key}
-            freezeType="left"
+            freezeType='left'
             headData={column}
             headVirtualIndex={freezeLeftIdx}
             cellStyles={{
@@ -63,7 +84,7 @@ const VirtualTableHeaderV2 = forwardRef(
             key={'table-head-freeze-right-' + column.key}
             headData={column}
             headVirtualIndex={freezeRightIdx}
-            freezeType="right"
+            freezeType='right'
             cellStyles={{
               position: 'absolute',
               transform: `translateX(${freezeColRightPositions[freezeRightIdx]}px)`,
@@ -160,12 +181,12 @@ const VirtualTableHeaderV2 = forwardRef(
         ref={ref as React.Ref<HTMLDivElement>}
         {...propRest}
       >
-        <div className="table-header relative flex h-full" style={{ width: calcTotalTableWidth }}>
-          <div className="sticky left-0 z-20 h-full" style={{ width: freezeLeftColumnsWidth }}>
+        <div className='table-header relative flex h-full' style={{ width: calcTotalTableWidth }}>
+          <div className='sticky left-0 z-20 h-full' style={{ width: freezeLeftColumnsWidth }}>
             {renderFreezeLeftColumns()}
           </div>
 
-          <div className="sticky z-20 h-full" style={{ left: containerWidth - freezeRightColumnsWidth }}>
+          <div className='sticky z-20 h-full' style={{ left: containerWidth - freezeRightColumnsWidth }}>
             {renderFreezeRightColumns()}
           </div>
 
@@ -175,7 +196,7 @@ const VirtualTableHeaderV2 = forwardRef(
         </div>
       </div>
     );
-  }
+  },
 );
 
 export default memo(VirtualTableHeaderV2) as (props: React.HTMLAttributes<HTMLDivElement>) => ReactNode;

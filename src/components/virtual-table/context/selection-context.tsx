@@ -1,7 +1,8 @@
-import { createContext, useContext } from 'use-context-selector';
-import { useCallback, useState } from 'react';
+import { createContext, useContextSelector } from 'use-context-selector';
+import { useCallback, useState, useMemo } from 'react';
 
-export interface ISelectionContext {
+// ==================== Types ====================
+export type ISelectionContext = {
   selectedRowKey: string | null;
   selectedRowKeys: Set<string>;
   deselectedRowKeys: Set<string>;
@@ -12,26 +13,49 @@ export interface ISelectionContext {
   setSelectedRowKey: (key: string | null) => void;
   toggleRowSelection: (key: string) => void;
   toggleSelectAll: (mode: boolean) => void;
-}
+};
 
-interface ISelectionContextProvider {
+type ISelectionContextProvider = {
   children: React.ReactNode;
   onChangeCheckboxRowSelection?: (
     selectedRows: (string | number)[],
     deselectedRows: (string | number)[],
-    isSelectAll: boolean
+    isSelectAll: boolean,
   ) => void;
-}
+};
 
-const SelectionContext = createContext<ISelectionContext | null>(null);
+// ==================== Context ====================
+const SelectionCtx = createContext<ISelectionContext | null>(null);
 
-export const useSelectionContext = () => useContext(SelectionContext)!;
+// ==================== Hooks ====================
+export const useSelectedRowKey = () => useContextSelector(SelectionCtx, (ctx) => ctx?.selectedRowKey ?? null);
 
-export const SelectionContextProvider = (props: ISelectionContextProvider) => {
+export const useSelectedRowKeys = () =>
+  useContextSelector(SelectionCtx, (ctx) => ctx?.selectedRowKeys ?? new Set<string>());
+
+export const useDeselectedRowKeys = () =>
+  useContextSelector(SelectionCtx, (ctx) => ctx?.deselectedRowKeys ?? new Set<string>());
+
+export const useExpandedRowKeys = () =>
+  useContextSelector(SelectionCtx, (ctx) => ctx?.expandedRowKeys ?? new Set<string>());
+
+export const useSelectAll = () => useContextSelector(SelectionCtx, (ctx) => ctx?.selectAll ?? false);
+
+export const useToggleExpandRow = () => useContextSelector(SelectionCtx, (ctx) => ctx?.toggleExpandRow)!;
+
+export const useOnClickRow = () => useContextSelector(SelectionCtx, (ctx) => ctx?.onClickRow)!;
+
+export const useSetSelectedRowKey = () => useContextSelector(SelectionCtx, (ctx) => ctx?.setSelectedRowKey)!;
+
+export const useToggleRowSelection = () => useContextSelector(SelectionCtx, (ctx) => ctx?.toggleRowSelection)!;
+
+export const useToggleSelectAll = () => useContextSelector(SelectionCtx, (ctx) => ctx?.toggleSelectAll)!;
+
+// ==================== Provider ====================
+export const SelectionContextProvider = (props: ISelectionContextProvider): React.ReactElement => {
   const { children, onChangeCheckboxRowSelection } = props;
 
   const [selectedRowKey, setSelectedRowKey] = useState<string | null>(null);
-
   const [expandedRowKeys, setExpandedRowKeys] = useState<Set<string>>(new Set());
   const [selectedRowKeys, setSelectedRowKeys] = useState<Set<string>>(new Set());
   const [deselectedRowKeys, setDeselectedRowKeys] = useState<Set<string>>(new Set());
@@ -72,7 +96,7 @@ export const SelectionContextProvider = (props: ISelectionContextProvider) => {
         return finalData;
       });
     },
-    [selectAll, onChangeCheckboxRowSelection]
+    [selectAll, onChangeCheckboxRowSelection],
   );
 
   const toggleSelectAll = useCallback(
@@ -83,7 +107,7 @@ export const SelectionContextProvider = (props: ISelectionContextProvider) => {
       setSelectedRowKeys(new Set());
       setDeselectedRowKeys(new Set());
     },
-    [onChangeCheckboxRowSelection]
+    [onChangeCheckboxRowSelection],
   );
 
   const toggleExpandRow = useCallback((key: string): void => {
@@ -95,22 +119,32 @@ export const SelectionContextProvider = (props: ISelectionContextProvider) => {
     });
   }, []);
 
-  return (
-    <SelectionContext.Provider
-      value={{
-        selectedRowKey,
-        selectedRowKeys,
-        deselectedRowKeys,
-        selectAll,
-        expandedRowKeys,
-        toggleExpandRow,
-        setSelectedRowKey,
-        onClickRow,
-        toggleRowSelection,
-        toggleSelectAll,
-      }}
-    >
-      {children}
-    </SelectionContext.Provider>
+  // Memoize context value
+  const contextValue = useMemo<ISelectionContext>(
+    () => ({
+      selectedRowKey,
+      selectedRowKeys,
+      deselectedRowKeys,
+      selectAll,
+      expandedRowKeys,
+      toggleExpandRow,
+      setSelectedRowKey,
+      onClickRow,
+      toggleRowSelection,
+      toggleSelectAll,
+    }),
+    [
+      selectedRowKey,
+      selectedRowKeys,
+      deselectedRowKeys,
+      selectAll,
+      expandedRowKeys,
+      toggleExpandRow,
+      onClickRow,
+      toggleRowSelection,
+      toggleSelectAll,
+    ],
   );
+
+  return <SelectionCtx.Provider value={contextValue}>{children}</SelectionCtx.Provider>;
 };

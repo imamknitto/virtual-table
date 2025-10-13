@@ -1,12 +1,17 @@
 import { memo, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { useHeaderContext } from '../../context/header-context';
-import { useVirtualizerContext } from '../../context/virtualizer-context';
-import { useFilterContext } from '../../context/filter-context';
 import { useClickOutside } from '../../hooks';
 import { DEFAULT_SIZE, type IHeader } from '../../lib';
 import Icons from '../../icons';
 import FilterCard from './filter-card';
+import {
+  useColumns,
+  useIsFilterVisible,
+  useToggleColumnVisibility,
+  useToggleFilterVisibility,
+} from '../../context/header-context';
+import { useColumnVirtualizer } from '../../context/virtualizer-context';
+import { useSort } from '../../context/filter-context';
 
 const DEFAULT_ACTIONS = [
   'Sort Ascending',
@@ -25,9 +30,13 @@ function HeaderAction({ headerKey, hideFilterSort }: IHeaderAction) {
   const cardRef = useRef<HTMLDivElement>(null);
   const [actionCard, setActionCard] = useState({ show: false, pos: { x: 0, y: 0 } });
 
-  const { toggleColumnVisibility, toggleFilterVisibility, isFilterVisible, columns } = useHeaderContext();
-  const { columnVirtualizer } = useVirtualizerContext();
-  const { sort } = useFilterContext();
+  const toggleColumnVisibility = useToggleColumnVisibility();
+  const toggleFilterVisibility = useToggleFilterVisibility();
+  const isFilterVisible = useIsFilterVisible();
+  const columns = useColumns();
+
+  const columnVirtualizer = useColumnVirtualizer();
+  const sort = useSort();
 
   useClickOutside([cardRef], () => setActionCard({ show: false, pos: { x: 0, y: 0 } }));
 
@@ -84,7 +93,7 @@ function HeaderAction({ headerKey, hideFilterSort }: IHeaderAction) {
 
         columnVirtualizer?.resizeItem(
           index,
-          columns[index]?.visible ? 0 : columns[index]?.width || DEFAULT_SIZE.COLUMN_WIDTH
+          columns[index]?.visible ? 0 : columns[index]?.width || DEFAULT_SIZE.COLUMN_WIDTH,
         );
       },
     };
@@ -101,23 +110,23 @@ function HeaderAction({ headerKey, hideFilterSort }: IHeaderAction) {
   }, [hideFilterSort, isFilterVisible]);
 
   return (
-    <div className="relative">
-      <Icons name="menu" className="!size-4 text-gray-500 cursor-pointer" onClick={handleOpenActionCard} />
+    <div className='relative'>
+      <Icons name='menu' className='!size-4 text-gray-500 cursor-pointer' onClick={handleOpenActionCard} />
 
       {actionCard.show &&
         createPortal(
-          <FilterCard ref={cardRef} className="fixed z-50" style={{ top: actionCard.pos.y, left: actionCard.pos.x }}>
+          <FilterCard ref={cardRef} className='fixed z-50' style={{ top: actionCard.pos.y, left: actionCard.pos.x }}>
             {modifiedActions.map((action, index) => (
               <span
                 key={action + index}
                 onClick={(e) => handleActionClick(e, action)}
-                className="relative py-2 px-3 flex items-center hover:bg-blue-950 hover:text-white cursor-pointer"
+                className='relative py-2 px-3 flex items-center hover:bg-blue-950 hover:text-white cursor-pointer'
               >
                 {action}
               </span>
             ))}
           </FilterCard>,
-          document.body
+          document.body,
         )}
     </div>
   );

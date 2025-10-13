@@ -4,22 +4,19 @@ import clsx from 'clsx';
 
 import { useScrollBottomDetection } from './hooks';
 import { DEFAULT_SIZE, type IAdjustedHeader, type IVirtualTable } from './lib';
-import { HeaderContextProvider } from './context/header-context';
-import { VirtualizerContextProvider } from './context/virtualizer-context';
-import { SelectionContextProvider } from './context/selection-context';
 import EmptyDataIndicator from './components/empty-data-indicator';
-import { FilterContextProvider } from './context/filter-context';
 import LoadingIndicator from './components/loading-indicator';
 import VirtualTableHeader from './virtual-table-header';
 import VirtualTableFooter from './virtual-table-footer';
-import UIContextProvider from './context/ui-context';
 import VirtualTableBody from './virtual-table-body';
 import './lib/style.css';
+import { HeaderContextProvider } from './context/header-context';
+import { VirtualizerContextProvider } from './context/virtualizer-context';
+import { FilterContextProvider } from './context/filter-context';
+import { SelectionContextProvider } from './context/selection-context';
+import { UIContextProvider } from './context/ui-context';
 
-function VirtualTableInner<TData>(
-  virtualTableProps: IVirtualTable<TData>,
-  ref: React.ForwardedRef<HTMLDivElement>,
-) {
+function VirtualTableInner<TData>(virtualTableProps: IVirtualTable<TData>, ref: React.ForwardedRef<HTMLDivElement>) {
   const {
     rowKey,
     data,

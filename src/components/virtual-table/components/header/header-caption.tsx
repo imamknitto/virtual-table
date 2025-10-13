@@ -1,8 +1,8 @@
 import { memo } from 'react';
 import clsx from 'clsx';
-import { useFilterContext } from '../../context/filter-context';
 import Icons from '../../icons';
 import HeaderAction from './header-action';
+import { useSort } from '../../context/filter-context';
 
 /**
  * NOTE: Rendering Header Caption.
@@ -19,7 +19,7 @@ interface IHeaderCaption {
 }
 
 function HeaderCaption({ isSingleHeader, isFilterVisible, caption, headerKey, hideFilterSort }: IHeaderCaption) {
-  const { sort } = useFilterContext();
+  const sort = useSort();
 
   if (isSingleHeader) return caption;
 
