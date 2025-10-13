@@ -2,8 +2,10 @@ name: Deploy React Vite App to GitHub Pages
 
 on:
   push:
-    branches:
-      - release/main  # deploy otomatis saat push ke branch ini
+    branches: [release/main]
+  pull_request:
+    branches: [release/main]
+    types: [closed]
 
 permissions:
   contents: write  # biar bisa push ke gh-pages
