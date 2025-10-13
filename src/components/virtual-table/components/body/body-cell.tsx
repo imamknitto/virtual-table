@@ -65,7 +65,8 @@ function BodyCell<TData>(bodyCellProps: IBodyCell<TData>) {
 
   const classNames = useMemo(() => {
     const baseClasses = {
-      'group-hover/row-cells:!bg-[#ECEEFF] group-hover/row-cells:!text-black-100': !isRowHighlighted,
+      'group-hover/row-cells:!bg-[#ECEEFF] dark:group-hover/row-cells:!bg-[#2F3574] group-hover/row-cells:!text-black-100':
+        !isRowHighlighted,
       '!hidden': !isVisible,
     };
 
