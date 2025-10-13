@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Redirecting...</title>
+    <script>
+      // GitHub Pages SPA redirect workaround
+      // When a user navigates to a route and refreshes, GitHub Pages serves 404.html
+      // This script captures the path and redirects to index.html with the path preserved
+      (function () {
+        var pathSegmentsToKeep = 1; // For repo deployed to /virtual-table/
+
+        var location = window.location;
+        var pathArray = location.pathname.split('/').slice(1);
+
+        // Remove the base path segment (virtual-table)
+        if (pathArray.length > pathSegmentsToKeep) {
+          var redirectPath = pathArray.slice(pathSegmentsToKeep).join('/');
+          
+          // Store the redirect path in sessionStorage
+          sessionStorage.setItem('redirectPath', '/' + redirectPath + location.search);
+        }
+
+        // Redirect to index.html
+        location.replace(
+          location.protocol +
+            '//' +
+            location.hostname +
+            (location.port ? ':' + location.port : '') +
+            '/' +
+            pathArray.slice(0, pathSegmentsToKeep).join('/') +
+            '/?redirect=' +
+            encodeURIComponent(location.pathname.slice(1) + location.search)
+        );
+      })();
+    </script>
+  </head>
+  <body></body>
+</html>
+
