@@ -102,6 +102,18 @@ const searchIndex: SearchResult[] = [
     keywords: ['filter', 'search', 'server', 'backend', 'api'],
   },
   {
+    title: 'Column Virtualization',
+    href: '/docs/examples/column-virtualization',
+    category: 'Examples',
+    keywords: ['column', 'virtualization', 'performance'],
+  },
+  {
+    title: 'Dynamic Row Height',
+    href: '/docs/examples/dynamic-row-height',
+    category: 'Examples',
+    keywords: ['dynamic', 'row', 'height', 'performance'],
+  },
+  {
     title: 'Large Dataset',
     href: '/docs/examples/large-dataset',
     category: 'Examples',
