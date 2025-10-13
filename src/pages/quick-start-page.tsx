@@ -13,9 +13,7 @@ export const QuickStartPage = () => {
       <div className='space-y-6'>
         <section>
           <h2 className='text-2xl font-semibold tracking-tight'>Basic Usage</h2>
-          <p className='text-muted-foreground mt-2'>
-            Here's a simple example of how to use Knitto Table:
-          </p>
+          <p className='text-muted-foreground mt-2'>Here's a simple example of how to use Knitto Table:</p>
 
           <div className='mt-4'>
             <div className='relative'>
@@ -186,8 +184,8 @@ function App() {
       <div className='rounded-lg border bg-muted/50 p-6'>
         <h3 className='font-semibold text-lg mb-2'>💡 Pro Tip</h3>
         <p className='text-sm text-muted-foreground'>
-          For large datasets (10,000+ rows), Knitto Table automatically handles virtualization to
-          ensure smooth scrolling and optimal performance. Built-in filtering, sorting, and row selection work
+          For large datasets (10,000+ rows), Knitto Table automatically handles virtualization to ensure
+          smooth scrolling and optimal performance. Built-in filtering, sorting, and row selection work
           seamlessly with virtualized data!
         </p>
       </div>
@@ -196,20 +194,20 @@ function App() {
         <h2 className='text-2xl font-semibold tracking-tight'>What's Next?</h2>
         <div className='grid gap-4 md:grid-cols-2'>
           <Link
-            to='/docs/components/virtual-table'
-            className='block p-4 border rounded-lg hover:bg-accent transition-colors'
-          >
-            <h3 className='font-semibold mb-2'>Components</h3>
-            <p className='text-sm text-muted-foreground'>
-              Learn about all available components and their props.
-            </p>
-          </Link>
-          <Link
-            to='/docs/examples/basic'
+            to='/docs/examples'
             className='block p-4 border rounded-lg hover:bg-accent transition-colors'
           >
             <h3 className='font-semibold mb-2'>Examples</h3>
             <p className='text-sm text-muted-foreground'>Explore more examples and use cases.</p>
+          </Link>
+          <Link
+            to='/docs/api/props'
+            className='block p-4 border rounded-lg hover:bg-accent transition-colors'
+          >
+            <h3 className='font-semibold mb-2'>API Reference</h3>
+            <p className='text-sm text-muted-foreground'>
+              Learn about all available components and their props.
+            </p>
           </Link>
         </div>
       </div>
