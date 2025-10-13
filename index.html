@@ -8,7 +8,18 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&display=swap" rel="stylesheet" />
-    <script type="module" crossorigin src="/virtual-table/assets/index-NtvNN34v.js"></script>
+    
+    <!-- GitHub Pages SPA redirect handler -->
+    <script>
+      (function () {
+        var redirect = sessionStorage.getItem('redirectPath');
+        if (redirect && redirect !== '/') {
+          sessionStorage.removeItem('redirectPath');
+          history.replaceState(null, '', redirect);
+        }
+      })();
+    </script>
+    <script type="module" crossorigin src="/virtual-table/assets/index-B2iC2mV1.js"></script>
     <link rel="modulepreload" crossorigin href="/virtual-table/assets/vendor-1zw1pNgy.js">
     <link rel="modulepreload" crossorigin href="/virtual-table/assets/router-BDK15HzG.js">
     <link rel="modulepreload" crossorigin href="/virtual-table/assets/utils-BrsFTMAM.js">
