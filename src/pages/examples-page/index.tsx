@@ -98,6 +98,35 @@ const ExamplesPage = () => {
           </Link>
         </div>
 
+        {/* Dynamic Row Height Example */}
+        <div className='rounded-lg border bg-card p-6'>
+          <div className='flex items-center space-x-2 mb-4'>
+            <div className='w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center'>
+              <svg className='w-4 h-4 text-primary' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                <path
+                  strokeLinecap='round'
+                  strokeLinejoin='round'
+                  strokeWidth='2'
+                  d='M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4'
+                />
+              </svg>
+            </div>
+            <h3 className='text-lg font-semibold'>Dynamic Row Height</h3>
+          </div>
+          <p className='text-sm text-muted-foreground mb-4'>
+            Enable dynamic row heights for flexible content display with automatic height adjustment.
+          </p>
+          <Link
+            to='/docs/examples/dynamic-row-height'
+            className='inline-flex items-center text-sm font-medium text-primary hover:underline'
+          >
+            View Example
+            <svg className='ml-1 w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+              <path strokeLinecap='round' strokeLinejoin='round' strokeWidth='2' d='M9 5l7 7-7 7' />
+            </svg>
+          </Link>
+        </div>
+
         {/* Sorting & Filtering Example */}
         <div className='rounded-lg border bg-card p-6'>
           <div className='flex items-center space-x-2 mb-4'>
