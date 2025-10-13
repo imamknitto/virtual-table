@@ -3,7 +3,7 @@
   "private": true,
   "version": "1.5.0",
   "type": "module",
-  "homepage": "https://github.com/imamknitto/virtual-table",
+  "homepage": "https://imamknitto.github.io/virtual-table/",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
