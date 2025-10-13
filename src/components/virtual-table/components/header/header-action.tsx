@@ -1,23 +1,16 @@
 import { memo, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useClickOutside } from '../../hooks';
-import { DEFAULT_SIZE, type IHeader } from '../../lib';
+import { DEFAULT_SIZE } from '../../lib';
 import Icons from '../../icons';
 import FilterCard from './filter-card';
-import {
-  useColumns,
-  useIsFilterVisible,
-  useToggleColumnVisibility,
-  useToggleFilterVisibility,
-} from '../../context/header-context';
-import { useColumnVirtualizer } from '../../context/virtualizer-context';
+import { useIsFilterVisible, useToggleFilterVisibility } from '../../context/header-context';
 import { useSort } from '../../context/filter-context';
 
 const DEFAULT_ACTIONS = [
   'Sort Ascending',
   'Sort Descending',
   'Unsort',
-  'Hide Kolom',
   // Filter toggle will be added dynamically
 ];
 
@@ -30,12 +23,8 @@ function HeaderAction({ headerKey, hideFilterSort }: IHeaderAction) {
   const cardRef = useRef<HTMLDivElement>(null);
   const [actionCard, setActionCard] = useState({ show: false, pos: { x: 0, y: 0 } });
 
-  const toggleColumnVisibility = useToggleColumnVisibility();
   const toggleFilterVisibility = useToggleFilterVisibility();
   const isFilterVisible = useIsFilterVisible();
-  const columns = useColumns();
-
-  const columnVirtualizer = useColumnVirtualizer();
   const sort = useSort();
 
   useClickOutside([cardRef], () => setActionCard({ show: false, pos: { x: 0, y: 0 } }));
@@ -87,15 +76,6 @@ function HeaderAction({ headerKey, hideFilterSort }: IHeaderAction) {
       Unsort: () => sort.onChangeSpecificSort(headerKey, 'unset'),
       'Tutup Filter': () => toggleFilterVisibility(),
       'Buka Filter': () => toggleFilterVisibility(),
-      'Hide Kolom': () => {
-        toggleColumnVisibility(headerKey);
-        const index = columns.findIndex((h: IHeader<unknown>) => h.key === headerKey);
-
-        columnVirtualizer?.resizeItem(
-          index,
-          columns[index]?.visible ? 0 : columns[index]?.width || DEFAULT_SIZE.COLUMN_WIDTH,
-        );
-      },
     };
 
     mapAction[action as keyof typeof mapAction]?.();

@@ -128,16 +128,16 @@ function FilterSelection(props: IFilterSelection) {
   const isEmptyFilteredOpts = filteredOptions.length < 1;
 
   return (
-    <div className="relative">
-      <div className="relative">
+    <div className='relative'>
+      <div className='relative'>
         {selectedOptions.length > 0 && (
-          <div className="absolute top-0 -right-1 size-2 rounded-full bg-knitto-blue-100 z-10" />
+          <div className='absolute top-0 -right-1 size-2 rounded-full bg-blue-950 z-10' />
         )}
         <Icons
-          name="filterMultiple"
+          name='filterMultiple'
           className={clsx(
-            'shrink-0 w-3.5 text-gray-500 hover:text-gray-900 cursor-pointer',
-            filterCard.show && '!text-gray-900'
+            'shrink-0 w-3.5 text-gray-500 hover:text-gray-900 dark:hover:text-gray-200 cursor-pointer',
+            filterCard.show ? '!text-gray-900 dark:!text-gray-200' : 'text-gray-500 dark:text-gray-700',
           )}
           onClick={handleOpenFilterCard}
         />
@@ -147,11 +147,11 @@ function FilterSelection(props: IFilterSelection) {
         createPortal(
           <FilterCard
             ref={filterRef}
-            className="fixed"
+            className='fixed'
             style={{ top: filterCard.position.top, left: filterCard.position.left }}
           >
             {!isEmptyOpts && (
-              <div className="px-1.5 pt-1.5">
+              <div className='px-1.5 pt-1.5'>
                 <InputSearch
                   id={`filter-selection-search-${headerKey}`}
                   value={searchQuery}
@@ -172,7 +172,7 @@ function FilterSelection(props: IFilterSelection) {
 
             <FilterAction onApply={handleApplyFilter} onReset={handleResetFilter} />
           </FilterCard>,
-          document.body
+          document.body,
         )}
     </div>
   );
@@ -187,8 +187,8 @@ const SelectionList = (props: ISelectionList) => {
       className={clsx('relative overflow-auto h-40 my-1.5 mx-1.5 filter-scrollbar', isEmptyOptions && '!h-16')}
     >
       {isEmptyOptions ? (
-        <div className="size-full flex justify-center items-center">
-          <span className="text-gray-400 text-xs font-normal">No data available!</span>
+        <div className='size-full flex justify-center items-center'>
+          <span className='text-gray-400 text-xs font-normal'>No data available!</span>
         </div>
       ) : (
         <div style={{ height: rowVirtualizer.getTotalSize() }}>

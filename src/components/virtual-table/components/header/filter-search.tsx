@@ -62,7 +62,7 @@ function FilterSearch(props: IVirtualFilterSearchProps) {
   if (mode === 'direct-search') {
     return (
       <InputSearch
-        className="bg-white !h-6"
+        className='bg-white !h-6'
         value={search}
         onChange={(e) => setSearch(e.target.value)}
         onClickEnter={() => onSearchChange(search)}
@@ -72,25 +72,25 @@ function FilterSearch(props: IVirtualFilterSearchProps) {
   }
 
   return (
-    <div className="relative">
-      <div className="relative">
+    <div className='relative'>
+      <div className='relative'>
         <Icons
-          name="search"
+          name='search'
           onClick={handleOpenCard}
           className={clsx(
-            'shrink-0 w-3.5 text-gray-500 hover:text-gray-900 cursor-pointer',
-            showCard.show && '!text-gray-900'
+            'shrink-0 w-3.5 text-gray-500 hover:text-gray-900 dark:hover:text-gray-200 cursor-pointer',
+            showCard.show ? '!text-gray-900 dark:!text-gray-200' : 'text-gray-500 dark:text-gray-700',
           )}
         />
       </div>
 
       {showCard.show &&
         createPortal(
-          <FilterCard ref={filterCardRef} className="fixed" style={{ top: showCard.pos.top, left: showCard.pos.left }}>
-            <div className="p-1">
+          <FilterCard ref={filterCardRef} className='fixed' style={{ top: showCard.pos.top, left: showCard.pos.left }}>
+            <div className='p-1'>
               <InputSearch
                 id={'filter-search-' + headerKey}
-                className="!w-full bg-white"
+                className='!w-full bg-white'
                 onKeyDown={handleEnterSearch}
                 onRemoveSearch={handleResetSearch}
                 value={search}
@@ -99,7 +99,7 @@ function FilterSearch(props: IVirtualFilterSearchProps) {
             </div>
             <FilterAction onReset={handleResetSearch} onApply={handleApplySearch} />
           </FilterCard>,
-          document.body
+          document.body,
         )}
     </div>
   );

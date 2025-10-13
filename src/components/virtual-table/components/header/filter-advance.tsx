@@ -109,16 +109,16 @@ function FilterAdvance(props: IFilterAdvance) {
   };
 
   return (
-    <div className="relative">
-      <div className="relative">
+    <div className='relative'>
+      <div className='relative'>
         {filterValue.config_name !== 'None' && filterValue.value.length > 0 && (
-          <div className="absolute top-0 -right-1 size-2 rounded-full bg-knitto-blue-100 z-10" />
+          <div className='absolute top-0 -right-1 size-2 rounded-full bg-blue-950 z-10' />
         )}
         <Icons
-          name="filterAdvance"
+          name='filterAdvance'
           className={clsx(
-            'shrink-0 w-5 text-gray-400 hover:text-gray-600 cursor-pointer',
-            filterCard.show && '!text-gray-600'
+            'shrink-0 w-5 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 cursor-pointer',
+            filterCard.show ? '!text-gray-600 dark:!text-gray-200' : 'text-gray-400 dark:text-gray-700',
           )}
           onClick={handleOpenFilterCard}
         />
@@ -128,11 +128,11 @@ function FilterAdvance(props: IFilterAdvance) {
         createPortal(
           <FilterCard
             ref={filterRef}
-            className="fixed"
+            className='fixed'
             style={{ top: filterCard.position.top, left: filterCard.position.left }}
           >
-            <div className="p-1.5 w-full flex flex-col items-start space-y-1">
-              <span className="text-xs text-gray-800">Filter dengan</span>
+            <div className='p-1.5 w-full flex flex-col items-start space-y-1'>
+              <span className='text-xs text-gray-800 dark:text-gray-200'>Filter dengan</span>
               <Dropdown options={CONFIG_OPTIONS} value={filterValue.config_name} onSelect={handleConfigChange} />
 
               {filterValue.config_name !== 'None' && (
@@ -147,7 +147,7 @@ function FilterAdvance(props: IFilterAdvance) {
 
             <FilterAction onApply={handleApplyFilter} onReset={handleResetFilter} />
           </FilterCard>,
-          document.body
+          document.body,
         )}
     </div>
   );

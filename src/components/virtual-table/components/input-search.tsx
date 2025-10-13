@@ -11,16 +11,7 @@ interface ITableVirtualInput extends React.InputHTMLAttributes<HTMLInputElement>
 
 const InputSearch = forwardRef<HTMLInputElement, ITableVirtualInput>(
   (
-    {
-      onClickEnter,
-      className,
-      onRemoveSearch,
-      value,
-      onChange,
-      onDebouncedChange,
-      debounceDelay = 300,
-      ...props
-    },
+    { onClickEnter, className, onRemoveSearch, value, onChange, onDebouncedChange, debounceDelay = 300, ...props },
     ref,
   ) => {
     const [inputValue, setInputValue] = useState<string>('');
@@ -67,7 +58,7 @@ const InputSearch = forwardRef<HTMLInputElement, ITableVirtualInput>(
           type='text'
           placeholder=''
           className={clsx(
-            'outline-none border bg-white/50 dark:bg-black/50 border-gray-200 rounded h-[1.625rem] px-1.5 w-full text-xs focus:border-blue-950',
+            'outline-none border bg-white dark:bg-black/50 border-gray-200 rounded h-[1.625rem] px-1.5 w-full text-xs focus:border-blue-950',
             'transition-all duration-300 font-medium',
             className,
           )}
