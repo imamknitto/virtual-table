@@ -126,10 +126,78 @@ const PropsPage = () => {
           </div>
         </section>
 
+        {/* Performance & Virtualization Props */}
+        <section>
+          <h2 className='text-2xl font-semibold tracking-tight'>Performance & Virtualization Props</h2>
+          <div className='mt-4 space-y-4'>
+            <div className='border rounded-lg p-4 border-green-200 bg-green-50/50'>
+              <div className='flex items-start justify-between mb-2'>
+                <h3 className='font-mono text-sm font-semibold'>enableColumnVirtualization</h3>
+                <span className='text-xs bg-green-100 text-green-800 px-2 py-1 rounded'>Default: true</span>
+              </div>
+              <p className='text-sm text-muted-foreground mb-2'>
+                Enables column virtualization to render only visible columns, improving performance with many
+                columns. This is the default behavior.
+              </p>
+              <div className='bg-muted rounded p-3 mb-3'>
+                <code className='text-xs'>boolean</code>
+                <span className='text-xs text-muted-foreground ml-2'>Default: true</span>
+              </div>
+              <div className='bg-yellow-50 border border-yellow-200 rounded p-3 text-xs'>
+                <p className='font-semibold text-yellow-900 mb-1'>⚠️ Important:</p>
+                <p className='text-yellow-800'>
+                  Must be set to <code className='bg-yellow-100 px-1 rounded'>false</code> to use dynamic row
+                  height. Column virtualization and dynamic row height cannot be used together.
+                </p>
+              </div>
+            </div>
+
+            <div className='border rounded-lg p-4 border-blue-200 bg-blue-50/50'>
+              <div className='flex items-start justify-between mb-2'>
+                <h3 className='font-mono text-sm font-semibold'>useDynamicRowHeight</h3>
+                <span className='text-xs bg-gray-100 text-gray-800 px-2 py-1 rounded'>Optional</span>
+              </div>
+              <p className='text-sm text-muted-foreground mb-2'>
+                Enables dynamic row heights where rows automatically adjust their height based on content.
+                Perfect for displaying multi-line text or complex cell content.
+              </p>
+              <div className='bg-muted rounded p-3 mb-3'>
+                <code className='text-xs'>boolean</code>
+                <span className='text-xs text-muted-foreground ml-2'>Default: false</span>
+              </div>
+              <div className='bg-yellow-50 border border-yellow-200 rounded p-3 text-xs'>
+                <p className='font-semibold text-yellow-900 mb-1'>⚠️ Requirement:</p>
+                <p className='text-yellow-800 mb-2'>
+                  Requires <code className='bg-yellow-100 px-1 rounded'>enableColumnVirtualization=&#123;false&#125;</code>{' '}
+                  to function properly.
+                </p>
+                <p className='text-yellow-800'>
+                  <strong>Best for:</strong> Tables with fewer than 15 columns and variable content heights.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* Feature Props */}
         <section>
           <h2 className='text-2xl font-semibold tracking-tight'>Feature Props</h2>
           <div className='mt-4 space-y-4'>
+            <div className='border rounded-lg p-4'>
+              <div className='flex items-start justify-between mb-2'>
+                <h3 className='font-mono text-sm font-semibold'>useAutoSizer</h3>
+                <span className='text-xs bg-gray-100 text-gray-800 px-2 py-1 rounded'>Optional</span>
+              </div>
+              <p className='text-sm text-muted-foreground mb-2'>
+                Automatically adjusts table size to fit its container. When enabled, the table will
+                dynamically resize based on parent container dimensions.
+              </p>
+              <div className='bg-muted rounded p-3'>
+                <code className='text-xs'>boolean</code>
+                <span className='text-xs text-muted-foreground ml-2'>Default: true</span>
+              </div>
+            </div>
+
             <div className='border rounded-lg p-4'>
               <div className='flex items-start justify-between mb-2'>
                 <h3 className='font-mono text-sm font-semibold'>useFooter</h3>
@@ -402,11 +470,38 @@ const PropsPage = () => {
       </div>
 
       <div className='rounded-lg border bg-muted/50 p-6'>
-        <h3 className='font-semibold text-lg mb-2'>💡 Pro Tip</h3>
-        <p className='text-sm text-muted-foreground'>
-          Most props are optional with sensible defaults. Start with the core props (headers, data, rowKey)
-          and gradually add features as needed. The component is designed to work well out of the box!
-        </p>
+        <h3 className='font-semibold text-lg mb-2'>💡 Pro Tips</h3>
+        <ul className='text-sm text-muted-foreground space-y-2'>
+          <li className='flex items-start gap-2'>
+            <span className='text-primary mt-0.5'>•</span>
+            <span>
+              Most props are optional with sensible defaults. Start with the core props (headers, data,
+              rowKey) and gradually add features as needed.
+            </span>
+          </li>
+          <li className='flex items-start gap-2'>
+            <span className='text-primary mt-0.5'>•</span>
+            <span>
+              <strong>Column virtualization is enabled by default</strong> for optimal performance. Only
+              disable it if you need dynamic row heights.
+            </span>
+          </li>
+          <li className='flex items-start gap-2'>
+            <span className='text-primary mt-0.5'>•</span>
+            <span>
+              Use <code className='bg-muted px-1 rounded text-xs'>enableColumnVirtualization=&#123;false&#125;</code>{' '}
+              with <code className='bg-muted px-1 rounded text-xs'>useDynamicRowHeight=&#123;true&#125;</code>{' '}
+              for tables with variable content heights and fewer columns.
+            </span>
+          </li>
+          <li className='flex items-start gap-2'>
+            <span className='text-primary mt-0.5'>•</span>
+            <span>
+              For best performance with many columns (15+), keep column virtualization enabled and use
+              fixed row heights.
+            </span>
+          </li>
+        </ul>
       </div>
     </div>
   );
