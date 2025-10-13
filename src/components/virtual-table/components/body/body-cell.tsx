@@ -3,6 +3,7 @@ import clsx from 'clsx';
 import { RowCheckbox, RowExpand, TableCell } from '..';
 import { useUIContext } from '../../context/ui-context';
 import type { IAdjustedHeader } from '../../lib';
+import { useVirtualizerContext } from '../../context/virtualizer-context';
 
 interface IBodyCell<TData> {
   rowKey: string;
@@ -18,6 +19,7 @@ interface IBodyCell<TData> {
     left: number;
     width: number;
     height: number;
+    virtualHeight?: number;
   };
   freezeMode?: 'left' | 'right' | 'none';
   freezeLeftColumnsWidth?: number;
@@ -46,6 +48,7 @@ function BodyCell<TData>(bodyCellProps: IBodyCell<TData>) {
   } = bodyCellProps;
 
   const { classNameCell } = useUIContext();
+  const { useDynamicRowHeight } = useVirtualizerContext();
 
   const isCheckboxColumn = column?.key === 'row-selection';
   const isExpandColumn = column?.key === 'expand';
@@ -71,10 +74,11 @@ function BodyCell<TData>(bodyCellProps: IBodyCell<TData>) {
 
     if (freezeMode === 'left') {
       return clsx(
-        'table-cell border-r bg-white/50 dark:bg-black/50 backdrop-blur-lg truncate',
+        'table-cell border-r bg-white/50 dark:bg-black/50 backdrop-blur-lg break-words',
         customClassName,
         {
           ...baseClasses,
+          truncate: !useDynamicRowHeight,
           '!border-b !border-l !border-t !border-y-[#2F3574] nth-[1]:border-l-[#2F3574]': isRowHighlighted,
         },
       );
@@ -82,18 +86,20 @@ function BodyCell<TData>(bodyCellProps: IBodyCell<TData>) {
 
     if (freezeMode === 'right') {
       return clsx(
-        'table-cell border-l bg-white/50 dark:bg-black/50 backdrop-blur-lg truncate',
+        'table-cell border-l bg-white/50 dark:bg-black/50 backdrop-blur-lg break-words',
         customClassName,
         {
           ...baseClasses,
+          truncate: !useDynamicRowHeight,
           '!border-y !border-y-[#2F3574]': isRowHighlighted,
           '!border-r !border-r-[#2F3574]': isRowHighlighted && isLastIndex,
         },
       );
     }
 
-    return clsx('table-cell border-r truncate', customClassName, {
+    return clsx('table-cell border-r break-words', customClassName, {
       ...baseClasses,
+      truncate: !useDynamicRowHeight,
       '!border-r-transparent': isLastIndex && !isRowHighlighted,
       '!border-r-[#2F3574]': isLastIndex && isRowHighlighted && !freezeRightColumnsWidth,
       'border-l border-l-[#2F3574]': isRowHighlighted && !freezeLeftColumnsWidth && isFirstIndex,
@@ -109,9 +115,22 @@ function BodyCell<TData>(bodyCellProps: IBodyCell<TData>) {
     isFirstIndex,
     isLastIndex,
     customClassName,
+    useDynamicRowHeight,
   ]);
 
   const cellStyle = useMemo(() => {
+    if (useDynamicRowHeight) {
+      // For dynamic row height, use flex layout - position.left is ignored
+      return {
+        flex: `0 0 ${position.width}px`,
+        top: 0,
+        minWidth: position.width,
+        maxWidth: position.width,
+        minHeight: position.height,
+      };
+    }
+
+    // For fixed row height, use absolute positioning
     return {
       position: 'absolute' as const,
       minHeight: position.height,
@@ -120,7 +139,7 @@ function BodyCell<TData>(bodyCellProps: IBodyCell<TData>) {
       width: position.width,
       top: 0,
     };
-  }, [position.height, position.left, position.width]);
+  }, [position.height, position.left, position.width, useDynamicRowHeight]);
 
   const cellContent = useMemo(() => {
     if (isCheckboxColumn) return <RowCheckbox checked={isRowChecked} />;

@@ -5,6 +5,7 @@ import { useHeaderContext } from './context/header-context';
 import { BodyCell, RowExpandedContent } from './components';
 import { useUIContext } from './context/ui-context';
 import type { IAdjustedHeader } from './lib';
+import clsx from 'clsx';
 
 interface IVirtualTableBody<TData> {
   headerHeight: number;
@@ -31,6 +32,7 @@ const VirtualTableBody = forwardRef(
       getLeaves,
     } = useHeaderContext();
     const {
+      useDynamicRowHeight,
       flattenedData,
       rowVirtualizer,
       rowVirtualItems,
@@ -292,6 +294,7 @@ const VirtualTableBody = forwardRef(
       isRowExpanded: boolean,
       rowIndex: number,
     ) => {
+      console.log('RENDER VIRTUALIZED COLUMNS');
       // Flatten all columns (including grouped children) to calculate proper first/last indices
       const allFlattenedColumns: { header: IAdjustedHeader; isGroupChild: boolean; groupIndex?: number }[] =
         [];
@@ -425,8 +428,6 @@ const VirtualTableBody = forwardRef(
                 rowIndex={rowIndex}
                 columnIndex={childIdx}
                 position={{ left, width: childWidth, height: rowHeight }}
-                freezeLeftColumnsWidth={freezeLeftColumnsWidth}
-                freezeRightColumnsWidth={freezeRightColumnsWidth}
               />
             );
 
@@ -456,8 +457,6 @@ const VirtualTableBody = forwardRef(
             rowIndex={rowIndex}
             columnIndex={columnIndex}
             position={{ left, width: columnWidth, height: rowHeight }}
-            freezeLeftColumnsWidth={freezeLeftColumnsWidth}
-            freezeRightColumnsWidth={freezeRightColumnsWidth}
           />,
         ];
       });
@@ -495,7 +494,10 @@ const VirtualTableBody = forwardRef(
               >
                 <div style={{ minHeight: rowHeight, width: calcTotalTableWidth }}>
                   <div className='relative h-full w-full flex group/row-cells'>
-                    <div className='sticky left-0 z-20' style={{ width: freezeLeftColumnsWidth }}>
+                    <div
+                      className={clsx('sticky left-0 z-20', useDynamicRowHeight && 'flex')}
+                      style={{ width: freezeLeftColumnsWidth }}
+                    >
                       {renderFreezeLeftColumns(
                         resolvedRowKey,
                         rowData,
@@ -505,7 +507,10 @@ const VirtualTableBody = forwardRef(
                       )}
                     </div>
 
-                    <div className='sticky z-20' style={{ left: containerWidth - freezeRightColumnsWidth }}>
+                    <div
+                      className={clsx('sticky z-20', useDynamicRowHeight && 'flex')}
+                      style={{ left: containerWidth - freezeRightColumnsWidth }}
+                    >
                       {renderFreezeRightColumns(
                         resolvedRowKey,
                         rowData,
@@ -515,15 +520,27 @@ const VirtualTableBody = forwardRef(
                       )}
                     </div>
 
-                    {enableColumnVirtualization
-                      ? renderVirtualizedColumns(
+                    {enableColumnVirtualization ? (
+                      renderVirtualizedColumns(
+                        resolvedRowKey,
+                        rowData,
+                        isRowChecked,
+                        isRowExpanded,
+                        row.index,
+                      )
+                    ) : useDynamicRowHeight ? (
+                      <div className='flex' style={{ marginLeft: -freezeRightColumnsWidth }}>
+                        {renderRegularColumns(
                           resolvedRowKey,
                           rowData,
                           isRowChecked,
                           isRowExpanded,
                           row.index,
-                        )
-                      : renderRegularColumns(resolvedRowKey, rowData, isRowChecked, isRowExpanded, row.index)}
+                        )}
+                      </div>
+                    ) : (
+                      renderRegularColumns(resolvedRowKey, rowData, isRowChecked, isRowExpanded, row.index)
+                    )}
                   </div>
                 </div>
 

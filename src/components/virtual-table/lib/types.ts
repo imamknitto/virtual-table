@@ -19,6 +19,7 @@ export interface IVirtualTable<TData> {
     selection?: boolean;
     advance?: boolean;
   };
+  useDynamicRowHeight?: boolean;
   enableColumnVirtualization?: boolean;
   rowHeight?: number;
   headerHeight?: number;
@@ -41,7 +42,7 @@ export interface IVirtualTable<TData> {
   onChangeCheckboxRowSelection?: (
     selectedRows: (string | number)[],
     deselectedRows: (string | number)[],
-    isSelectAll: boolean
+    isSelectAll: boolean,
   ) => void;
   onScrollTouchBottom?: () => void;
   onScroll?: (scrollTop: number, scrollLeft: number) => void;

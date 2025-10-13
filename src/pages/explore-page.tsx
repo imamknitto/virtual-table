@@ -23,7 +23,7 @@ const generateFakeUser = (id: number): User => ({
   username: faker.internet.username(),
   phone: faker.phone.number(),
   company: faker.company.name(),
-  jobTitle: faker.person.jobTitle(),
+  jobTitle: faker.person.jobTitle() + ' ' + faker.person.jobTitle(),
   city: faker.location.city(),
   country: faker.location.country(),
   status: faker.helpers.arrayElement(['Active', 'Inactive', 'Pending']),
@@ -36,9 +36,9 @@ const ExplorePage = () => {
 
   const headers: IHeader<User>[] = [
     // Freeze Left
-    { key: 'id', caption: 'ID', width: 80, freeze: 'left' },
-    { key: 'name', caption: 'Name', width: 180, freeze: 'left' },
-    
+    { key: 'id', caption: 'ID', width: 80 },
+    { key: 'name', caption: 'Name', width: 180 },
+
     // Multi-level Group Headers (scrollable)
     {
       key: 'group-header-personal',
@@ -78,10 +78,10 @@ const ExplorePage = () => {
         },
       ],
     },
-    
+
     // Regular Column (scrollable)
-    { key: 'salary', caption: 'Salary', width: 120 },
-    
+    { key: 'salary', caption: 'Salary', width: 120, freeze: 'right' },
+
     // Freeze Right
     { key: 'status', caption: 'Status', width: 100, freeze: 'right' },
   ];
@@ -89,16 +89,22 @@ const ExplorePage = () => {
   return (
     <div className='flex flex-col gap-y-8'>
       <div className='flex flex-col gap-y-4 w-full h-[500px]'>
-        <h4>Kolom tidak di-virtualisasi</h4>
+        <h4>Kolom tidak di-virtualisasi dan menggunakan Dynamic Row Height</h4>
         <div className='flex-1'>
-          <VirtualTable data={data} headers={headers} rowKey={'id'} enableColumnVirtualization={false} />
+          <VirtualTable
+            data={data}
+            headers={headers}
+            rowKey={'id'}
+            enableColumnVirtualization={false}
+            useDynamicRowHeight={true}
+          />
         </div>
       </div>
 
       <div className='flex flex-col gap-y-4 w-full h-[500px]'>
         <h4>Kolom di-virtualisasi</h4>
         <div className='flex-1'>
-          <VirtualTable data={data} headers={headers} rowKey={'id'} enableColumnVirtualization={true} />
+          <VirtualTable data={data} headers={headers} rowKey={'id'} />
         </div>
       </div>
     </div>

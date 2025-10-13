@@ -11,7 +11,7 @@ const TableHead = forwardRef<HTMLDivElement, TableHeadProps>(
       <div
         ref={ref}
         className={clsx(
-          'font-semibold border-b border-[#D2D2D4] px-1.5 bg-[#EFF0F6] dark:bg-black/50 backdrop-blur-lg text-xs content-center h-full global-report-title !text-[12px]',
+          'font-semibold border-b border-[#D2D2D4] px-1.5 bg-[#EFF0F6]/50 dark:bg-black/50 backdrop-blur-lg text-xs content-center h-full global-report-title !text-[12px]',
           className,
         )}
         {...props}

@@ -16,11 +16,15 @@ import UIContextProvider from './context/ui-context';
 import VirtualTableBody from './virtual-table-body';
 import './lib/style.css';
 
-function VirtualTableInner<TData>(virtualTableProps: IVirtualTable<TData>, ref: React.ForwardedRef<HTMLDivElement>) {
+function VirtualTableInner<TData>(
+  virtualTableProps: IVirtualTable<TData>,
+  ref: React.ForwardedRef<HTMLDivElement>,
+) {
   const {
     rowKey,
     data,
     headers,
+    useDynamicRowHeight = false,
     headerMode = 'double',
     rowHeight = DEFAULT_SIZE.ROW_HEIGHT,
     headerHeight = DEFAULT_SIZE.HEADER_HEIGTH,
@@ -82,10 +86,11 @@ function VirtualTableInner<TData>(virtualTableProps: IVirtualTable<TData>, ref: 
         isResetFilter={isResetFilter}
         useSessionFilter={useSessionFilter}
       >
-        <VirtualizerContextProvider 
-          rowKey={rowKey} 
+        <VirtualizerContextProvider
+          rowKey={rowKey}
           scrollElementRef={scrollElementRef}
           enableColumnVirtualization={enableColumnVirtualization}
+          useDynamicRowHeight={useDynamicRowHeight}
         >
           <SelectionContextProvider onChangeCheckboxRowSelection={onChangeCheckboxRowSelection}>
             <UIContextProvider
@@ -102,13 +107,12 @@ function VirtualTableInner<TData>(virtualTableProps: IVirtualTable<TData>, ref: 
                 className={clsx(
                   'w-full h-full overflow-auto relative border border-[#8E8F93]',
                   isLoading && 'pointer-events-none',
-                  classNameOuterTable
+                  classNameOuterTable,
                 )}
-                // style={useAutoSizer && width && height ? { width, height } : undefined}
                 style={{
                   ...(useAutoSizer && width && height ? { width, height } : {}),
                   scrollbarGutter: 'stable',
-                  overflowAnchor: 'none'
+                  overflowAnchor: 'none',
                 }}
                 onScroll={(e) => onScroll?.(e.currentTarget.scrollTop, e.currentTarget.scrollLeft)}
               >
@@ -137,7 +141,7 @@ function VirtualTableInner<TData>(virtualTableProps: IVirtualTable<TData>, ref: 
 
   if (useAutoSizer) {
     return (
-      <div className="w-full h-full relative">
+      <div className='w-full h-full relative'>
         <AutoSizer>{({ width, height }) => renderTableContent(width, height)}</AutoSizer>
 
         {isLoading && <LoadingIndicator />}
@@ -149,7 +153,7 @@ function VirtualTableInner<TData>(virtualTableProps: IVirtualTable<TData>, ref: 
 }
 
 const VirtualTable = forwardRef(VirtualTableInner) as <TData>(
-  props: IVirtualTable<TData> & { ref?: React.ForwardedRef<HTMLDivElement> }
+  props: IVirtualTable<TData> & { ref?: React.ForwardedRef<HTMLDivElement> },
 ) => ReturnType<typeof VirtualTableInner>;
 
 export default VirtualTable;
