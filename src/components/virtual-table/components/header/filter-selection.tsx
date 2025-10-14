@@ -113,8 +113,8 @@ function FilterSelection(props: IFilterSelection) {
     }
 
     if (isBottomOverflowed) {
-      // geser ke atas biar ga overflow bottom>
-      calculatedTopPosition = rect.top - (totalTopPos - viewportHeight) - 20;
+      // place the card above the trigger to avoid bottom overflow
+      calculatedTopPosition = rect.top - (DEFAULT_SIZE.CARD_FILTER_HEIGHT + 12);
     }
 
     setFilterCard((prev) => ({
@@ -130,9 +130,7 @@ function FilterSelection(props: IFilterSelection) {
   return (
     <div className='relative'>
       <div className='relative'>
-        {selectedOptions.length > 0 && (
-          <div className='absolute top-0 -right-1 size-2 rounded-full bg-blue-950 z-10' />
-        )}
+        {selectedOptions.length > 0 && <div className='absolute top-0 -right-1 size-2 rounded-full bg-blue-950 z-10' />}
         <Icons
           name='filterMultiple'
           className={clsx(
