@@ -18,7 +18,6 @@ import {
   useRowVirtualizer,
   useUseDynamicRowHeight,
   useEnableColumnVirtualization,
-  useToggleExpandRow,
 } from './context/virtualizer-context';
 import {
   useDeselectedRowKeys,
@@ -27,6 +26,7 @@ import {
   useSelectAll,
   useSelectedRowKey,
   useSelectedRowKeys,
+  useToggleExpandRow,
   useToggleRowSelection,
 } from './context/selection-context';
 import {

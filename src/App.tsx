@@ -29,43 +29,48 @@ const ExplorePage = lazy(() => import('./pages/explore-page'));
 const ColumnVirtualizationPage = lazy(() => import('./pages/examples-page/column-virtualization-page'));
 const DynamicRowHeightPage = lazy(() => import('./pages/examples-page/dynamic-row-height-page'));
 
-const router = createBrowserRouter([
+const router = createBrowserRouter(
+  [
+    {
+      path: '/',
+      element: (
+        <Suspense fallback={<ContentLoading />}>
+          <DocumentationLayout />
+        </Suspense>
+      ),
+      errorElement: <ErrorFallback />,
+      children: [
+        { index: true, element: <IntroductionPage /> },
+        { path: 'docs/introduction', element: <IntroductionPage /> },
+        { path: 'docs/installation', element: <InstallationPage /> },
+        { path: 'docs/quick-start', element: <QuickStartPage /> },
+        { path: 'docs/examples', element: <ExamplesPage /> },
+        { path: 'docs/examples/basic-usage', element: <BasicUsagePage /> },
+        { path: 'docs/examples/header-customization', element: <HeaderCustomizationPage /> },
+        { path: 'docs/examples/checkbox-selection', element: <CheckboxSelectionPage /> },
+        { path: 'docs/examples/custom-render-cell', element: <CustomCellPage /> },
+        { path: 'docs/examples/click-row-action', element: <ClickRowActionPage /> },
+        { path: 'docs/examples/freeze-column', element: <FreezeColumnPage /> },
+        { path: 'docs/examples/expand-row', element: <ExpandRowPage /> },
+        { path: 'docs/examples/footer', element: <FooterPage /> },
+        { path: 'docs/examples/server-filter', element: <ServerFilterPage /> },
+        { path: 'docs/examples/header-grouping', element: <HeaderGroupingPage /> },
+        { path: 'docs/examples/large-dataset', element: <LargeDatasetPage /> },
+        { path: 'docs/examples/scrolling', element: <ScrollingPage /> },
+        { path: 'docs/examples/column-virtualization', element: <ColumnVirtualizationPage /> },
+        { path: 'docs/examples/dynamic-row-height', element: <DynamicRowHeightPage /> },
+        { path: 'docs/api/props', element: <PropsPage /> },
+        { path: 'docs/api/methods', element: <MethodsPage /> },
+        { path: 'blog', element: <BlogPage /> },
+        { path: 'explore', element: <ExplorePage /> },
+        { path: '*', element: <NotFoundPage /> },
+      ],
+    },
+  ],
   {
-    path: '/',
-    element: (
-      <Suspense fallback={<ContentLoading />}>
-        <DocumentationLayout />
-      </Suspense>
-    ),
-    errorElement: <ErrorFallback />,
-    children: [
-      { index: true, element: <IntroductionPage /> },
-      { path: 'docs/introduction', element: <IntroductionPage /> },
-      { path: 'docs/installation', element: <InstallationPage /> },
-      { path: 'docs/quick-start', element: <QuickStartPage /> },
-      { path: 'docs/examples', element: <ExamplesPage /> },
-      { path: 'docs/examples/basic-usage', element: <BasicUsagePage /> },
-      { path: 'docs/examples/header-customization', element: <HeaderCustomizationPage /> },
-      { path: 'docs/examples/checkbox-selection', element: <CheckboxSelectionPage /> },
-      { path: 'docs/examples/custom-render-cell', element: <CustomCellPage /> },
-      { path: 'docs/examples/click-row-action', element: <ClickRowActionPage /> },
-      { path: 'docs/examples/freeze-column', element: <FreezeColumnPage /> },
-      { path: 'docs/examples/expand-row', element: <ExpandRowPage /> },
-      { path: 'docs/examples/footer', element: <FooterPage /> },
-      { path: 'docs/examples/server-filter', element: <ServerFilterPage /> },
-      { path: 'docs/examples/header-grouping', element: <HeaderGroupingPage /> },
-      { path: 'docs/examples/large-dataset', element: <LargeDatasetPage /> },
-      { path: 'docs/examples/scrolling', element: <ScrollingPage /> },
-      { path: 'docs/examples/column-virtualization', element: <ColumnVirtualizationPage /> },
-      { path: 'docs/examples/dynamic-row-height', element: <DynamicRowHeightPage /> },
-      { path: 'docs/api/props', element: <PropsPage /> },
-      { path: 'docs/api/methods', element: <MethodsPage /> },
-      { path: 'blog', element: <BlogPage /> },
-      { path: 'explore', element: <ExplorePage /> },
-      { path: '*', element: <NotFoundPage /> },
-    ],
+    basename: import.meta.env.BASE_URL,
   },
-]);
+);
 
 const App = () => {
   // Define routes to preload

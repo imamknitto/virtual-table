@@ -97,8 +97,8 @@ function FilterAdvance(props: IFilterAdvance) {
     }
 
     if (isBottomOverflowed) {
-      // geser ke atas biar ga overflow bottom>
-      calculatedTopPosition = rect.top - 37;
+      // place the card above the trigger to avoid bottom overflow
+      calculatedTopPosition = rect.top - (DEFAULT_SIZE.CARD_FILTER_HEIGHT + 12);
     }
 
     setFilterCard((prev) => ({

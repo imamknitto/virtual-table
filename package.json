@@ -1,8 +1,9 @@
 {
   "name": "react-virtualized-table",
   "private": true,
-  "version": "1.4.0",
+  "version": "1.6.0",
   "type": "module",
+  "homepage": "https://imamknitto.github.io/virtual-table/",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
