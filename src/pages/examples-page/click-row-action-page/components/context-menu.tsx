@@ -21,26 +21,26 @@ const ContextMenu = ({ isOpen, position, onAction, onClose }: ContextMenuProps) 
   return createPortal(
     <div
       ref={contextMenuRef}
-      className='fixed z-50 bg-background border border-border rounded-lg shadow-lg py-2 min-w-48'
+      className='fixed z-50 bg-white dark:bg-black/50 dark:backdrop-blur-xl border border-border rounded-lg shadow-lg py-2 min-w-48'
       style={{
         left: position.x,
         top: position.y,
       }}
     >
       <button
-        className='w-full px-4 py-2 text-left hover:bg-accent text-sm transition-colors'
+        className='w-full px-4 py-2 text-left hover:bg-blue-50 dark:hover:bg-blue-950 text-sm transition-colors'
         onClick={() => onAction('Edit')}
       >
         ✏️ Edit Product
       </button>
       <button
-        className='w-full px-4 py-2 text-left hover:bg-accent text-sm transition-colors'
+        className='w-full px-4 py-2 text-left hover:bg-blue-50 dark:hover:bg-blue-950 text-sm transition-colors'
         onClick={() => onAction('Duplicate')}
       >
         📋 Duplicate
       </button>
       <button
-        className='w-full px-4 py-2 text-left hover:bg-accent text-sm transition-colors'
+        className='w-full px-4 py-2 text-left hover:bg-blue-50 dark:hover:bg-blue-950 text-sm transition-colors'
         onClick={() => onAction('View Details')}
       >
         👁️ View Details

@@ -57,9 +57,9 @@ const PreviewSection = ({
             <VirtualTable
               classNameCell={(item) => {
                 if (selectedRow?.id === item.id)
-                  return 'bg-blue-50 dark:bg-blue-950 border-blue-200 dark:border-blue-800';
+                  return 'bg-blue-50 dark:bg-blue-950 !border-l-blue-950 dark:!border-blue-800';
                 if (doubleClickedRow?.id === item.id)
-                  return 'bg-green-50 dark:bg-green-950 border-green-200 dark:border-green-800';
+                  return 'bg-green-50 dark:bg-green-950 !border-l-green-950 dark:!border-green-800';
                 return '';
               }}
               data={data}
@@ -94,11 +94,7 @@ const PreviewSection = ({
         </div>
 
         {/* Interaction Log */}
-        <InteractionLog
-          doubleClickedRow={doubleClickedRow}
-          interactionLog={interactionLog}
-          selectedRow={selectedRow}
-        />
+        <InteractionLog doubleClickedRow={doubleClickedRow} interactionLog={interactionLog} selectedRow={selectedRow} />
       </div>
 
       {/* Context Menu */}
@@ -110,10 +106,13 @@ const PreviewSection = ({
         row={contextMenuRow}
       />
 
-      {showCode && <div className='mt-4'><CodeBlock code={CODE_EXAMPLE} title='Click Row Actions Example' /></div>}
+      {showCode && (
+        <div className='mt-4'>
+          <CodeBlock code={CODE_EXAMPLE} title='Click Row Actions Example' />
+        </div>
+      )}
     </section>
   );
 };
 
 export default memo(PreviewSection);
-
