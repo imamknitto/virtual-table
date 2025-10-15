@@ -11,26 +11,28 @@
         var pathSegmentsToKeep = 1; // For repo deployed to /virtual-table/
 
         var location = window.location;
-        var pathArray = location.pathname.split('/').slice(1);
+        var pathArray = location.pathname.split('/').filter(function(segment) {
+          return segment !== '';
+        });
 
-        // Remove the base path segment (virtual-table)
+        // Get the path after removing the base segment (virtual-table)
+        var redirectPath = '';
         if (pathArray.length > pathSegmentsToKeep) {
-          var redirectPath = pathArray.slice(pathSegmentsToKeep).join('/');
-          
-          // Store the redirect path in sessionStorage
-          sessionStorage.setItem('redirectPath', '/' + redirectPath + location.search);
+          redirectPath = '/' + pathArray.slice(pathSegmentsToKeep).join('/');
         }
+        
+        // Store the redirect path in sessionStorage
+        var fullRedirectPath = redirectPath + location.search + location.hash;
+        sessionStorage.setItem('redirectPath', fullRedirectPath);
 
-        // Redirect to index.html
+        // Redirect to index.html at the base path
+        var basePath = '/' + pathArray.slice(0, pathSegmentsToKeep).join('/') + '/';
         location.replace(
           location.protocol +
             '//' +
             location.hostname +
             (location.port ? ':' + location.port : '') +
-            '/' +
-            pathArray.slice(0, pathSegmentsToKeep).join('/') +
-            '/?redirect=' +
-            encodeURIComponent(location.pathname.slice(1) + location.search)
+            basePath
         );
       })();
     </script>
