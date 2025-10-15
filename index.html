@@ -8,14 +8,21 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&display=swap" rel="stylesheet" />
-    
+
     <!-- GitHub Pages SPA redirect handler -->
     <script>
       (function () {
+        // Check sessionStorage for redirect path from 404.html
         var redirect = sessionStorage.getItem('redirectPath');
-        if (redirect && redirect !== '/') {
+        if (redirect) {
           sessionStorage.removeItem('redirectPath');
-          history.replaceState(null, '', redirect);
+          // Only redirect if it's not the root path
+          if (redirect !== '/' && redirect !== '') {
+            // Prepend base path for GitHub Pages
+            var basePath = '/virtual-table';
+            var fullPath = basePath + redirect;
+            history.replaceState(null, '', fullPath);
+          }
         }
       })();
     </script>
