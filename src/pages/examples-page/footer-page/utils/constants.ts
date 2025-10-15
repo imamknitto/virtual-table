@@ -54,7 +54,7 @@ const headers: IHeader<SampleData>[] = [
 ];
 
 // Virtual Table with Basic Footer
-<VirtualTable
+<KnittoTable
   headers={headers}
   data={data}
   rowKey="id"
@@ -132,7 +132,7 @@ const headers: IHeader<SampleData>[] = [
 ];
 
 // Virtual Table with Advanced Footer
-<VirtualTable
+<KnittoTable
   headers={headers}
   data={data}
   rowKey="id"
@@ -211,7 +211,7 @@ const headers: IHeader<SampleData>[] = [
 ];
 
 // Virtual Table with Summary Footer
-<VirtualTable
+<KnittoTable
   headers={headers}
   data={data}
   rowKey="id"

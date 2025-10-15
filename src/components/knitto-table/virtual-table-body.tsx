@@ -16,7 +16,6 @@ import {
   useFlattenedData,
   useRowVirtualItems,
   useRowVirtualizer,
-  useUseDynamicRowHeight,
   useEnableColumnVirtualization,
 } from './context/virtualizer-context';
 import {
@@ -36,6 +35,7 @@ import {
   useUseFooter,
   useFreezeColRightPositions,
   useCalcHeaderTotalHeight,
+  useUseDynamicRowHeight,
 } from './context/ui-context';
 
 interface IVirtualTableBody<TData> {

@@ -44,7 +44,7 @@ const EmployeeTable = () => {
   ];
 
   return (
-    <VirtualTable
+    <KnittoTable
       headers={headers}
       data={data}
       rowKey="id"
@@ -97,7 +97,7 @@ const SalesReportTable = () => {
   ];
 
   return (
-    <VirtualTable
+    <KnittoTable
       headers={headers}
       data={data}
       rowKey="id"
@@ -161,7 +161,7 @@ const ComplexGroupingTable = () => {
   ];
 
   return (
-    <VirtualTable
+    <KnittoTable
       headers={headers}
       data={data}
       rowKey="id"
@@ -234,7 +234,7 @@ const FreezeGroupingTable = () => {
   ];
 
   return (
-    <VirtualTable
+    <KnittoTable
       headers={headers}
       data={data}
       rowKey="id"

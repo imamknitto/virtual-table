@@ -1,4 +1,4 @@
-export const CODE_EXAMPLE_VIRTUALIZED = `import { VirtualTable } from '@/components/virtual-table';
+export const CODE_EXAMPLE_VIRTUALIZED = `import { KnittoTable } from '@/components/virtual-table';
 
 const headers = [
   { key: 'id', caption: 'ID', width: 80, freeze: 'left' },
@@ -18,7 +18,7 @@ const headers = [
 
 function MyTable() {
   return (
-    <VirtualTable
+    <KnittoTable
       data={data}
       headers={headers}
       rowKey="id"
@@ -27,7 +27,7 @@ function MyTable() {
   );
 }`;
 
-export const CODE_EXAMPLE_NON_VIRTUALIZED = `import { VirtualTable } from '@/components/virtual-table';
+export const CODE_EXAMPLE_NON_VIRTUALIZED = `import { KnittoTable } from '@/components/virtual-table';
 
 const headers = [
   { key: 'id', caption: 'ID', width: 80, freeze: 'left' },
@@ -47,7 +47,7 @@ const headers = [
 
 function MyTable() {
   return (
-    <VirtualTable
+    <KnittoTable
       data={data}
       headers={headers}
       rowKey="id"
@@ -56,7 +56,7 @@ function MyTable() {
   );
 }`;
 
-export const CODE_EXAMPLE_COMBINED = `import { VirtualTable } from '@/components/virtual-table';
+export const CODE_EXAMPLE_COMBINED = `import { KnittoTable } from '@/components/virtual-table';
 
 // Example with both modes side by side
 function ComparisonTable() {
@@ -65,7 +65,7 @@ function ComparisonTable() {
       {/* Virtualized Columns */}
       <div>
         <h3>With Column Virtualization</h3>
-        <VirtualTable
+        <KnittoTable
           data={data}
           headers={headers}
           rowKey="id"
@@ -76,7 +76,7 @@ function ComparisonTable() {
       {/* Non-Virtualized Columns */}
       <div>
         <h3>Without Column Virtualization</h3>
-        <VirtualTable
+        <KnittoTable
           data={data}
           headers={headers}
           rowKey="id"

@@ -1,5 +1,5 @@
 import { memo, useMemo, useState } from 'react';
-import { VirtualTable } from '../../../../components/virtual-table';
+import { KnittoTable } from '../../../../components/knitto-table';
 import { BASIC_CODE_EXAMPLE, type SampleData } from '../utils';
 import { getBasicHeaders } from '../utils/table-headers';
 import CodeBlock from './code-block';
@@ -30,7 +30,7 @@ const BasicFooterSection = ({ data }: BasicFooterSectionProps) => {
       </div>
 
       <div className='h-96 border rounded-lg overflow-hidden'>
-        <VirtualTable
+        <KnittoTable
           classNameOuterTable='border-0'
           data={data}
           filterHeight={32}

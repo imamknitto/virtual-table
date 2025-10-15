@@ -1,5 +1,5 @@
 import { memo, useState } from 'react';
-import { VirtualTable } from '../../../../components/virtual-table';
+import { KnittoTable } from '../../../../components/knitto-table';
 import { CODE_EXAMPLE_BASIC, CODE_EXAMPLE_WITH_CUSTOM_CELL } from '../utils/constants';
 import type { Product } from '../utils/types';
 import { getBasicHeaders, getAdvancedHeaders } from '../utils/table-headers';
@@ -75,7 +75,7 @@ const PreviewSection = ({ data }: PreviewSectionProps) => {
           </p>
 
           <div className='h-[500px]'>
-            <VirtualTable
+            <KnittoTable
               data={data}
               filterHeight={32}
               headerHeight={40}

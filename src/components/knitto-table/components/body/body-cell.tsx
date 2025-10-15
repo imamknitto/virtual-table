@@ -2,8 +2,7 @@ import { memo, useMemo } from 'react';
 import clsx from 'clsx';
 import { RowCheckbox, RowExpand, TableCell } from '..';
 import type { IAdjustedHeader } from '../../lib';
-import { useUseDynamicRowHeight } from '../../context/virtualizer-context';
-import { useClassNameCell } from '../../context/ui-context';
+import { useClassNameCell, useUseDynamicRowHeight } from '../../context/ui-context';
 
 interface IBodyCell<TData> {
   rowKey: string;

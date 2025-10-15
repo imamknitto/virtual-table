@@ -129,7 +129,7 @@ const HeaderCustomizationExample = () => {
   ], [customHeaderEnabled, filterSelectionEnabled, filterVisibilityEnabled, data]);
 
   return (
-    <VirtualTable
+    <KnittoTable
       headers={headers}
       data={data}
       rowKey="id"

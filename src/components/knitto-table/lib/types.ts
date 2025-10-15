@@ -8,7 +8,7 @@ import { FILTER_ADVANCE_CONFIG } from './constants';
  *
  * @example
  * ```tsx
- * <VirtualTable
+ * <KnittoTable
  *   headers={columns}
  *   data={users}
  *   rowKey="id"
@@ -169,7 +169,7 @@ export interface IVirtualTable<TData> {
    * Enables dynamic row height calculation based on content.
    * Useful for rows with variable content heights.
    *
-   * enableColumnVirtualization must be false due to dynamic row 
+   * enableColumnVirtualization must be false due to dynamic row
    * height requires all columns to be rendered for proper measurement.
    *
    * @default false
@@ -191,6 +191,19 @@ export interface IVirtualTable<TData> {
    * ```
    */
   enableColumnVirtualization?: boolean;
+
+  /**
+   * Use native HTML table elements instead of virtualized divs.
+   * When true, disables virtualization and renders using <table>, <thead>, <tbody>, <tr>, <td>.
+   * Better for small datasets or when you need standard table semantics.
+   *
+   * @default false
+   * @example
+   * ```tsx
+   * useRegularTable={true}
+   * ```
+   */
+  useRegularTable?: boolean;
 
   /**
    * Fixed height for each row in pixels.
@@ -615,6 +628,24 @@ export interface IHeader<TData> {
    * ```
    */
   children?: Omit<IHeader<TData>, 'freeze'>[];
+
+  /**
+   * Enable automatic rowspan merging for consecutive duplicate values.
+   * Only works with useRegularTable={true}.
+   * Data must be pre-sorted by this column for proper merging.
+   *
+   * @default false
+   * @example
+   * ```tsx
+   * {
+   *   key: 'category',
+   *   caption: 'Category',
+   *   enableRowSpan: true,
+   *   hideFilter: { sort: true }  // Recommended to disable sort
+   * }
+   * ```
+   */
+  enableRowSpan?: boolean;
 }
 
 /**

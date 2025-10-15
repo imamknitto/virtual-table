@@ -18,7 +18,7 @@ export const QuickStartPage = () => {
           <div className='mt-4'>
             <div className='relative'>
               <pre className='bg-muted rounded-lg p-4 overflow-x-auto text-sm'>
-                <code>{`import { VirtualTable } from 'knitto-virtual-table';
+                <code>{`import { KnittoTable } from 'knitto-virtual-table';
 
 interface User {
   id: number;
@@ -43,7 +43,7 @@ function App() {
 
   return (
     <div className="h-[400px] w-full">
-      <VirtualTable<User>
+      <KnittoTable<User>
         data={data}
         headers={headers}
         rowKey="id"
@@ -76,7 +76,7 @@ function App() {
           <div className='mt-4'>
             <div className='relative'>
               <pre className='bg-muted rounded-lg p-4 overflow-x-auto text-sm'>
-                <code>{`import { VirtualTable } from 'knitto-virtual-table';
+                <code>{`import { KnittoTable } from 'knitto-virtual-table';
 
 function App() {
   const headers = [
@@ -94,7 +94,7 @@ function App() {
 
   return (
     <div className="h-[400px] w-full">
-      <VirtualTable<User>
+      <KnittoTable<User>
         data={data}
         headers={headers}
         rowKey="id"
@@ -125,7 +125,7 @@ function App() {
           <div className='mt-4'>
             <div className='relative'>
               <pre className='bg-muted rounded-lg p-4 overflow-x-auto text-sm'>
-                <code>{`import { VirtualTable } from 'knitto-virtual-table';
+                <code>{`import { KnittoTable } from 'knitto-virtual-table';
 
 function App() {
   const headers = [
@@ -156,7 +156,7 @@ function App() {
 
   return (
     <div className="h-[400px] w-full">
-      <VirtualTable<User>
+      <KnittoTable<User>
         data={data}
         headers={headers}
         rowKey="id"

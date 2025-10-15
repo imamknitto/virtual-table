@@ -22,7 +22,6 @@ type IVirtualizerContext = {
   containerHeight: number;
   toggleExpandRow: (key: string) => void;
   enableColumnVirtualization: boolean;
-  useDynamicRowHeight: boolean;
 };
 
 type IVirtualizerContextProvider<T> = {
@@ -30,7 +29,6 @@ type IVirtualizerContextProvider<T> = {
   rowKey: keyof T | ((data: T, index: number) => string);
   scrollElementRef: React.RefObject<HTMLDivElement | null>;
   enableColumnVirtualization?: boolean;
-  useDynamicRowHeight?: boolean;
 };
 
 // ==================== Context ====================
@@ -59,12 +57,9 @@ export const useToggleExpandRow = () => useContextSelector(VirtualizerCtx, (ctx)
 export const useEnableColumnVirtualization = () =>
   useContextSelector(VirtualizerCtx, (ctx) => ctx?.enableColumnVirtualization ?? false);
 
-export const useUseDynamicRowHeight = () =>
-  useContextSelector(VirtualizerCtx, (ctx) => ctx?.useDynamicRowHeight ?? false);
-
 // ==================== Provider ====================
 export const VirtualizerContextProvider = <T,>(props: IVirtualizerContextProvider<T>): React.ReactElement => {
-  const { children, scrollElementRef, rowKey, enableColumnVirtualization = true, useDynamicRowHeight = false } = props;
+  const { children, scrollElementRef, rowKey, enableColumnVirtualization = true } = props;
 
   const [containerWidth, setContainerWidth] = useState<number>(0);
   const [containerHeight, setContainerHeight] = useState<number>(0);
@@ -144,7 +139,6 @@ export const VirtualizerContextProvider = <T,>(props: IVirtualizerContextProvide
       toggleExpandRow,
       expandedRows: expandedKeys,
       enableColumnVirtualization,
-      useDynamicRowHeight,
     }),
     [
       flattenedData,
@@ -157,7 +151,6 @@ export const VirtualizerContextProvider = <T,>(props: IVirtualizerContextProvide
       toggleExpandRow,
       expandedKeys,
       enableColumnVirtualization,
-      useDynamicRowHeight,
     ],
   );
 

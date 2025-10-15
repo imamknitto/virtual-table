@@ -21,7 +21,7 @@ const LargeDatasetTable = () => {
   ];
 
   return (
-    <VirtualTable
+    <KnittoTable
       headers={headers}
       data={data}
       rowKey="id"
@@ -45,7 +45,7 @@ const headers = [
 ];
 
 // 3. Optimize row height
-<VirtualTable
+<KnittoTable
   rowHeight={32} // Fixed height for better performance
   // ... other props
 />

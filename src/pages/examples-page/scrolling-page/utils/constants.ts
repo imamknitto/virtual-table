@@ -22,7 +22,7 @@ const ScrollTrackingTable = () => {
   ];
 
   return (
-    <VirtualTable
+    <KnittoTable
       ref={tableRef}
       headers={headers}
       data={data}
@@ -62,7 +62,7 @@ const ProgrammaticScrollTable = () => {
         <button onClick={() => scrollToPosition(500)}>Scroll to 500px</button>
       </div>
       
-      <VirtualTable
+      <KnittoTable
         ref={tableRef}
         headers={headers}
         data={data}
@@ -94,7 +94,7 @@ const InfiniteScrollTable = () => {
   }, [isLoading]);
 
   return (
-    <VirtualTable
+    <KnittoTable
       headers={headers}
       data={data}
       rowKey="id"

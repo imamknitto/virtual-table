@@ -19,8 +19,9 @@ export type IUIContext = {
   useFooter: boolean;
   filterHeight: number;
   headerMode: 'single' | 'double';
-  expandedContent: (rowData: unknown) => ReactNode;
   calcHeaderTotalHeight: number;
+  useDynamicRowHeight: boolean;
+  expandedContent: (rowData: unknown) => ReactNode;
   classNameCell?: (data: unknown, rowIndex: number, columnIndex: number) => string;
 };
 
@@ -28,10 +29,11 @@ type IUIContextProviderProps<TData = unknown> = {
   children: ReactNode;
   filterHeight: number;
   useFooter: boolean;
-  expandedContent?: (rowData: unknown) => ReactNode;
   headerMode: 'single' | 'double';
   headerHeight: number;
   isFilterVisible?: boolean;
+  useDynamicRowHeight?: boolean;
+  expandedContent?: (rowData: unknown) => ReactNode;
   classNameCell?: (data: TData, rowIndex: number, columnIndex: number) => string;
 };
 
@@ -58,11 +60,14 @@ export const useCalcHeaderTotalHeight = () => useContextSelector(UICtx, (ctx) =>
 
 export const useClassNameCell = () => useContextSelector(UICtx, (ctx) => ctx?.classNameCell);
 
+export const useUseDynamicRowHeight = () => useContextSelector(UICtx, (ctx) => ctx?.useDynamicRowHeight ?? false);
+
 // ==================== Provider ====================
 export const UIContextProvider = <TData = unknown,>(props: IUIContextProviderProps<TData>): React.ReactElement => {
   const {
     children,
     filterHeight,
+    useDynamicRowHeight = false,
     expandedContent,
     useFooter = false,
     headerMode,
@@ -160,6 +165,7 @@ export const UIContextProvider = <TData = unknown,>(props: IUIContextProviderPro
       filterHeight,
       headerMode,
       calcHeaderTotalHeight,
+      useDynamicRowHeight,
       expandedContent: memoizedExpandedContent,
       classNameCell: memoizedClassNameCell,
     }),
@@ -171,6 +177,7 @@ export const UIContextProvider = <TData = unknown,>(props: IUIContextProviderPro
       filterHeight,
       headerMode,
       calcHeaderTotalHeight,
+      useDynamicRowHeight,
       memoizedExpandedContent,
       memoizedClassNameCell,
     ],

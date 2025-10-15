@@ -111,7 +111,7 @@ const headers: IHeader<Employee>[] = [
   ];
 
 // 5. Virtual Table with Custom Cells
-<VirtualTable
+<KnittoTable
   headers={headers}
   data={sampleData}
   rowKey='id'

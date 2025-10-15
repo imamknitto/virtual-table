@@ -67,7 +67,7 @@ const CheckboxSelectionTable = () => {
   };
 
   return (
-    <VirtualTable
+    <KnittoTable
       headers={headers}
       data={data}
       rowKey="id"

@@ -1,4 +1,4 @@
-import type { IHeader } from '../../../../components/virtual-table';
+import type { IHeader } from '../../../../components/knitto-table';
 import type { Employee } from '../utils';
 import { ActionButtons, AvatarCell, ProgressBar, SalaryCell, SkillsTags, StatusBadge } from './cell-components';
 

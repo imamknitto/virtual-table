@@ -1,4 +1,4 @@
-import type { IHeader } from '../../../../components/virtual-table';
+import type { IHeader } from '../../../../components/knitto-table';
 import type { CombinedData } from './types';
 
 export const getUserHeaders = (): IHeader<CombinedData>[] => [
