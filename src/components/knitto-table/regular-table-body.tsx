@@ -173,7 +173,7 @@ function RegularTableBody<TData>({
           <Fragment key={'regular-table-row-' + key}>
             <tr
               data-row-index={rowIndex}
-              className={clsx('hover:bg-[#ECEEFF] dark:hover:bg-[#2F3574] transition-colors duration-150', {
+              className={clsx('transition-colors duration-150', {
                 // NOTE: Row yang selected tanpa ada rowspan cells
                 'bg-[#ECEEFF]/50 dark:bg-blue-900/50': isRowSelected,
               })}

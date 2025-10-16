@@ -1,6 +1,6 @@
 import { memo } from 'react';
-import { VirtualTable, type IHeader } from '../../../../components/knitto-table';
 import { PERFORMANCE_DATA } from '../utils';
+import { KnittoTable, type IHeader } from '../../../../components/knitto-table';
 
 const performanceHeaders: IHeader<(typeof PERFORMANCE_DATA)[0]>[] = [
   { key: 'metric', caption: 'Metric', width: 200 },
