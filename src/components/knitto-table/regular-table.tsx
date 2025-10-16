@@ -5,7 +5,14 @@ import { DEFAULT_SIZE, type IKnittoTable } from './lib';
 
 type TPickKnittoTable<TData> = Pick<
   IKnittoTable<TData>,
-  'rowKey' | 'headerHeight' | 'rowHeight' | 'onClickRow' | 'onDoubleClickRow'
+  | 'rowKey'
+  | 'headerHeight'
+  | 'rowHeight'
+  | 'onClickRow'
+  | 'onDoubleClickRow'
+  | 'useFooter'
+  | 'footerHeight'
+  | 'isLoading'
 >;
 
 function RegularTable<TData>(props: TPickKnittoTable<TData>) {
@@ -18,15 +25,17 @@ function RegularTable<TData>(props: TPickKnittoTable<TData>) {
   } = props;
 
   return (
-    <table className='w-full border-collapse' style={{ tableLayout: 'fixed' }}>
-      <RegularTableHeader headerHeight={headerHeight} />
-      <RegularTableBody
-        rowKey={rowKey}
-        rowHeight={rowHeight}
-        onClickRowToParent={onClickRow}
-        onDoubleClickRowToParent={onDoubleClickRow}
-      />
-    </table>
+    <>
+      <table className='w-full border-collapse' style={{ tableLayout: 'fixed' }}>
+        <RegularTableHeader headerHeight={headerHeight} />
+        <RegularTableBody
+          rowKey={rowKey}
+          rowHeight={rowHeight}
+          onClickRowToParent={onClickRow}
+          onDoubleClickRowToParent={onDoubleClickRow}
+        />
+      </table>
+    </>
   );
 }
 

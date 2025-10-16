@@ -170,6 +170,7 @@ function RegularTableHeader({ headerHeight }: IRegularTableHeader) {
                 className={clsx('flex size-full relative group/outer', {
                   'flex-row justify-between items-center': isSingleHeader,
                   'flex-col justify-between items-start': !isSingleHeader,
+                  'pl-1.5': isSingleHeader,
                 })}
               >
                 <HeaderCaption
@@ -199,7 +200,7 @@ function RegularTableHeader({ headerHeight }: IRegularTableHeader) {
               key={'regular-table-head-group-' + header.key?.toString()}
               width={header.width || 0}
               height={hasChildren ? DEFAULT_SIZE.GROUP_HEADER_HEIGHT : calcHeaderHeight}
-              className={clsx({ 'border-r': !isLastColumn })}
+              className={clsx({ 'border-r': !isLastColumn, 'text-start': true })}
               colSpan={colSpan}
               rowSpan={rowSpan}
             >
@@ -236,6 +237,7 @@ function RegularTableHeader({ headerHeight }: IRegularTableHeader) {
                 className={clsx('flex size-full relative group/outer', {
                   'flex-row justify-between items-center': isSingleHeader,
                   'flex-col justify-between items-start': !isSingleHeader,
+                  'pl-1.5': isSingleHeader,
                 })}
               >
                 <HeaderCaption
@@ -266,7 +268,7 @@ function RegularTableHeader({ headerHeight }: IRegularTableHeader) {
                 key={'regular-table-head-child-' + child.key?.toString()}
                 width={child.width || 0}
                 height={calcHeaderHeight}
-                className={clsx({ 'border-r': !isLastChild })}
+                className={clsx({ 'border-r': !isLastChild, 'text-start': true })}
               >
                 {headContent}
               </NativeTableHead>
@@ -279,7 +281,7 @@ function RegularTableHeader({ headerHeight }: IRegularTableHeader) {
 
   return (
     <>
-    <thead className='sticky top-0 z-10'>
+      <thead className='sticky top-0 z-10'>
         {hasGroupedHeaders ? (
           <>
             {/* NOTE: Untuk grouped headers, render 2 baris:
@@ -342,19 +344,19 @@ function RegularTableHeader({ headerHeight }: IRegularTableHeader) {
               }
 
               return (
-          <NativeTableHead
-            key={'regular-table-head-' + header.key?.toString()}
-            width={header.width || 0}
+                <NativeTableHead
+                  key={'regular-table-head-' + header.key?.toString()}
+                  width={header.width || 0}
                   height={calcHeaderHeight}
                   className={clsx({ 'border-r': !isLastColumn })}
-          >
+                >
                   {headContent}
-          </NativeTableHead>
+                </NativeTableHead>
               );
             })}
-      </tr>
+          </tr>
         )}
-    </thead>
+      </thead>
       <ResizeLine />
     </>
   );
