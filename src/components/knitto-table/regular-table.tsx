@@ -1,17 +1,14 @@
 import type { ReactNode } from 'react';
 import RegularTableBody from './regular-table-body';
 import RegularTableHeader from './regular-table-header';
-import { DEFAULT_SIZE } from './lib';
+import { DEFAULT_SIZE, type IKnittoTable } from './lib';
 
-interface IRegularTable<TData> {
-  rowKey: keyof TData | ((data: TData, index: number) => string);
-  headerHeight?: number;
-  rowHeight?: number;
-  onClickRow?: (item: TData, rowIndex: number, columnIndex: number) => void;
-  onDoubleClickRow?: (item: TData, rowIndex: number, columnIndex: number) => void;
-}
+type TPickKnittoTable<TData> = Pick<
+  IKnittoTable<TData>,
+  'rowKey' | 'headerHeight' | 'rowHeight' | 'onClickRow' | 'onDoubleClickRow'
+>;
 
-function RegularTable<TData>(props: IRegularTable<TData>) {
+function RegularTable<TData>(props: TPickKnittoTable<TData>) {
   const {
     rowKey,
     headerHeight = DEFAULT_SIZE.HEADER_HEIGTH,
@@ -33,4 +30,4 @@ function RegularTable<TData>(props: IRegularTable<TData>) {
   );
 }
 
-export default RegularTable as <TData>(props: IRegularTable<TData>) => ReactNode;
+export default RegularTable as <TData>(props: TPickKnittoTable<TData>) => ReactNode;

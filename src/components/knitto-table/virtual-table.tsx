@@ -1,12 +1,12 @@
 import { type ReactNode } from 'react';
-import { DEFAULT_SIZE, type IVirtualTable } from './lib';
+import { DEFAULT_SIZE, type IKnittoTable } from './lib';
 import VirtualTableHeader from './virtual-table-header';
 import VirtualTableBody from './virtual-table-body';
 import VirtualTableFooter from './virtual-table-footer';
 import { EmptyDataIndicator } from './components';
 
-type TPickVirtualTable<TData> = Pick<
-  IVirtualTable<TData>,
+type TPickKnittoTable<TData> = Pick<
+  IKnittoTable<TData>,
   | 'headerHeight'
   | 'rowHeight'
   | 'filterHeight'
@@ -19,7 +19,7 @@ type TPickVirtualTable<TData> = Pick<
   | 'isLoading'
 >;
 
-function VirtualTable<TData>(props: TPickVirtualTable<TData>) {
+function VirtualTable<TData>(props: TPickKnittoTable<TData>) {
   const {
     isLoading = false,
     rowHeight = DEFAULT_SIZE.ROW_HEIGHT,
@@ -54,4 +54,4 @@ function VirtualTable<TData>(props: TPickVirtualTable<TData>) {
   );
 }
 
-export default VirtualTable as <TData>(props: TPickVirtualTable<TData>) => ReactNode;
+export default VirtualTable as <TData>(props: TPickKnittoTable<TData>) => ReactNode;

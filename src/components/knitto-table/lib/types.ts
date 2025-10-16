@@ -2,23 +2,7 @@ import type { Virtualizer } from '@tanstack/react-virtual';
 import type { ReactNode } from 'react';
 import { FILTER_ADVANCE_CONFIG } from './constants';
 
-/**
- * Main configuration interface for the VirtualTable component.
- * Supports virtualization, filtering, sorting, row expansion, and various customization options.
- *
- * @example
- * ```tsx
- * <KnittoTable
- *   headers={columns}
- *   data={users}
- *   rowKey="id"
- *   rowHeight={48}
- *   useFooter
- *   onClickRow={(user) => console.log(user)}
- * />
- * ```
- */
-export interface IVirtualTable<TData> {
+export interface IKnittoTable<TData> {
   /**
    * Array of column definitions for the table headers.
    * Each header defines a column's key, caption, width, filters, and custom renderers.

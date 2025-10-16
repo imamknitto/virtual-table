@@ -11,12 +11,12 @@ import { SelectionContextProvider } from './context/selection-context';
 import { UIContextProvider } from './context/ui-context';
 
 import { useScrollBottomDetection } from './hooks';
-import { DEFAULT_SIZE, type IAdjustedHeader, type IVirtualTable } from './lib';
+import { DEFAULT_SIZE, type IAdjustedHeader, type IKnittoTable } from './lib';
 
 import './lib/style.css';
 import { LoadingIndicator, TableScrollWrapper } from './components';
 
-const KnittoTable = forwardRef(<TData,>(props: IVirtualTable<TData>, ref: React.ForwardedRef<HTMLDivElement>) => {
+const KnittoTable = forwardRef(<TData,>(props: IKnittoTable<TData>, ref: React.ForwardedRef<HTMLDivElement>) => {
   const {
     rowKey,
     data,
@@ -180,5 +180,5 @@ const KnittoTable = forwardRef(<TData,>(props: IVirtualTable<TData>, ref: React.
 });
 
 export default KnittoTable as <TData>(
-  props: IVirtualTable<TData> & { ref?: React.ForwardedRef<HTMLDivElement> },
+  props: IKnittoTable<TData> & { ref?: React.ForwardedRef<HTMLDivElement> },
 ) => ReactNode;

@@ -8,11 +8,13 @@ export type ISelectionContext = {
   deselectedRowKeys: Set<string>;
   expandedRowKeys: Set<string>;
   selectAll: boolean;
+  selectedRowWithSpanKeys: string[];
   toggleExpandRow: (key: string) => void;
   onClickRow: (key: string | null) => void;
   setSelectedRowKey: (key: string | null) => void;
   toggleRowSelection: (key: string) => void;
   toggleSelectAll: (mode: boolean) => void;
+  setSelectedRowWithSpanKeys: (keys: string[]) => void;
 };
 
 type ISelectionContextProvider = {
@@ -28,6 +30,12 @@ type ISelectionContextProvider = {
 const SelectionCtx = createContext<ISelectionContext | null>(null);
 
 // ==================== Hooks ====================
+export const useSetSelectedRowWithSpanKeys = () =>
+  useContextSelector(SelectionCtx, (ctx) => ctx?.setSelectedRowWithSpanKeys)!;
+
+export const useSelectedRowWithSpanKeys = () =>
+  useContextSelector(SelectionCtx, (ctx) => ctx?.selectedRowWithSpanKeys ?? []);
+
 export const useSelectedRowKey = () => useContextSelector(SelectionCtx, (ctx) => ctx?.selectedRowKey ?? null);
 
 export const useSelectedRowKeys = () =>
@@ -55,6 +63,7 @@ export const useToggleSelectAll = () => useContextSelector(SelectionCtx, (ctx) =
 export const SelectionContextProvider = (props: ISelectionContextProvider): React.ReactElement => {
   const { children, onChangeCheckboxRowSelection } = props;
 
+  const [selectedRowWithSpanKeys, setSelectedRowWithSpanKeys] = useState<string[]>([]);
   const [selectedRowKey, setSelectedRowKey] = useState<string | null>(null);
   const [expandedRowKeys, setExpandedRowKeys] = useState<Set<string>>(new Set());
   const [selectedRowKeys, setSelectedRowKeys] = useState<Set<string>>(new Set());
@@ -128,10 +137,12 @@ export const SelectionContextProvider = (props: ISelectionContextProvider): Reac
       selectAll,
       expandedRowKeys,
       toggleExpandRow,
+      selectedRowWithSpanKeys,
       setSelectedRowKey,
       onClickRow,
       toggleRowSelection,
       toggleSelectAll,
+      setSelectedRowWithSpanKeys,
     }),
     [
       selectedRowKey,
@@ -140,9 +151,11 @@ export const SelectionContextProvider = (props: ISelectionContextProvider): Reac
       selectAll,
       expandedRowKeys,
       toggleExpandRow,
+      selectedRowWithSpanKeys,
       onClickRow,
       toggleRowSelection,
       toggleSelectAll,
+      setSelectedRowWithSpanKeys,
     ],
   );
 

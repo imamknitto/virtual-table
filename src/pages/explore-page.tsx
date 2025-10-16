@@ -120,7 +120,7 @@ function ExplorePage() {
   return (
     <div className='flex flex-col gap-y-8'>
       <div className='space-y-2.5'>
-        <h4>Regular Table With Col Span / Header Grouping</h4>
+        <h4>Regular Table pake Col Span atau Group Header</h4>
 
         <div className='h-80'>
           <KnittoTable
@@ -136,7 +136,7 @@ function ExplorePage() {
       </div>
 
       <div className='space-y-2.5'>
-        <h4>Regular Table With Row Span (Grouped Data)</h4>
+        <h4>Regular Table pake Row Span</h4>
 
         <div className='h-80'>
           <KnittoTable

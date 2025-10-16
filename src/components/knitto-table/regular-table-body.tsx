@@ -1,5 +1,5 @@
 import { Fragment } from 'react/jsx-runtime';
-import { memo, type ReactNode } from 'react';
+import { memo, type ReactNode, useMemo, useCallback } from 'react';
 import clsx from 'clsx';
 
 import NativeTableCell from './components/native-table-cell';
@@ -15,8 +15,10 @@ import {
   useSelectAll,
   useSelectedRowKey,
   useSelectedRowKeys,
+  useSelectedRowWithSpanKeys,
   useToggleExpandRow,
   useToggleRowSelection,
+  useSetSelectedRowWithSpanKeys,
 } from './context/selection-context';
 import { useExpandedContent, useUseDynamicRowHeight } from './context/ui-context';
 
@@ -39,6 +41,7 @@ function RegularTableBody<TData>({
   const selectAll = useSelectAll();
   const onClickRow = useOnClickRow();
   const selectedRowKey = useSelectedRowKey();
+  const selectedRowWithSpanKeys = useSelectedRowWithSpanKeys();
   const selectedRowKeys = useSelectedRowKeys();
   const deselectedRowKeys = useDeselectedRowKeys();
   const toggleRowSelection = useToggleRowSelection();
@@ -46,73 +49,144 @@ function RegularTableBody<TData>({
   const expandedRowKeys = useExpandedRowKeys();
   const expandedContent = useExpandedContent();
   const useDynamicRowHeight = useUseDynamicRowHeight();
+  const setSelectedRowWithSpanKeys = useSetSelectedRowWithSpanKeys();
 
   // NOTE: Ambil semua leaf columns dari flattened columns data (handle grouped headers)
-  const flattenedColumns = flattenColumnsData.map((item) => item.col);
+  const flattenedColumns = useMemo(() => flattenColumnsData.map((item) => item.col), [flattenColumnsData]);
 
   // NOTE: Hitung rowspan untuk kolom yang punya flag enableRowSpan
   // Return Map dengan info cell mana yang harus di-render dan cell mana yang di-skip (merged)
   const rowSpanMap = useRowSpanCalculator(filteredData, flattenedColumns);
 
-  const getRowKey = (item: TData, index: number): string => {
-    if (typeof rowKey === 'function') {
-      return rowKey(item, index);
-    }
-    return String(item[rowKey]);
-  };
+  const getRowKey = useCallback(
+    (item: TData, index: number): string => {
+      if (typeof rowKey === 'function') {
+        return rowKey(item, index);
+      }
+      return String(item[rowKey]);
+    },
+    [rowKey],
+  );
 
-  const handleClickRow = (item: TData, rowIndex: number, columnIndex: number) => {
-    const key = getRowKey(item, rowIndex);
-    onClickRow?.(key);
-    onClickRowToParent?.(item, rowIndex, columnIndex);
-  };
+  // NOTE: Cache row keys untuk performa yang lebih baik
+  const rowKeysMap = useMemo(() => {
+    const map = new Map<number, string>();
+    filteredData.forEach((item, index) => {
+      map.set(index, getRowKey(item, index));
+    });
+    return map;
+  }, [filteredData, getRowKey]);
 
-  const handleDoubleClickRow = (item: TData, rowIndex: number, columnIndex: number) => {
-    onDoubleClickRowToParent?.(item, rowIndex, columnIndex);
-  };
+  // Helper function untuk get cached key
+  const getCachedRowKey = useCallback(
+    (index: number): string => {
+      return rowKeysMap.get(index) || getRowKey(filteredData[index], index);
+    },
+    [rowKeysMap, filteredData, getRowKey],
+  );
 
-  const handleCheckboxChange = (item: TData, rowIndex: number) => {
-    const key = getRowKey(item, rowIndex);
-    toggleRowSelection(key);
-  };
+  const handleClickRow = useCallback(
+    (item: TData, rowIndex: number, columnIndex: number) => {
+      const key = getCachedRowKey(rowIndex);
 
-  const handleExpandToggle = (item: TData, rowIndex: number) => {
-    const key = getRowKey(item, rowIndex);
-    toggleExpandRow(key);
-  };
+      const column = flattenedColumns[columnIndex] as IHeader<TData>;
+      const cellKey = `${String(column.key)}-${rowIndex}`;
+      const rowSpanData = rowSpanMap.get(cellKey);
+
+      const keysToAdd: string[] = [];
+
+      // NOTE: Jika cell ini punya rowspan, tambahkan semua row yang di-spannya ke selectedRowWithSpanKeys
+      if (rowSpanData && rowSpanData.rowSpan > 1 && rowSpanData.shouldRender) {
+        for (let i = rowSpanData.spanStartRow; i <= rowSpanData.spanEndRow; i++) {
+          const key = getCachedRowKey(i);
+          keysToAdd.push(key);
+        }
+      } else {
+        keysToAdd.push(key);
+      }
+
+      if (rowSpanMap.size > 0) {
+        setSelectedRowWithSpanKeys(keysToAdd);
+        onClickRowToParent?.(item, rowIndex, columnIndex);
+      } else {
+        onClickRow?.(key);
+        onClickRowToParent?.(item, rowIndex, columnIndex);
+      }
+    },
+    [flattenedColumns, rowSpanMap, setSelectedRowWithSpanKeys, onClickRowToParent, onClickRow, getCachedRowKey],
+  );
+
+  const handleDoubleClickRow = useCallback(
+    (item: TData, rowIndex: number, columnIndex: number) => {
+      onDoubleClickRowToParent?.(item, rowIndex, columnIndex);
+    },
+    [onDoubleClickRowToParent],
+  );
+
+  const handleCheckboxChange = useCallback(
+    (_item: TData, rowIndex: number) => {
+      const key = getCachedRowKey(rowIndex);
+      toggleRowSelection(key);
+    },
+    [toggleRowSelection, getCachedRowKey],
+  );
+
+  const handleExpandToggle = useCallback(
+    (_item: TData, rowIndex: number) => {
+      const key = getCachedRowKey(rowIndex);
+      toggleExpandRow(key);
+    },
+    [toggleExpandRow, getCachedRowKey],
+  );
+
+  // Helper function untuk cek apakah cell ini harus di-highlight
+  const checkCellHighlighting = useCallback(
+    (_item: TData, rowIndex: number, cellKey: string) => {
+      const key = getCachedRowKey(rowIndex);
+
+      if (rowSpanMap.size === 0) {
+        // Tidak ada rowspan, gunakan logika biasa
+        return key === selectedRowKey;
+      }
+
+      // Ada rowspan, cek apakah row ini ada di selectedRowWithSpanKeys
+      if (selectedRowWithSpanKeys.includes(key)) {
+        return true;
+      }
+
+      // Jika cell ini punya rowspan, cek apakah ada row yang di-spannya terpilih
+      const rowSpanData = rowSpanMap.get(cellKey);
+      if (rowSpanData && rowSpanData.shouldRender && rowSpanData.rowSpan > 1) {
+        for (let i = rowSpanData.spanStartRow; i <= rowSpanData.spanEndRow; i++) {
+          const spanRowKey = getCachedRowKey(i);
+          if (selectedRowWithSpanKeys.includes(spanRowKey)) {
+            return true;
+          }
+        }
+      }
+
+      return false;
+    },
+    [rowSpanMap, selectedRowKey, selectedRowWithSpanKeys, getCachedRowKey],
+  );
 
   const renderCell = (item: TData, column: IHeader<TData>, rowIndex: number, columnIndex: number) => {
-    const key = getRowKey(item, rowIndex);
+    const key = getCachedRowKey(rowIndex);
     const cellKey = `${String(column.key)}-${rowIndex}`;
     const isCheckboxColumn = column.key === 'row-selection';
     const isExpandColumn = column.key === 'expand';
     const isRowChecked = selectAll ? !deselectedRowKeys.has(key) : selectedRowKeys.has(key);
     const isRowExpanded = expandedRowKeys.has(key);
-    const isRowHighlighted = key === String(selectedRowKey);
     const isLastColumn = columnIndex === flattenedColumns.length - 1;
 
     // NOTE: Cek data rowspan untuk cell ini
     const rowSpanData = rowSpanMap.get(cellKey);
 
-    if (rowSpanData && !rowSpanData.shouldRender) {
-      // NOTE: Skip rendering karena cell ini sudah di-merge dengan cell di row atasnya
-      return null;
-    }
+    // NOTE: Skip rendering karena cell ini sudah di-merge dengan cell di row atasnya
+    if (rowSpanData && !rowSpanData.shouldRender) return null;
 
-    // NOTE: Untuk cell yang punya rowspan, cek apakah salah satu row dalam span range sedang selected
-    // Kalau iya, cell ini harus ikut di-highlight
-    let isCellHighlighted = isRowHighlighted;
-
-    if (rowSpanData && rowSpanData.rowSpan > 1) {
-      // Loop through semua row dalam span range
-      for (let i = rowSpanData.spanStartRow; i <= rowSpanData.spanEndRow; i++) {
-        const rowKey = getRowKey(filteredData[i], i);
-        if (rowKey === String(selectedRowKey)) {
-          isCellHighlighted = true;
-          break;
-        }
-      }
-    }
+    // Cek apakah cell ini harus di-highlight
+    const isCellHighlighted = checkCellHighlighting(item, rowIndex, cellKey);
 
     let cellContent;
 
@@ -150,11 +224,9 @@ function RegularTableBody<TData>({
         data-rowspan-end={rowSpanData?.spanEndRow}
         className={clsx(useDynamicRowHeight ? 'break-words' : 'truncate', {
           'border-r': !isLastColumn,
-          // NOTE: Pakai isCellHighlighted (bukan isRowHighlighted) supaya rowspan cells ikut highlight
-          // Background color untuk selected state
           'bg-[#ECEEFF] dark:bg-blue-900': isCellHighlighted,
-          // NOTE: Border visual feedback untuk rowspan cells yang highlighted
-          'transition-colors duration-150': hasRowSpan,
+          'group-hover/regular-table-row:bg-[#ECEEFF] dark:group-hover/regular-table-row:bg-blue-900': !rowSpanMap.size,
+          'transition-colors duration-150': true,
         })}
       >
         {cellContent}
@@ -165,19 +237,13 @@ function RegularTableBody<TData>({
   return (
     <tbody>
       {filteredData.map((item, rowIndex) => {
-        const key = getRowKey(item, rowIndex);
+        const key = getCachedRowKey(rowIndex);
         const isRowExpanded = expandedRowKeys.has(key);
-        const isRowSelected = key === String(selectedRowKey);
+        // const isRowSelected = key === String(selectedRowKey);
 
         return (
           <Fragment key={'regular-table-row-' + key}>
-            <tr
-              data-row-index={rowIndex}
-              className={clsx('transition-colors duration-150', {
-                // NOTE: Row yang selected tanpa ada rowspan cells
-                'bg-[#ECEEFF]/50 dark:bg-blue-900/50': isRowSelected,
-              })}
-            >
+            <tr data-row-index={rowIndex} className='group/regular-table-row'>
               {flattenedColumns.map((column, columnIndex) =>
                 renderCell(item, column as IHeader<TData>, rowIndex, columnIndex),
               )}
