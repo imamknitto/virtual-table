@@ -4,7 +4,7 @@ import clsx from 'clsx';
 
 import NativeTableCell from './components/native-table-cell';
 import { RowCheckbox, RowExpand } from './components';
-import type { IHeader } from './lib';
+import type { IHeader, IKnittoTable } from './lib';
 import { useFlattenColumns } from './context/header-context';
 import { useFilteredData } from './context/filter-context';
 import { useRowSpanCalculator } from './hooks/use-rowspan-calculator';
@@ -25,9 +25,9 @@ import { useClassNameCell, useExpandedContent, useUseDynamicRowHeight } from './
 interface IRegularTableBody<TData> {
   rowKey: keyof TData | ((data: TData, index: number) => string);
   rowHeight: number;
-  onClickRowToParent?: (item: TData, rowIndex: number, columnIndex: number) => void;
-  onDoubleClickRowToParent?: (item: TData, rowIndex: number, columnIndex: number) => void;
-  onRightClickRowToParent?: (item: TData, position: { x: number; y: number }) => void;
+  onClickRowToParent?: IKnittoTable<TData>['onClickRow'];
+  onDoubleClickRowToParent?: IKnittoTable<TData>['onDoubleClickRow'];
+  onRightClickRowToParent?: IKnittoTable<TData>['onRightClickRow'];
 }
 
 function RegularTableBody<TData>({
@@ -97,12 +97,14 @@ function RegularTableBody<TData>({
       const rowSpanData = rowSpanMap.get(cellKey);
 
       const keysToAdd: string[] = [];
+      const groupOfItems: TData[] = [];
 
       // NOTE: Jika cell ini punya rowspan, tambahkan semua row yang di-spannya ke selectedRowWithSpanKeys
       if (rowSpanData && rowSpanData.rowSpan > 1 && rowSpanData.shouldRender) {
         for (let i = rowSpanData.spanStartRow; i <= rowSpanData.spanEndRow; i++) {
           const key = getCachedRowKey(i);
           keysToAdd.push(key);
+          groupOfItems.push(filteredData[i]);
         }
       } else {
         keysToAdd.push(key);
@@ -110,13 +112,21 @@ function RegularTableBody<TData>({
 
       if (rowSpanMap.size > 0) {
         setSelectedRowWithSpanKeys(keysToAdd);
-        onClickRowToParent?.(item, rowIndex, columnIndex);
+        onClickRowToParent?.(item, rowIndex, columnIndex, groupOfItems);
       } else {
         onClickRow?.(key);
         onClickRowToParent?.(item, rowIndex, columnIndex);
       }
     },
-    [flattenedColumns, rowSpanMap, setSelectedRowWithSpanKeys, onClickRowToParent, onClickRow, getCachedRowKey],
+    [
+      flattenedColumns,
+      rowSpanMap,
+      setSelectedRowWithSpanKeys,
+      onClickRowToParent,
+      onClickRow,
+      getCachedRowKey,
+      filteredData,
+    ],
   );
 
   const handleDoubleClickRow = useCallback(
@@ -208,7 +218,7 @@ function RegularTableBody<TData>({
     const classNameCellContent = clsx(useDynamicRowHeight ? 'break-words' : 'truncate', {
       'border-r': !isLastColumn,
       '!border-l': isFreezeRight,
-      'bg-white': (isFreezeLeft || isFreezeRight) && !isCellHighlighted,
+      'bg-white dark:bg-black/50 backdrop-blur-2xl': (isFreezeLeft || isFreezeRight) && !isCellHighlighted,
       'bg-[#ECEEFF] dark:bg-blue-900': isCellHighlighted,
       'group-hover/regular-table-row:bg-[#ECEEFF] dark:group-hover/regular-table-row:bg-blue-900': !rowSpanMap.size,
       'transition-colors duration-150 size-full content-center px-1.5 text-xs border-b border-[#D2D2D4]': true,

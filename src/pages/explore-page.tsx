@@ -234,8 +234,11 @@ function ExplorePage() {
             data={combinedExampleData}
             useFooter
             useRegularTable
-            onRightClickRow={(item) => {
-              console.log('onRightClickRow', item);
+            onClickRow={(item, rowIndex, columnIndex, groupOfItems) => {
+              console.log('CLICK ROW: ', { item, rowIndex, columnIndex, groupOfItems });
+            }}
+            onRightClickRow={(item, position) => {
+              console.log('RIGHT CLICK ROW: ', { item, position });
             }}
           />
         </div>

@@ -281,14 +281,19 @@ export interface IKnittoTable<TData> {
   /**
    * Callback fired when a row is clicked.
    *
+   * @param item - The data item of the clicked row.
+   * @param rowIndex - The index of the clicked row.
+   * @param columnIndex - The index of the clicked column.
+   * @param groupOfItems - The group of items that are clicked (only available if the row has rowspan)
+   *
    * @example
    * ```tsx
-   * onClickRow={(item, rowIndex, columnIndex) => {
-   *   console.log('Clicked row:', item, 'at', rowIndex, columnIndex);
+   * onClickRow={(item, rowIndex, columnIndex, groupOfItems) => {
+   *   console.log('Clicked row:', item, 'at', rowIndex, columnIndex, 'with group of items:', groupOfItems);
    * }}
    * ```
    */
-  onClickRow?: (item: TData, rowIndex: number, columnIndex: number) => void;
+  onClickRow?: (item: TData, rowIndex: number, columnIndex: number, groupOfItems?: TData[]) => void;
 
   /**
    * Callbacks for filter change events.
@@ -318,10 +323,14 @@ export interface IKnittoTable<TData> {
   /**
    * Callback fired when a row is double-clicked.
    *
+   * @param item - The data item of the double-clicked row.
+   * @param rowIndex - The index of the double-clicked row.
+   * @param columnIndex - The index of the double-clicked column.
+   *
    * @example
    * ```tsx
    * onDoubleClickRow={(item, rowIndex, columnIndex) => {
-   *   openEditModal(item);
+   *   console.log('Double clicked row:', item, 'at', rowIndex, columnIndex);
    * }}
    * ```
    */
@@ -331,10 +340,13 @@ export interface IKnittoTable<TData> {
    * Callback fired when a row is right-clicked.
    * Provides the clicked item and mouse position for context menu display.
    *
+   * @param item - The data item of the right-clicked row.
+   * @param position - The position of the right-clicked row.
+   *
    * @example
    * ```tsx
    * onRightClickRow={(item, position) => {
-   *   showContextMenu(item, position.x, position.y);
+   *   console.log('Right clicked row:', item, 'at', position.x, position.y);
    * }}
    * ```
    */
