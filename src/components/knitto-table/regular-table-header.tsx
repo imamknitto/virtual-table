@@ -144,11 +144,11 @@ function RegularTableHeader({ headerHeight }: IRegularTableHeader) {
           const isFreezeRight = header.freeze === 'right';
 
           const baseClassName = clsx('size-full relative group/outer', {
-            '!border-r border-[#D2D2D4]': !isLastColumn,
+            'border-b border-r border-[#D2D2D4]': !isLastColumn,
             'border-l': isFreezeRight,
             'h-full content-center': true,
             'bg-[#EFF0F6] dark:bg-black': true,
-            '!text-xs font-semibold': true,
+            'text-start !text-xs font-semibold': true,
           });
 
           // NOTE: Kalau punya children, colSpan = jumlah leaf children. Kalau tidak, colSpan = 1
@@ -214,7 +214,6 @@ function RegularTableHeader({ headerHeight }: IRegularTableHeader) {
               className={clsx({
                 '!sticky !left-0 z-20': isFreezeLeft,
                 '!sticky !right-0 z-20': isFreezeRight,
-                'text-start': true,
               })}
               colSpan={colSpan}
               rowSpan={rowSpan}
@@ -318,18 +317,28 @@ function RegularTableHeader({ headerHeight }: IRegularTableHeader) {
               const isCheckboxHeader = header.key === 'row-selection';
               const isLastColumn = columnIndex === columns.length - 1;
               const hideFilterSort = header?.hideFilter?.sort || false;
+              const isFreezeRight = header.freeze === 'right';
+              const isFreezeLeft = header.freeze === 'left';
+
+              const baseClassName = clsx('size-full relative group/outer', {
+                '!border-r border-[#D2D2D4]': !isLastColumn,
+                'border-l': isFreezeRight,
+                'h-full content-center': true,
+                'bg-[#EFF0F6] dark:bg-black': true,
+                '!text-xs font-semibold': true,
+              });
 
               let headContent;
 
               if (isCheckboxHeader) {
                 headContent = (
-                  <div onClick={handleSelectAllChange} className='cursor-pointer'>
+                  <div onClick={handleSelectAllChange} className={baseClassName}>
                     <RowCheckbox checked={selectAll && !deselectedRowKeys.size} />
                   </div>
                 );
               } else if (header.renderHeader) {
                 headContent = (
-                  <div className='relative size-full group/outer'>
+                  <div className={baseClassName}>
                     {header.renderHeader()}
                     <ResizeIndicator handleMouseDown={(e) => handleResizeColumn(e, columnIndex)} />
                   </div>
@@ -337,7 +346,7 @@ function RegularTableHeader({ headerHeight }: IRegularTableHeader) {
               } else {
                 headContent = (
                   <div
-                    className={clsx('flex size-full relative group/outer', {
+                    className={clsx(baseClassName, 'flex', {
                       'flex-row justify-between items-center': isSingleHeader,
                       'flex-col justify-between items-start': !isSingleHeader,
                     })}
@@ -369,7 +378,10 @@ function RegularTableHeader({ headerHeight }: IRegularTableHeader) {
                   key={'regular-table-head-' + header.key?.toString()}
                   width={header.width || 0}
                   height={calcHeaderHeight}
-                  className={clsx({ 'border-r': !isLastColumn })}
+                  className={clsx({
+                    '!sticky !left-0 z-20': isFreezeLeft,
+                    '!sticky !right-0 z-20': isFreezeRight,
+                  })}
                 >
                   {headContent}
                 </NativeTableHead>
