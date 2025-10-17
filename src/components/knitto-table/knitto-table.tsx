@@ -1,4 +1,4 @@
-import { useMemo, useRef, useEffect, forwardRef, type ReactNode } from 'react';
+import { useMemo, useRef, forwardRef, type ReactNode } from 'react';
 import AutoSizer from 'react-virtualized-auto-sizer';
 
 import RegularTable from './regular-table';
@@ -11,12 +11,13 @@ import { SelectionContextProvider } from './context/selection-context';
 import { UIContextProvider } from './context/ui-context';
 
 import { useScrollBottomDetection } from './hooks';
-import { DEFAULT_SIZE, type IAdjustedHeader, type IKnittoTable } from './lib';
+import { DEFAULT_SIZE, type IAdjustedHeader, type IKnittoTable, type IVirtualTableRef } from './lib';
 
 import './lib/style.css';
 import { LoadingIndicator, TableScrollWrapper } from './components';
+import type { Virtualizer } from '@tanstack/react-virtual';
 
-const KnittoTable = forwardRef(<TData,>(props: IKnittoTable<TData>, ref: React.ForwardedRef<HTMLDivElement>) => {
+const KnittoTable = forwardRef(<TData,>(props: IKnittoTable<TData>, ref: React.ForwardedRef<IVirtualTableRef>) => {
   const {
     rowKey,
     data,
@@ -50,15 +51,50 @@ const KnittoTable = forwardRef(<TData,>(props: IKnittoTable<TData>, ref: React.F
    * - Jika ref adalah function, maka set ref ke scrollElementRef.current
    * - Jika ref adalah mutable ref object, maka set current ke scrollElementRef.current
    */
-  useEffect(() => {
-    if (!scrollElementRef.current) return;
+  const handleScrollElementRef = (element: HTMLDivElement | null) => {
+    scrollElementRef.current = element;
 
-    if (typeof ref === 'function') {
-      ref(scrollElementRef.current);
-    } else if (ref) {
-      (ref as React.MutableRefObject<HTMLDivElement | null>).current = scrollElementRef.current;
+    if (element) {
+      const refValue = {
+        virtualizer: null, // Akan diupdate ketika virtualizer ready
+        scrollElement: element,
+      };
+
+      if (typeof ref === 'function') {
+        ref(refValue);
+      } else if (ref) {
+        (ref as React.MutableRefObject<IVirtualTableRef>).current = refValue;
+      }
     }
-  }, [ref, scrollElementRef.current]);
+  };
+
+  // Handle rowVirtualizer ready callback - update virtualizer saja
+  const handleRowVirtualizerReady = (virtualizer: Virtualizer<HTMLDivElement, Element>) => {
+    if (ref) {
+      if (typeof ref === 'function') {
+        // Function ref - set ulang dengan virtualizer
+        const refValue = {
+          virtualizer,
+          scrollElement: scrollElementRef.current,
+        };
+        ref(refValue);
+      } else {
+        // Object ref - update virtualizer saja
+        if (ref.current) {
+          ref.current.virtualizer = virtualizer;
+        }
+      }
+    }
+  };
+  // useEffect(() => {
+  //   if (!scrollElementRef.current) return;
+
+  //   if (typeof ref === 'function') {
+  //     ref(scrollElementRef.current);
+  //   } else if (ref) {
+  //     (ref as React.MutableRefObject<HTMLDivElement | null>).current = scrollElementRef.current;
+  //   }
+  // }, [ref, scrollElementRef.current]);
 
   // Setup scroll bottom detection
   useScrollBottomDetection(scrollElementRef, {
@@ -90,6 +126,7 @@ const KnittoTable = forwardRef(<TData,>(props: IKnittoTable<TData>, ref: React.F
       rowKey={rowKey}
       scrollElementRef={scrollElementRef}
       enableColumnVirtualization={enableColumnVirtualization}
+      onRowVirtualizerReady={handleRowVirtualizerReady}
     >
       <UIContextProvider
         filterHeight={filterHeight}
@@ -101,7 +138,7 @@ const KnittoTable = forwardRef(<TData,>(props: IKnittoTable<TData>, ref: React.F
         useDynamicRowHeight={useDynamicRowHeight}
       >
         <TableScrollWrapper
-          ref={scrollElementRef}
+          handleScrollElementRef={handleScrollElementRef}
           isLoading={isLoading}
           classNameOuterTable={classNameOuterTable || ''}
           useAutoSizer={useAutoSizer}
@@ -132,7 +169,7 @@ const KnittoTable = forwardRef(<TData,>(props: IKnittoTable<TData>, ref: React.F
       useDynamicRowHeight={useDynamicRowHeight}
     >
       <TableScrollWrapper
-        ref={scrollElementRef}
+        handleScrollElementRef={handleScrollElementRef}
         isLoading={isLoading}
         classNameOuterTable={classNameOuterTable || ''}
         useAutoSizer={useAutoSizer}

@@ -413,6 +413,50 @@ export interface IKnittoTable<TData> {
    */
   onScroll?: (scrollTop: number, scrollLeft: number) => void;
 }
+export interface IVirtualTableRef {
+  /**
+   * Virtualizer instance for the table.
+   * @type {Virtualizer<HTMLDivElement, Element> | null}
+   *
+   * @example
+   * ```tsx
+   * import { type IVirtualTableRef } from 'knitto-table';
+   *
+   * const tableRef = useRef<IVirtualTableRef>(null);
+   *
+   * const scrollToIndex = () => {
+   *   if (!tableRef.current) return;
+   *
+   *   tableRef.current.virtualizer?.scrollToIndex(index, { align: 'start', behavior: 'smooth' });
+   * }
+   *
+   *
+   * <KnittoTable ref={tableRef} ... />
+   * ```
+   *
+   */
+  virtualizer: Virtualizer<HTMLDivElement, Element> | null;
+
+  /**
+   * Scroll element for the table.
+   * @type {HTMLDivElement | null}
+   *
+   * ```tsx
+   * import { type IVirtualTableRef } from 'knitto-table';
+   *
+   * const tableRef = useRef<IVirtualTableRef>(null);
+   *
+   * const scrollToTop = () => {
+   *   if (!tableRef.current) return;
+   *
+   *   tableRef.current.scrollElement?.scrollTo({ top: 0, behavior: 'smooth' });
+   * }
+   *
+   *
+   * <KnittoTable ref={tableRef} ... />
+   */
+  scrollElement: HTMLDivElement | null;
+}
 
 /**
  * Configuration interface for table column headers.

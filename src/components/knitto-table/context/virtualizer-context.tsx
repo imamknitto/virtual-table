@@ -1,6 +1,6 @@
 import { useVirtualizer, Virtualizer, type VirtualItem } from '@tanstack/react-virtual';
 import { createContext, useContextSelector } from 'use-context-selector';
-import { useMemo, useCallback } from 'react';
+import { useMemo, useCallback, useEffect } from 'react';
 import useFlattenedDataIncremental from '../hooks/use-flattened-data-incremental';
 import { useAutoStretchColumn } from '../hooks/use-auto-stretch-column';
 import { DEFAULT_SIZE } from '../lib';
@@ -30,6 +30,7 @@ type IVirtualizerContextProvider<T> = {
   rowKey: keyof T | ((data: T, index: number) => string);
   scrollElementRef: React.RefObject<HTMLDivElement | null>;
   enableColumnVirtualization?: boolean;
+  onRowVirtualizerReady?: (virtualizer: Virtualizer<HTMLDivElement, Element>) => void;
 };
 
 // ==================== Context ====================
@@ -60,7 +61,7 @@ export const useEnableColumnVirtualization = () =>
 
 // ==================== Provider ====================
 export const VirtualizerContextProvider = <T,>(props: IVirtualizerContextProvider<T>): React.ReactElement => {
-  const { children, scrollElementRef, rowKey, enableColumnVirtualization = true } = props;
+  const { children, scrollElementRef, rowKey, enableColumnVirtualization = true, onRowVirtualizerReady } = props;
 
   const columns = useColumns();
   const filteredData = useFilteredData();
@@ -92,6 +93,13 @@ export const VirtualizerContextProvider = <T,>(props: IVirtualizerContextProvide
     estimateSize: () => DEFAULT_SIZE.ROW_HEIGHT,
     overscan: 20,
   });
+
+  // Expose rowVirtualizer to parent component
+  useEffect(() => {
+    if (rowVirtualizer && onRowVirtualizerReady) {
+      onRowVirtualizerReady(rowVirtualizer);
+    }
+  }, [rowVirtualizer, onRowVirtualizerReady]);
 
   // Auto stretch column hook
   useAutoStretchColumn({
