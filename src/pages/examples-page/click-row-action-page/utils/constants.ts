@@ -1,4 +1,4 @@
-export const CODE_EXAMPLE = `import { VirtualTable, type IHeader } from '@knitto/virtual-table';
+export const CODE_EXAMPLE = `import { KnittoTable, type IHeader } from '@knitto/virtual-table';
 
 type Product = {
   id: number;

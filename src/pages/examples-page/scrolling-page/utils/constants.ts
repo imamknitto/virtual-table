@@ -1,5 +1,5 @@
 export const CODE_EXAMPLES = {
-  scrollTracking: `import { VirtualTable, type IHeader, type IVirtualTableRef } from '@knitto/virtual-table';
+  scrollTracking: `import { KnittoTable, type IHeader, type IVirtualTableRef } from '@knitto/virtual-table';
 import { useRef, useCallback } from 'react';
 
 const ScrollTrackingTable = () => {
@@ -32,7 +32,7 @@ const ScrollTrackingTable = () => {
   );
 };`,
 
-  programmaticScrolling: `import { VirtualTable, type IHeader, type IVirtualTableRef } from '@knitto/virtual-table';
+  programmaticScrolling: `import { KnittoTable, type IHeader, type IVirtualTableRef } from '@knitto/virtual-table';
 import { useRef } from 'react';
 
 const ProgrammaticScrollTable = () => {
@@ -78,7 +78,7 @@ const ProgrammaticScrollTable = () => {
   );
 };`,
 
-  infiniteScroll: `import { VirtualTable, type IHeader} from '@knitto/virtual-table';
+  infiniteScroll: `import { KnittoTable, type IHeader} from '@knitto/virtual-table';
 import { useCallback, useState } from 'react';
 
 const InfiniteScrollTable = () => {

@@ -1,5 +1,5 @@
 export const CODE_EXAMPLES = {
-  basicUsage: `import { VirtualTable, type IHeader } from '@knitto/virtual-table';
+  basicUsage: `import { KnittoTable, type IHeader } from '@knitto/virtual-table';
 import { useMemo } from 'react';
 
 const LargeDatasetTable = () => {

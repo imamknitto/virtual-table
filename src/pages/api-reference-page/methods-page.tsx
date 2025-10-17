@@ -4,7 +4,7 @@ const MethodsPage = () => {
       <div>
         <h1 className='text-4xl font-bold tracking-tight'>Methods</h1>
         <p className='text-xl text-muted-foreground mt-4'>
-          Available methods and utilities for working with VirtualTable component.
+          Available methods and utilities for working with KnittoTable component.
         </p>
       </div>
 

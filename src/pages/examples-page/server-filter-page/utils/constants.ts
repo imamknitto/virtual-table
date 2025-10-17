@@ -1,6 +1,6 @@
 export const CODE_EXAMPLES = {
   main: `import { useState, useEffect, useCallback } from 'react';
-import { VirtualTable, type IHeader } from '@knitto/virtual-table';
+import { KnittoTable, type IHeader } from '@knitto/virtual-table';
 import type { TSortOrder, TFilterAdvanceConfig } from '@knitto/virtual-table/lib/types';
 
 // Types for our API data

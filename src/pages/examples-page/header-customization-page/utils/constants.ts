@@ -1,5 +1,5 @@
 export const CODE_EXAMPLE = `import { useState, useMemo } from 'react';
-import { VirtualTable, type IHeader } from '@knitto/virtual-table';
+import { KnittoTable, type IHeader } from '@knitto/virtual-table';
 import { faker } from '@faker-js/faker';
 import clsx from 'clsx';
 

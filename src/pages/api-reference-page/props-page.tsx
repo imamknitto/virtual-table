@@ -4,7 +4,7 @@ const PropsPage = () => {
       <div>
         <h1 className='text-4xl font-bold tracking-tight'>Props</h1>
         <p className='text-xl text-muted-foreground mt-4'>
-          Complete reference for all VirtualTable component props and their configurations.
+          Complete reference for all KnittoTable component props and their configurations.
         </p>
       </div>
 

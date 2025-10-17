@@ -28,7 +28,7 @@ const NestedTableSection = ({ data }: NestedTableSectionProps) => {
       <div className='mb-4 p-4 bg-green-50 dark:bg-green-950 border border-green-200 dark:border-green-800 rounded-lg'>
         <p className='text-sm text-green-800 dark:text-green-200'>
           <strong>Example:</strong> Company table with expandable rows containing nested
-          VirtualTable components. Each department can be expanded to show teams, demonstrating
+          KnittoTable components. Each department can be expanded to show teams, demonstrating
           recursive expand functionality.
         </p>
       </div>

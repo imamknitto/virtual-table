@@ -1,5 +1,5 @@
 export const CODE_EXAMPLES = {
-  basicExpand: `import { VirtualTable, type IHeader } from '@knitto/virtual-table';
+  basicExpand: `import { KnittoTable, type IHeader } from '@knitto/virtual-table';
 
 const EmployeeTable = () => {
   const [data] = useState(generateEmployeeData());
@@ -53,7 +53,7 @@ const EmployeeTable = () => {
   );
 };`,
 
-  nestedTable: `import { VirtualTable, type IHeader } from '@knitto/virtual-table';
+  nestedTable: `import { KnittoTable, type IHeader } from '@knitto/virtual-table';
 
 const CompanyTable = () => {
   const [data] = useState(generateCompanyData());
@@ -108,7 +108,7 @@ const CompanyTable = () => {
   );
 };`,
 
-  customToggle: `import { VirtualTable, type IHeader } from '@knitto/virtual-table';
+  customToggle: `import { KnittoTable, type IHeader } from '@knitto/virtual-table';
 
 const CustomExpandTable = () => {
   const [data] = useState(generateEmployeeData());
