@@ -28,6 +28,11 @@ const ProgrammaticScrollingSection = ({ data }: ProgrammaticScrollingSectionProp
     tableRef.current?.scrollElement?.scrollTo({ top, left, behavior: 'smooth' });
   };
 
+  const scrollToIndex = (index: number) => {
+    // Sometimes we need no find the proper index to set proper position
+    tableRef.current?.virtualizer?.scrollToIndex(index - 1, { align: 'start', behavior: 'smooth' });
+  };
+
   return (
     <section>
       <div className='flex items-center justify-between mb-4'>
@@ -73,6 +78,12 @@ const ProgrammaticScrollingSection = ({ data }: ProgrammaticScrollingSectionProp
           onClick={() => scrollToPosition(1000, 200)}
         >
           📍 Scroll to (1000px, 200px)
+        </button>
+        <button
+          className='inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground h-8 px-3'
+          onClick={() => scrollToIndex(10)}
+        >
+          📍 Scroll to Index 10
         </button>
       </div>
 

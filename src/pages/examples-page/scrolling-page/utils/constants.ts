@@ -54,12 +54,18 @@ const ProgrammaticScrollTable = () => {
     tableRef.current?.scrollElement?.scrollTo({ top, left, behavior: 'smooth' });
   };
 
+  const scrollToIndex = (index: number) => {
+    // Sometimes we need no find the proper index to set proper position
+    tableRef.current?.virtualizer?.scrollToIndex(index - 1, { align: 'start', behavior: 'smooth' });
+  };
+
   return (
     <div>
       <div className="mb-4 space-x-2">
         <button onClick={scrollToTop}>Scroll to Top</button>
         <button onClick={scrollToBottom}>Scroll to Bottom</button>
         <button onClick={() => scrollToPosition(500)}>Scroll to 500px</button>
+        <button onClick={() => scrollToIndex(10)}>Scroll to Index 10</button>
       </div>
       
       <KnittoTable
