@@ -17,20 +17,14 @@ const NativeTableHead = forwardRef<HTMLTableCellElement, TableHeadProps>(
         ref={ref}
         colSpan={colSpan}
         rowSpan={rowSpan}
-        className={clsx(
-          'h-full content-center',
-          'bg-[#EFF0F6] dark:bg-black',
-          'border-b border-[#D2D2D4]',
-          '!text-xs font-semibold',
-          'global-report-title',
-          className,
-        )}
+        className={clsx('global-report-title', className)}
         style={{
           top: 0,
           height,
           width: `${width}px`,
           minWidth: `${width}px`,
           maxWidth: maxWidth ? `${maxWidth}px` : 'none',
+          ...props.style,
         }}
         {...props}
       >

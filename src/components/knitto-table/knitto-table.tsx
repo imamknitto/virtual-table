@@ -150,7 +150,7 @@ const KnittoTable = forwardRef(<TData,>(props: IKnittoTable<TData>, ref: React.F
    * - Cek apakah menggunakan regular table atau virtual table
    */
   const renderTableContent = (width?: number, height?: number) => (
-    <HeaderContextProvider initialColumns={modifiedHeaders as IAdjustedHeader[]}>
+    <HeaderContextProvider initialColumns={modifiedHeaders as IAdjustedHeader[]} useRegularTable={useRegularTable}>
       <FilterContextProvider
         dataSource={data}
         useServerFilter={useServerFilter}

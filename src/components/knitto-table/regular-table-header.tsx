@@ -140,6 +140,17 @@ function RegularTableHeader({ headerHeight }: IRegularTableHeader) {
           const isCheckboxHeader = header.key === 'row-selection';
           const hasChildren = header.children && header.children.length > 0;
           const isLastColumn = columnIndex === columns.length - 1;
+          const isFreezeLeft = header.freeze === 'left';
+          const isFreezeRight = header.freeze === 'right';
+
+          const baseClassName = clsx('size-full relative group/outer', {
+            '!border-r border-[#D2D2D4]': !isLastColumn,
+            'border-l': isFreezeRight,
+            'h-full content-center': true,
+            'bg-[#EFF0F6] dark:bg-black': true,
+            '!text-xs font-semibold': true,
+          });
+
           // NOTE: Kalau punya children, colSpan = jumlah leaf children. Kalau tidak, colSpan = 1
           const colSpan = hasChildren ? getLeaves(header).length : 1;
           // NOTE: Kalau punya children, rowSpan = 1 (hanya baris pertama). Kalau tidak, rowSpan = 2 (span ke baris kedua)
@@ -155,11 +166,11 @@ function RegularTableHeader({ headerHeight }: IRegularTableHeader) {
             );
           } else if (hasChildren) {
             headContent = (
-              <div className='relative size-full group/outer flex items-center justify-center'>{header.caption}</div>
+              <div className={clsx(baseClassName, 'flex items-center justify-center')}>{header.caption}</div>
             );
           } else if (header.renderHeader) {
             headContent = (
-              <div className='relative size-full group/outer'>
+              <div className={baseClassName}>
                 {header.renderHeader()}
                 <ResizeIndicator handleMouseDown={(e) => handleResizeColumn(e, columnIndex)} />
               </div>
@@ -167,7 +178,7 @@ function RegularTableHeader({ headerHeight }: IRegularTableHeader) {
           } else {
             headContent = (
               <div
-                className={clsx('flex size-full relative group/outer', {
+                className={clsx(baseClassName, 'flex', {
                   'flex-row justify-between items-center': isSingleHeader,
                   'flex-col justify-between items-start': !isSingleHeader,
                   'pl-1.5': isSingleHeader,
@@ -200,7 +211,11 @@ function RegularTableHeader({ headerHeight }: IRegularTableHeader) {
               key={'regular-table-head-group-' + header.key?.toString()}
               width={header.width || 0}
               height={hasChildren ? DEFAULT_SIZE.GROUP_HEADER_HEIGHT : calcHeaderHeight}
-              className={clsx({ 'border-r': !isLastColumn, 'text-start': true })}
+              className={clsx({
+                '!sticky !left-0 z-20': isFreezeLeft,
+                '!sticky !right-0 z-20': isFreezeRight,
+                'text-start': true,
+              })}
               colSpan={colSpan}
               rowSpan={rowSpan}
             >
@@ -221,12 +236,18 @@ function RegularTableHeader({ headerHeight }: IRegularTableHeader) {
           // NOTE: Skip kalau kolom ini tidak punya children (sudah di-render di row pertama dengan rowSpan=2)
           if (!hasChildren) return [];
 
-          return header.children!.map((child, childIndex) => {
-            const isLastChild = childIndex === header.children!.length - 1;
+          return header.children!.map((child) => {
             const hideFilterSort = child?.hideFilter?.sort || false;
 
+            const baseClassName = clsx('size-full relative group/outer', {
+              'border-r': true,
+              'h-full content-center': true,
+              'bg-[#EFF0F6] dark:bg-black': true,
+              '!text-xs font-semibold': true,
+            });
+
             const headContent = child.renderHeader ? (
-              <div className='relative size-full group/outer'>
+              <div className={baseClassName}>
                 {child.renderHeader()}
                 <ResizeIndicator
                   handleMouseDown={(e) => handleResizeChildColumn(e, header.key as string, child.key as string)}
@@ -234,7 +255,7 @@ function RegularTableHeader({ headerHeight }: IRegularTableHeader) {
               </div>
             ) : (
               <div
-                className={clsx('flex size-full relative group/outer', {
+                className={clsx(baseClassName, 'flex', {
                   'flex-row justify-between items-center': isSingleHeader,
                   'flex-col justify-between items-start': !isSingleHeader,
                   'pl-1.5': isSingleHeader,
@@ -268,7 +289,7 @@ function RegularTableHeader({ headerHeight }: IRegularTableHeader) {
                 key={'regular-table-head-child-' + child.key?.toString()}
                 width={child.width || 0}
                 height={calcHeaderHeight}
-                className={clsx({ 'border-r': !isLastChild, 'text-start': true })}
+                className={clsx({ 'text-start': true })}
               >
                 {headContent}
               </NativeTableHead>

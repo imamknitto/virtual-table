@@ -10,6 +10,7 @@ type TPickKnittoTable<TData> = Pick<
   | 'rowHeight'
   | 'onClickRow'
   | 'onDoubleClickRow'
+  | 'onRightClickRow'
   | 'useFooter'
   | 'footerHeight'
   | 'isLoading'
@@ -22,6 +23,7 @@ function RegularTable<TData>(props: TPickKnittoTable<TData>) {
     rowHeight = DEFAULT_SIZE.ROW_HEIGHT,
     onClickRow,
     onDoubleClickRow,
+    onRightClickRow,
   } = props;
 
   return (
@@ -33,6 +35,7 @@ function RegularTable<TData>(props: TPickKnittoTable<TData>) {
           rowHeight={rowHeight}
           onClickRowToParent={onClickRow}
           onDoubleClickRowToParent={onDoubleClickRow}
+          onRightClickRowToParent={onRightClickRow}
         />
       </table>
     </>

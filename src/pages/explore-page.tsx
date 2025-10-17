@@ -199,7 +199,7 @@ const combinedExampleData: SalesReport[] = [
 ];
 
 const combinedHeaders: IHeader<SalesReport>[] = [
-  { key: 'region', caption: 'Region', enableRowSpan: true },
+  { key: 'region', caption: 'Region', enableRowSpan: true, freeze: 'left' },
   { key: 'country', caption: 'Country', enableRowSpan: true },
   { key: 'salesRep', caption: 'Sales Rep', width: 150, enableRowSpan: true },
   { key: 'product', caption: 'Product', width: 120 },
@@ -213,7 +213,7 @@ const combinedHeaders: IHeader<SalesReport>[] = [
       { key: 'q4Sales', caption: 'Q4', width: 100 },
     ],
   },
-  { key: 'totalSales', caption: 'Total Sales', width: 120 },
+  { key: 'totalSales', caption: 'Total Sales', width: 120, freeze: 'right' },
 ];
 
 function ExplorePage() {
@@ -233,6 +233,9 @@ function ExplorePage() {
             headers={combinedHeaders}
             data={combinedExampleData}
             useRegularTable
+            onRightClickRow={(item) => {
+              console.log('onRightClickRow', item);
+            }}
           />
         </div>
       </div>

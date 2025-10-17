@@ -16,14 +16,7 @@ const NativeTableCell = forwardRef((props: ITableCell, ref: React.Ref<HTMLTableC
     <td
       ref={ref}
       rowSpan={rowSpan}
-      className={clsx(
-        'px-1.5',
-        'border-b border-[#D2D2D4]',
-        '!text-xs',
-        'global-report-content',
-        'content-center',
-        className,
-      )}
+      className={clsx('global-report-content', className)}
       style={{
         width: columnWidth,
         minWidth: columnWidth,

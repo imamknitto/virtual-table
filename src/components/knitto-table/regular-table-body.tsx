@@ -20,13 +20,14 @@ import {
   useToggleRowSelection,
   useSetSelectedRowWithSpanKeys,
 } from './context/selection-context';
-import { useExpandedContent, useUseDynamicRowHeight } from './context/ui-context';
+import { useClassNameCell, useExpandedContent, useUseDynamicRowHeight } from './context/ui-context';
 
 interface IRegularTableBody<TData> {
   rowKey: keyof TData | ((data: TData, index: number) => string);
   rowHeight: number;
   onClickRowToParent?: (item: TData, rowIndex: number, columnIndex: number) => void;
   onDoubleClickRowToParent?: (item: TData, rowIndex: number, columnIndex: number) => void;
+  onRightClickRowToParent?: (item: TData, position: { x: number; y: number }) => void;
 }
 
 function RegularTableBody<TData>({
@@ -34,6 +35,7 @@ function RegularTableBody<TData>({
   rowHeight,
   onClickRowToParent,
   onDoubleClickRowToParent,
+  onRightClickRowToParent,
 }: IRegularTableBody<TData>) {
   const flattenColumnsData = useFlattenColumns();
   const filteredData = useFilteredData() as TData[];
@@ -50,6 +52,7 @@ function RegularTableBody<TData>({
   const expandedContent = useExpandedContent();
   const useDynamicRowHeight = useUseDynamicRowHeight();
   const setSelectedRowWithSpanKeys = useSetSelectedRowWithSpanKeys();
+  const classNameCell = useClassNameCell();
 
   // NOTE: Ambil semua leaf columns dari flattened columns data (handle grouped headers)
   const flattenedColumns = useMemo(() => flattenColumnsData.map((item) => item.col), [flattenColumnsData]);
@@ -123,6 +126,16 @@ function RegularTableBody<TData>({
     [onDoubleClickRowToParent],
   );
 
+  const handleRightClickRow = useCallback(
+    (item: TData, e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+      if (!onRightClickRowToParent) return;
+
+      e.preventDefault();
+      onRightClickRowToParent?.(item, { x: e.clientX, y: e.clientY });
+    },
+    [onRightClickRowToParent],
+  );
+
   const handleCheckboxChange = useCallback(
     (_item: TData, rowIndex: number) => {
       const key = getCachedRowKey(rowIndex);
@@ -178,6 +191,9 @@ function RegularTableBody<TData>({
     const isRowChecked = selectAll ? !deselectedRowKeys.has(key) : selectedRowKeys.has(key);
     const isRowExpanded = expandedRowKeys.has(key);
     const isLastColumn = columnIndex === flattenedColumns.length - 1;
+    const customClassNameCell = classNameCell ? classNameCell(item, rowIndex, columnIndex) : '';
+    const isFreezeLeft = column.freeze === 'left';
+    const isFreezeRight = column.freeze === 'right';
 
     // NOTE: Cek data rowspan untuk cell ini
     const rowSpanData = rowSpanMap.get(cellKey);
@@ -188,24 +204,35 @@ function RegularTableBody<TData>({
     // Cek apakah cell ini harus di-highlight
     const isCellHighlighted = checkCellHighlighting(item, rowIndex, cellKey);
 
+    // classname
+    const classNameCellContent = clsx(useDynamicRowHeight ? 'break-words' : 'truncate', {
+      'border-r': !isLastColumn,
+      '!border-l': isFreezeRight,
+      'bg-white': (isFreezeLeft || isFreezeRight) && !isCellHighlighted,
+      'bg-[#ECEEFF] dark:bg-blue-900': isCellHighlighted,
+      'group-hover/regular-table-row:bg-[#ECEEFF] dark:group-hover/regular-table-row:bg-blue-900': !rowSpanMap.size,
+      'transition-colors duration-150 size-full content-center px-1.5 text-xs border-b border-[#D2D2D4]': true,
+      [customClassNameCell]: !!customClassNameCell && !isFreezeLeft && !isFreezeRight,
+    });
+
     let cellContent;
 
     if (isCheckboxColumn) {
       cellContent = (
-        <div onClick={() => handleCheckboxChange(item, rowIndex)}>
+        <div className={classNameCellContent} onClick={() => handleCheckboxChange(item, rowIndex)}>
           <RowCheckbox checked={isRowChecked} />
         </div>
       );
     } else if (isExpandColumn) {
       cellContent = (
-        <div onClick={() => handleExpandToggle(item, rowIndex)}>
+        <div className={classNameCellContent} onClick={() => handleExpandToggle(item, rowIndex)}>
           {column.renderExpandToggle?.(item, isRowExpanded) || <RowExpand isExpanded={isRowExpanded} />}
         </div>
       );
     } else if (column.renderCell) {
       cellContent = column.renderCell(item);
     } else {
-      cellContent = String(item[column.key as keyof TData] || '');
+      cellContent = <div className={classNameCellContent}>{String(item[column.key as keyof TData] || '')}</div>;
     }
 
     // NOTE: Untuk cell dengan rowspan yang highlighted, tambahkan border visual feedback
@@ -219,15 +246,11 @@ function RegularTableBody<TData>({
         rowSpan={rowSpanData?.rowSpan || 1} // NOTE: Set rowSpan dari hasil kalkulasi (default: 1)
         onClick={() => !isCheckboxColumn && !isExpandColumn && handleClickRow(item, rowIndex, columnIndex)}
         onDoubleClick={() => !isCheckboxColumn && !isExpandColumn && handleDoubleClickRow(item, rowIndex, columnIndex)}
+        onContextMenu={(e) => !isCheckboxColumn && !isExpandColumn && handleRightClickRow(item, e)}
         data-has-rowspan={hasRowSpan || undefined} // NOTE: Data attribute untuk tracking rowspan cells
         data-rowspan-start={rowSpanData?.spanStartRow}
         data-rowspan-end={rowSpanData?.spanEndRow}
-        className={clsx(useDynamicRowHeight ? 'break-words' : 'truncate', {
-          'border-r': !isLastColumn,
-          'bg-[#ECEEFF] dark:bg-blue-900': isCellHighlighted,
-          'group-hover/regular-table-row:bg-[#ECEEFF] dark:group-hover/regular-table-row:bg-blue-900': !rowSpanMap.size,
-          'transition-colors duration-150': true,
-        })}
+        className={clsx({ '!sticky !left-0 z-[2]': isFreezeLeft, '!sticky !right-0 z-[2]': isFreezeRight })}
       >
         {cellContent}
       </NativeTableCell>
@@ -239,7 +262,6 @@ function RegularTableBody<TData>({
       {filteredData.map((item, rowIndex) => {
         const key = getCachedRowKey(rowIndex);
         const isRowExpanded = expandedRowKeys.has(key);
-        // const isRowSelected = key === String(selectedRowKey);
 
         return (
           <Fragment key={'regular-table-row-' + key}>

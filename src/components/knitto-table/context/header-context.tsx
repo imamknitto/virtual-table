@@ -30,6 +30,7 @@ type IHeaderContext = {
 type IHeaderContextProvider = {
   initialColumns: IAdjustedHeader[];
   children: React.ReactNode;
+  useRegularTable: boolean;
 };
 
 type HeaderState = {
@@ -229,7 +230,11 @@ export const useUpdateChildColumn = () => useContextSelector(HeaderCtx, (ctx) =>
 export const useUpdateFreezeChildColumn = () => useContextSelector(HeaderCtx, (ctx) => ctx?.updateFreezeChildColumn)!;
 
 // ==================== Provider ====================
-export const HeaderContextProvider = ({ initialColumns, children }: IHeaderContextProvider): React.ReactElement => {
+export const HeaderContextProvider = ({
+  initialColumns,
+  useRegularTable,
+  children,
+}: IHeaderContextProvider): React.ReactElement => {
   const [state, dispatch] = useReducer(headerReducer, {
     columns: [],
     freezeLeftColumns: [],
@@ -242,15 +247,25 @@ export const HeaderContextProvider = ({ initialColumns, children }: IHeaderConte
     if (!initialColumns.length) return;
 
     const processedColumns = normalizeColumnsRecursive(initialColumns);
-    const virtualized = processedColumns.filter((col) => !col.freeze);
-    const freezeLeft = processedColumns.filter((col) => col.freeze === 'left');
-    const freezeRight = processedColumns.filter((col) => col.freeze === 'right');
 
-    dispatch({
-      type: 'INITIALIZE',
-      payload: { columns: virtualized, freezeLeft, freezeRight },
-    });
-  }, [initialColumns]);
+    if (useRegularTable) {
+      // Untuk regular table: columns tidak perlu freeze separation
+      dispatch({
+        type: 'INITIALIZE',
+        payload: { columns: processedColumns, freezeLeft: [], freezeRight: [] },
+      });
+    } else {
+      // Untuk virtual table: separate freeze left/right/virtualized
+      const virtualized = processedColumns.filter((col) => !col.freeze);
+      const freezeLeft = processedColumns.filter((col) => col.freeze === 'left');
+      const freezeRight = processedColumns.filter((col) => col.freeze === 'right');
+
+      dispatch({
+        type: 'INITIALIZE',
+        payload: { columns: virtualized, freezeLeft, freezeRight },
+      });
+    }
+  }, [initialColumns, useRegularTable]);
 
   // Memoized flatten columns
   const flattenColumns = useMemo(() => flattenHeaderLeaves(state.columns), [state.columns]);
