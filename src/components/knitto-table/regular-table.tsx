@@ -41,7 +41,7 @@ function RegularTable<TData>(props: IRegularTableProps<TData>) {
 
   return (
     <>
-      <table className='w-full border-collapse' style={{ tableLayout: 'fixed' }}>
+      <table className='w-max' style={{ tableLayout: 'fixed' }}>
         <RegularTableHeader headerHeight={headerHeight} />
         <RegularTableBody
           rowKey={rowKey}

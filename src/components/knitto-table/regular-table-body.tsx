@@ -4,10 +4,38 @@ import clsx from 'clsx';
 
 import NativeTableCell from './components/native-table-cell';
 import { RowCheckbox, RowExpand } from './components';
-import type { IHeader, IKnittoTable } from './lib';
+import type { IHeader, IKnittoTable, IAdjustedHeader } from './lib';
 import { useFlattenColumns } from './context/header-context';
 import { useFilteredData } from './context/filter-context';
 import { useRowSpanCalculator } from './hooks/use-rowspan-calculator';
+
+// Utility functions for freeze position calculations
+const getFreezeLeftPosition = (columns: IAdjustedHeader[], currentIndex: number) => {
+  const currentColumn = columns[currentIndex];
+  if (currentColumn?.freeze !== 'left') return 0;
+
+  let leftPosition = 0;
+  for (let i = 0; i < currentIndex; i++) {
+    if (columns[i].freeze === 'left') {
+      leftPosition += columns[i].width || 0;
+    }
+  }
+  return leftPosition;
+};
+
+const getFreezeRightPosition = (columns: IAdjustedHeader[], currentIndex: number) => {
+  const currentColumn = columns[currentIndex];
+  if (currentColumn?.freeze !== 'right') return 0;
+
+  let rightPosition = 0;
+  // Hitung dari kolom saat ini ke kanan
+  for (let i = currentIndex + 1; i < columns.length; i++) {
+    if (columns[i].freeze === 'right') {
+      rightPosition += columns[i].width || 0;
+    }
+  }
+  return rightPosition;
+};
 import {
   useDeselectedRowKeys,
   useExpandedRowKeys,
@@ -205,6 +233,15 @@ function RegularTableBody<TData>({
     const isFreezeLeft = column.freeze === 'left';
     const isFreezeRight = column.freeze === 'right';
 
+    const freezeLeftPosition = getFreezeLeftPosition(
+      flattenedColumns.map((col) => col) as IAdjustedHeader[],
+      columnIndex,
+    );
+    const freezeRightPosition = getFreezeRightPosition(
+      flattenedColumns.map((col) => col) as IAdjustedHeader[],
+      columnIndex,
+    );
+
     // NOTE: Cek data rowspan untuk cell ini
     const rowSpanData = rowSpanMap.get(cellKey);
 
@@ -242,7 +279,12 @@ function RegularTableBody<TData>({
     } else if (column.renderCell) {
       cellContent = column.renderCell(item);
     } else {
-      cellContent = <div className={classNameCellContent}>{String(item[column.key as keyof TData] || '')}</div>;
+      cellContent = (
+        <div className={classNameCellContent}>
+          {String(item[column.key as keyof TData] || '')}
+          {freezeRightPosition}
+        </div>
+      );
     }
 
     // NOTE: Untuk cell dengan rowspan yang highlighted, tambahkan border visual feedback
@@ -260,7 +302,13 @@ function RegularTableBody<TData>({
         data-has-rowspan={hasRowSpan || undefined} // NOTE: Data attribute untuk tracking rowspan cells
         data-rowspan-start={rowSpanData?.spanStartRow}
         data-rowspan-end={rowSpanData?.spanEndRow}
-        className={clsx({ '!sticky !left-0 z-[2]': isFreezeLeft, '!sticky !right-0 z-[2]': isFreezeRight })}
+        style={{
+          position: isFreezeLeft || isFreezeRight ? 'sticky' : undefined,
+          zIndex: 2,
+          ...(isFreezeLeft && { left: freezeLeftPosition }),
+          ...(isFreezeRight && { right: freezeRightPosition }),
+        }}
+        className={clsx({})}
       >
         {cellContent}
       </NativeTableCell>

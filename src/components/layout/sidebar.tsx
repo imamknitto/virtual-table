@@ -38,6 +38,8 @@ const navigation: NavItem[] = [
       { title: 'Column Virtualization', href: '/docs/examples/column-virtualization' },
       { title: 'Dynamic Row Height', href: '/docs/examples/dynamic-row-height' },
       { title: 'Large Dataset', href: '/docs/examples/large-dataset' },
+      { title: 'Regular Table', href: '/docs/examples/regular-table' },
+      { title: 'Rowspan', href: '/docs/examples/rowspan' },
     ],
   },
   {
@@ -74,6 +76,8 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
         import('../../pages/examples-page/column-virtualization-page'),
       '/docs/examples/dynamic-row-height': () =>
         import('../../pages/examples-page/dynamic-row-height-page'),
+      '/docs/examples/regular-table': () => import('../../pages/examples-page/regular-table-page'),
+      '/docs/examples/rowspan': () => import('../../pages/examples-page/rowspan-page'),
       '/docs/api/props': () => import('../../pages/api-reference-page/props-page'),
       '/docs/api/methods': () => import('../../pages/api-reference-page/methods-page'),
       '/docs/examples': () => import('../../pages/examples-page/index'),

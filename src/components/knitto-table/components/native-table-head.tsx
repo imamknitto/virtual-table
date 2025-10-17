@@ -11,7 +11,7 @@ interface TableHeadProps extends React.ThHTMLAttributes<React.ComponentRef<'th'>
 }
 
 const NativeTableHead = forwardRef<HTMLTableCellElement, TableHeadProps>(
-  ({ width, maxWidth, height, headValue, className, children, colSpan, rowSpan, ...props }, ref) => {
+  ({ width, maxWidth, height, headValue, className, children, colSpan, rowSpan, style, ...props }, ref) => {
     return (
       <th
         ref={ref}
@@ -24,7 +24,7 @@ const NativeTableHead = forwardRef<HTMLTableCellElement, TableHeadProps>(
           width: `${width}px`,
           minWidth: `${width}px`,
           maxWidth: maxWidth ? `${maxWidth}px` : 'none',
-          ...props.style,
+          ...style,
         }}
         {...props}
       >

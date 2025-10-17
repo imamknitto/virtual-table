@@ -232,7 +232,6 @@ function ExplorePage() {
             isLoading={false}
             headers={combinedHeaders}
             data={combinedExampleData}
-            useFooter
             useRegularTable
             onClickRow={(item, rowIndex, columnIndex, groupOfItems) => {
               console.log('CLICK ROW: ', { item, rowIndex, columnIndex, groupOfItems });

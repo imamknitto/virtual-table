@@ -15,7 +15,35 @@ import { RowCheckbox, TableFilter } from './components';
 import ResizeIndicator from './components/resize-indicator';
 import ResizeLine from './components/resize-line';
 import NativeTableHead from './components/native-table-head';
-import { DEFAULT_SIZE } from './lib';
+import { DEFAULT_SIZE, type IAdjustedHeader } from './lib';
+
+// Utility functions for freeze position calculations
+const getFreezeLeftPosition = (columns: IAdjustedHeader[], currentIndex: number) => {
+  const currentColumn = columns[currentIndex];
+  if (currentColumn?.freeze !== 'left') return 0;
+
+  let leftPosition = 0;
+  for (let i = 0; i < currentIndex; i++) {
+    if (columns[i].freeze === 'left') {
+      leftPosition += columns[i].width || 0;
+    }
+  }
+  return leftPosition;
+};
+
+const getFreezeRightPosition = (columns: IAdjustedHeader[], currentIndex: number) => {
+  const currentColumn = columns[currentIndex];
+  if (currentColumn?.freeze !== 'right') return 0;
+
+  let rightPosition = 0;
+  // Hitung dari kolom saat ini ke kanan
+  for (let i = currentIndex + 1; i < columns.length; i++) {
+    if (columns[i].freeze === 'right') {
+      rightPosition += columns[i].width || 0;
+    }
+  }
+  return rightPosition;
+};
 
 interface IRegularTableHeader {
   headerHeight: number;
@@ -143,6 +171,9 @@ function RegularTableHeader({ headerHeight }: IRegularTableHeader) {
           const isFreezeLeft = header.freeze === 'left';
           const isFreezeRight = header.freeze === 'right';
 
+          const freezeLeftPosition = getFreezeLeftPosition(columns, columnIndex);
+          const freezeRightPosition = getFreezeRightPosition(columns, columnIndex);
+
           const baseClassName = clsx('size-full relative group/outer', {
             'border-b border-r border-[#D2D2D4]': !isLastColumn,
             'border-l': isFreezeRight,
@@ -211,9 +242,14 @@ function RegularTableHeader({ headerHeight }: IRegularTableHeader) {
               key={'regular-table-head-group-' + header.key?.toString()}
               width={header.width || 0}
               height={hasChildren ? DEFAULT_SIZE.GROUP_HEADER_HEIGHT : calcHeaderHeight}
+              style={{
+                position: isFreezeLeft || isFreezeRight ? 'sticky' : undefined,
+                zIndex: 20,
+                ...(isFreezeLeft && { left: freezeLeftPosition }),
+                ...(isFreezeRight && { right: freezeRightPosition }),
+              }}
               className={clsx({
-                '!sticky !left-0 z-20': isFreezeLeft,
-                '!sticky !right-0 z-20': isFreezeRight,
+                'text-start': true,
               })}
               colSpan={colSpan}
               rowSpan={rowSpan}
@@ -235,8 +271,22 @@ function RegularTableHeader({ headerHeight }: IRegularTableHeader) {
           // NOTE: Skip kalau kolom ini tidak punya children (sudah di-render di row pertama dengan rowSpan=2)
           if (!hasChildren) return [];
 
-          return header.children!.map((child) => {
+          return header.children!.map((child, childIndex) => {
             const hideFilterSort = child?.hideFilter?.sort || false;
+            const isFreezeLeft = header.freeze === 'left';
+            const isFreezeRight = header.freeze === 'right';
+
+            // Calculate child position within parent group
+            let childOffset = 0;
+            for (let i = 0; i < childIndex; i++) {
+              childOffset += header.children![i].width || 0;
+            }
+
+            const parentFreezeLeftPosition = getFreezeLeftPosition(columns, columns.indexOf(header));
+            const parentFreezeRightPosition = getFreezeRightPosition(columns, columns.indexOf(header));
+
+            const childFreezeLeftPosition = isFreezeLeft ? parentFreezeLeftPosition + childOffset : 0;
+            const childFreezeRightPosition = isFreezeRight ? parentFreezeRightPosition + childOffset : 0;
 
             const baseClassName = clsx('size-full relative group/outer', {
               'border-r': true,
@@ -288,6 +338,12 @@ function RegularTableHeader({ headerHeight }: IRegularTableHeader) {
                 key={'regular-table-head-child-' + child.key?.toString()}
                 width={child.width || 0}
                 height={calcHeaderHeight}
+                style={{
+                  position: isFreezeLeft || isFreezeRight ? 'sticky' : undefined,
+                  zIndex: 20,
+                  ...(isFreezeLeft && { left: childFreezeLeftPosition }),
+                  ...(isFreezeRight && { right: childFreezeRightPosition }),
+                }}
                 className={clsx({ 'text-start': true })}
               >
                 {headContent}
@@ -319,6 +375,9 @@ function RegularTableHeader({ headerHeight }: IRegularTableHeader) {
               const hideFilterSort = header?.hideFilter?.sort || false;
               const isFreezeRight = header.freeze === 'right';
               const isFreezeLeft = header.freeze === 'left';
+
+              const freezeLeftPosition = getFreezeLeftPosition(columns, columnIndex);
+              const freezeRightPosition = getFreezeRightPosition(columns, columnIndex);
 
               const baseClassName = clsx('size-full relative group/outer', {
                 '!border-r border-[#D2D2D4]': !isLastColumn,
@@ -378,10 +437,12 @@ function RegularTableHeader({ headerHeight }: IRegularTableHeader) {
                   key={'regular-table-head-' + header.key?.toString()}
                   width={header.width || 0}
                   height={calcHeaderHeight}
-                  className={clsx({
-                    '!sticky !left-0 z-20': isFreezeLeft,
-                    '!sticky !right-0 z-20': isFreezeRight,
-                  })}
+                  style={{
+                    position: isFreezeLeft || isFreezeRight ? 'sticky' : undefined,
+                    zIndex: 20,
+                    ...(isFreezeLeft && { left: freezeLeftPosition }),
+                    ...(isFreezeRight && { right: freezeRightPosition }),
+                  }}
                 >
                   {headContent}
                 </NativeTableHead>
