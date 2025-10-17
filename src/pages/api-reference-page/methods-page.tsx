@@ -9,6 +9,64 @@ const MethodsPage = () => {
       </div>
 
       <div className='space-y-6'>
+        {/* Ref Methods */}
+        <section>
+          <h2 className='text-2xl font-semibold tracking-tight'>Ref Methods</h2>
+          <p className='text-muted-foreground mt-2'>
+            Methods available through the table ref for programmatic control and access to internal components.
+          </p>
+
+          <div className='mt-4 space-y-4'>
+            <div className='border rounded-lg p-4 border-green-200 bg-green-50/50'>
+              <h3 className='font-semibold mb-3'>IVirtualTableRef Interface</h3>
+              <p className='text-sm text-muted-foreground mb-3'>
+                The ref object provides access to the table's internal virtualizer and scroll element.
+              </p>
+              <div className='bg-muted rounded p-3 mb-3'>
+                <code className='text-xs'>{`interface IVirtualTableRef {
+  virtualizer: Virtualizer<HTMLDivElement, Element> | null;
+  scrollElement: HTMLDivElement | null;
+}`}</code>
+              </div>
+              <div className='space-y-3'>
+                <div>
+                  <h4 className='font-mono text-sm font-semibold'>virtualizer</h4>
+                  <p className='text-sm text-muted-foreground'>
+                    TanStack Virtual row virtualizer instance for programmatic row scrolling and navigation.
+                  </p>
+                  <div className='bg-muted rounded p-2 mt-2'>
+                    <code className='text-xs'>{`// Scroll to specific row index
+tableRef.current?.virtualizer?.scrollToIndex(10, { 
+  align: 'start', 
+  behavior: 'smooth' 
+});`}</code>
+                  </div>
+                </div>
+                <div>
+                  <h4 className='font-mono text-sm font-semibold'>scrollElement</h4>
+                  <p className='text-sm text-muted-foreground'>
+                    Direct access to the table's scroll container for custom scroll operations.
+                  </p>
+                  <div className='bg-muted rounded p-2 mt-2'>
+                    <code className='text-xs'>{`// Scroll to top
+tableRef.current?.scrollElement?.scrollTo({ 
+  top: 0, 
+  behavior: 'smooth' 
+});
+
+// Scroll to specific position
+tableRef.current?.scrollElement?.scrollTo({ 
+  top: 500, 
+  left: 200, 
+  behavior: 'smooth' 
+});`}</code>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* Context Methods */}
         <section>
           <h2 className='text-2xl font-semibold tracking-tight'>Context Methods</h2>
@@ -248,6 +306,28 @@ const MethodsPage = () => {
 );`}</code>
               </div>
             </div>
+
+            <div className='border rounded-lg p-4 border-purple-200 bg-purple-50/50'>
+              <h3 className='font-semibold mb-3'>useRowSpanCalculator</h3>
+              <p className='text-sm text-muted-foreground mb-3'>
+                Hook for calculating rowspan data for consecutive duplicate values. Used internally for row grouping functionality.
+              </p>
+              <div className='bg-muted rounded p-3 mb-3'>
+                <code className='text-xs'>{`const rowSpanData = useRowSpanCalculator<TData>(
+  data: TData[],
+  columns: IHeader<unknown>[]
+): Map<string, RowSpanData>`}</code>
+              </div>
+              <div className='bg-blue-50 border border-blue-200 rounded p-3 text-xs'>
+                <p className='font-semibold text-blue-900 mb-1'>💡 Usage:</p>
+                <p className='text-blue-800 mb-2'>
+                  Automatically calculates which cells should be merged and which should be hidden for rowspan functionality.
+                </p>
+                <p className='text-blue-800'>
+                  <strong>Returns:</strong> Map with cell keys and their rowspan information including span count, render status, and span boundaries.
+                </p>
+              </div>
+            </div>
           </div>
         </section>
 
@@ -388,9 +468,9 @@ const MethodsPage = () => {
       <div className='rounded-lg border bg-muted/50 p-6'>
         <h3 className='font-semibold text-lg mb-2'>💡 Pro Tip</h3>
         <p className='text-sm text-muted-foreground'>
-          These methods provide fine-grained control over table behavior. Use context methods for runtime
-          manipulation, hooks for custom functionality, and utilities for common calculations. All methods are
-          fully typed for excellent developer experience!
+          These methods provide fine-grained control over table behavior. Use ref methods for programmatic
+          scrolling and navigation, context methods for runtime manipulation, hooks for custom functionality,
+          and utilities for common calculations. All methods are fully typed for excellent developer experience!
         </p>
       </div>
     </div>

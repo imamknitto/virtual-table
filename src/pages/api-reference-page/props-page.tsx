@@ -55,6 +55,44 @@ const PropsPage = () => {
           </div>
         </section>
 
+        {/* Header Configuration Props */}
+        <section>
+          <h2 className='text-2xl font-semibold tracking-tight'>Header Configuration Props</h2>
+          <p className='text-muted-foreground mt-2'>
+            Properties available in the IHeader interface for configuring individual columns.
+          </p>
+          <div className='mt-4 space-y-4'>
+            <div className='border rounded-lg p-4'>
+              <div className='flex items-start justify-between mb-2'>
+                <h3 className='font-mono text-sm font-semibold'>enableRowSpan</h3>
+                <span className='text-xs bg-gray-100 text-gray-800 px-2 py-1 rounded'>Optional</span>
+              </div>
+              <p className='text-sm text-muted-foreground mb-2'>
+                Enables automatic rowspan merging for consecutive duplicate values in this column.
+                Only works with useRegularTable=true. Data must be pre-sorted by this column for proper merging.
+              </p>
+              <div className='bg-muted rounded p-3 mb-3'>
+                <code className='text-xs'>boolean</code>
+                <span className='text-xs text-muted-foreground ml-2'>Default: false</span>
+              </div>
+              <div className='bg-yellow-50 border border-yellow-200 rounded p-3 text-xs'>
+                <p className='font-semibold text-yellow-900 mb-1'>⚠️ Requirements:</p>
+                <ul className='text-yellow-800 space-y-1'>
+                  <li>• Must use <code className='bg-yellow-100 px-1 rounded'>useRegularTable=&#123;true&#125;</code></li>
+                  <li>• Data must be pre-sorted by this column</li>
+                  <li>• Recommended to disable sort filter: <code className='bg-yellow-100 px-1 rounded'>hideFilter: &#123; sort: true &#125;</code></li>
+                </ul>
+              </div>
+              <div className='bg-blue-50 border border-blue-200 rounded p-3 text-xs mt-3'>
+                <p className='font-semibold text-blue-900 mb-1'>💡 Example:</p>
+                <code className='text-xs text-blue-800'>
+                  {`{ key: 'category', caption: 'Category', enableRowSpan: true, hideFilter: { sort: true } }`}
+                </code>
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* Layout Props */}
         <section>
           <h2 className='text-2xl font-semibold tracking-tight'>Layout Props</h2>
@@ -174,6 +212,30 @@ const PropsPage = () => {
                 <p className='text-yellow-800'>
                   <strong>Best for:</strong> Tables with fewer than 15 columns and variable content heights.
                 </p>
+              </div>
+            </div>
+
+            <div className='border rounded-lg p-4 border-purple-200 bg-purple-50/50'>
+              <div className='flex items-start justify-between mb-2'>
+                <h3 className='font-mono text-sm font-semibold'>useRegularTable</h3>
+                <span className='text-xs bg-gray-100 text-gray-800 px-2 py-1 rounded'>Optional</span>
+              </div>
+              <p className='text-sm text-muted-foreground mb-2'>
+                Uses native HTML table elements (&lt;table&gt;, &lt;thead&gt;, &lt;tbody&gt;, &lt;tr&gt;, &lt;td&gt;) instead of virtualized divs.
+                Provides better accessibility and semantic HTML structure. Required for row grouping/rowspan functionality.
+              </p>
+              <div className='bg-muted rounded p-3 mb-3'>
+                <code className='text-xs'>boolean</code>
+                <span className='text-xs text-muted-foreground ml-2'>Default: false</span>
+              </div>
+              <div className='bg-blue-50 border border-blue-200 rounded p-3 text-xs'>
+                <p className='font-semibold text-blue-900 mb-1'>💡 Use Cases:</p>
+                <ul className='text-blue-800 space-y-1'>
+                  <li>• Row grouping with rowspan functionality</li>
+                  <li>• Better accessibility and screen reader support</li>
+                  <li>• Small datasets where virtualization isn't needed</li>
+                  <li>• Standard table semantics for better SEO</li>
+                </ul>
               </div>
             </div>
           </div>
@@ -492,6 +554,20 @@ const PropsPage = () => {
               Use <code className='bg-muted px-1 rounded text-xs'>enableColumnVirtualization=&#123;false&#125;</code>{' '}
               with <code className='bg-muted px-1 rounded text-xs'>useDynamicRowHeight=&#123;true&#125;</code>{' '}
               for tables with variable content heights and fewer columns.
+            </span>
+          </li>
+          <li className='flex items-start gap-2'>
+            <span className='text-primary mt-0.5'>•</span>
+            <span>
+              Enable <code className='bg-muted px-1 rounded text-xs'>useRegularTable=&#123;true&#125;</code>{' '}
+              for row grouping/rowspan functionality, better accessibility, and semantic HTML structure.
+            </span>
+          </li>
+          <li className='flex items-start gap-2'>
+            <span className='text-primary mt-0.5'>•</span>
+            <span>
+              Use <code className='bg-muted px-1 rounded text-xs'>enableRowSpan=&#123;true&#125;</code>{' '}
+              in header configuration for automatic cell merging of consecutive duplicate values.
             </span>
           </li>
           <li className='flex items-start gap-2'>
