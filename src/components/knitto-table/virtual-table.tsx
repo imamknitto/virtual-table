@@ -4,6 +4,7 @@ import VirtualTableHeader from './virtual-table-header';
 import VirtualTableBody from './virtual-table-body';
 import VirtualTableFooter from './virtual-table-footer';
 import { EmptyDataIndicator } from './components';
+import { useContainerHeight } from './context/virtualizer-context';
 
 type TPickKnittoTable<TData> = Pick<
   IKnittoTable<TData>,
@@ -33,6 +34,8 @@ function VirtualTable<TData>(props: TPickKnittoTable<TData>) {
     useFooter,
   } = props;
 
+  const containerHeight = useContainerHeight();
+
   return (
     <>
       <VirtualTableHeader />
@@ -49,7 +52,7 @@ function VirtualTable<TData>(props: TPickKnittoTable<TData>) {
       />
 
       {useFooter && <VirtualTableFooter footerHeight={footerHeight} />}
-      {!isLoading && <EmptyDataIndicator />}
+      {!isLoading && <EmptyDataIndicator containerHeight={containerHeight} />}
     </>
   );
 }

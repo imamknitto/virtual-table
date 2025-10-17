@@ -140,7 +140,7 @@ const KnittoTable = forwardRef(<TData,>(props: IKnittoTable<TData>, ref: React.F
         height={height}
         onScroll={onScroll || (() => {})}
       >
-        <RegularTable {...props} />
+        <RegularTable scrollElementRef={scrollElementRef} {...props} />
       </TableScrollWrapper>
     </UIContextProvider>
   );

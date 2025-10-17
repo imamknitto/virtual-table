@@ -1,11 +1,12 @@
 import { useVirtualizer, Virtualizer, type VirtualItem } from '@tanstack/react-virtual';
 import { createContext, useContextSelector } from 'use-context-selector';
-import { useEffect, useState, useMemo, useCallback } from 'react';
+import { useMemo, useCallback } from 'react';
 import useFlattenedDataIncremental from '../hooks/use-flattened-data-incremental';
 import { useAutoStretchColumn } from '../hooks/use-auto-stretch-column';
 import { DEFAULT_SIZE } from '../lib';
 import { useColumns } from './header-context';
 import { useFilteredData } from './filter-context';
+import { useContainerDimensions } from '../hooks/use-container-dimensions';
 
 // ==================== Constants ====================
 const EMPTY_VIRTUAL_ITEMS: VirtualItem[] = [];
@@ -61,26 +62,11 @@ export const useEnableColumnVirtualization = () =>
 export const VirtualizerContextProvider = <T,>(props: IVirtualizerContextProvider<T>): React.ReactElement => {
   const { children, scrollElementRef, rowKey, enableColumnVirtualization = true } = props;
 
-  const [containerWidth, setContainerWidth] = useState<number>(0);
-  const [containerHeight, setContainerHeight] = useState<number>(0);
-
   const columns = useColumns();
   const filteredData = useFilteredData();
 
-  // ResizeObserver for container dimensions
-  useEffect(() => {
-    const observer = new ResizeObserver((entries) => {
-      const { width, height } = entries[0].contentRect;
-      setContainerWidth(width);
-      setContainerHeight(height);
-    });
-
-    if (scrollElementRef.current) {
-      observer.observe(scrollElementRef.current);
-    }
-
-    return () => observer.disconnect();
-  }, [scrollElementRef]);
+  // Find and observe container dimensions
+  const { width: containerWidth, height: containerHeight } = useContainerDimensions(scrollElementRef);
 
   // Flattened data with expand/collapse logic
   const { flattenedData, toggleExpand, expandedKeys } = useFlattenedDataIncremental(filteredData as T[], rowKey);

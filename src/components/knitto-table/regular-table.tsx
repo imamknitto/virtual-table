@@ -2,6 +2,8 @@ import type { ReactNode } from 'react';
 import RegularTableBody from './regular-table-body';
 import RegularTableHeader from './regular-table-header';
 import { DEFAULT_SIZE, type IKnittoTable } from './lib';
+import { useContainerDimensions } from './hooks/use-container-dimensions';
+import { EmptyDataIndicator } from './components';
 
 type TPickKnittoTable<TData> = Pick<
   IKnittoTable<TData>,
@@ -16,15 +18,23 @@ type TPickKnittoTable<TData> = Pick<
   | 'isLoading'
 >;
 
-function RegularTable<TData>(props: TPickKnittoTable<TData>) {
+interface IRegularTableProps<TData> extends TPickKnittoTable<TData> {
+  scrollElementRef: React.RefObject<HTMLDivElement | null>;
+}
+
+function RegularTable<TData>(props: IRegularTableProps<TData>) {
   const {
+    scrollElementRef,
     rowKey,
+    isLoading = false,
     headerHeight = DEFAULT_SIZE.HEADER_HEIGTH,
     rowHeight = DEFAULT_SIZE.ROW_HEIGHT,
     onClickRow,
     onDoubleClickRow,
     onRightClickRow,
   } = props;
+
+  const { height: containerHeight } = useContainerDimensions(scrollElementRef);
 
   return (
     <>
@@ -38,8 +48,10 @@ function RegularTable<TData>(props: TPickKnittoTable<TData>) {
           onRightClickRowToParent={onRightClickRow}
         />
       </table>
+
+      {!isLoading && <EmptyDataIndicator forRegularTable containerHeight={containerHeight} />}
     </>
   );
 }
 
-export default RegularTable as <TData>(props: TPickKnittoTable<TData>) => ReactNode;
+export default RegularTable as <TData>(props: IRegularTableProps<TData>) => ReactNode;
