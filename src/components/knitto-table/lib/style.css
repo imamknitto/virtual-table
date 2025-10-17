@@ -61,3 +61,44 @@
   will-change: transform;
   transform: translateZ(0);
 }
+
+/* === Sticky Footer === */
+.sticky-footer {
+  position: sticky;
+  bottom: 0;
+  z-index: 30;
+  background: white;
+  border-top: 1px solid #d2d2d4;
+}
+
+/* Make footer only sticky when there's enough content to scroll */
+[data-table-container] {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}
+
+[data-table-container] table {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+[data-table-container] thead {
+  flex-shrink: 0;
+}
+
+[data-table-container] tbody {
+  flex: 1;
+}
+
+[data-table-container] tfoot {
+  flex-shrink: 0;
+  margin-top: auto;
+}
+
+.dark .sticky-footer {
+  background: #1a1a1a;
+  border-top-color: #404040;
+  box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.3);
+}

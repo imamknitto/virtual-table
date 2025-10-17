@@ -4,6 +4,7 @@ import RegularTableHeader from './regular-table-header';
 import { DEFAULT_SIZE, type IKnittoTable } from './lib';
 import { useContainerDimensions } from './hooks/use-container-dimensions';
 import { EmptyDataIndicator } from './components';
+import RegularTableFooter from './regular-table-footer';
 
 type TPickKnittoTable<TData> = Pick<
   IKnittoTable<TData>,
@@ -29,9 +30,11 @@ function RegularTable<TData>(props: IRegularTableProps<TData>) {
     isLoading = false,
     headerHeight = DEFAULT_SIZE.HEADER_HEIGTH,
     rowHeight = DEFAULT_SIZE.ROW_HEIGHT,
+    footerHeight = DEFAULT_SIZE.FOOTER_HEIGHT,
     onClickRow,
     onDoubleClickRow,
     onRightClickRow,
+    useFooter,
   } = props;
 
   const { height: containerHeight } = useContainerDimensions(scrollElementRef);
@@ -47,6 +50,7 @@ function RegularTable<TData>(props: IRegularTableProps<TData>) {
           onDoubleClickRowToParent={onDoubleClickRow}
           onRightClickRowToParent={onRightClickRow}
         />
+        {useFooter && <RegularTableFooter footerHeight={footerHeight} />}
       </table>
 
       {!isLoading && <EmptyDataIndicator forRegularTable containerHeight={containerHeight} />}

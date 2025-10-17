@@ -199,21 +199,21 @@ const combinedExampleData: SalesReport[] = [
 ];
 
 const combinedHeaders: IHeader<SalesReport>[] = [
-  { key: 'region', caption: 'Region', enableRowSpan: true, freeze: 'left' },
+  { key: 'region', caption: 'Region', enableRowSpan: true, freeze: 'left', renderFooter: () => 'Total Region' },
   { key: 'country', caption: 'Country', enableRowSpan: true },
   { key: 'salesRep', caption: 'Sales Rep', width: 150, enableRowSpan: true },
-  { key: 'product', caption: 'Product', width: 120 },
+  { key: 'product', caption: 'Product', width: 120, renderFooter: () => 'Total Product' },
   {
     key: 'group-header-sales',
     caption: 'Quarterly Sales',
     children: [
-      { key: 'q1Sales', caption: 'Q1', width: 100 },
-      { key: 'q2Sales', caption: 'Q2', width: 100 },
-      { key: 'q3Sales', caption: 'Q3', width: 100 },
-      { key: 'q4Sales', caption: 'Q4', width: 100 },
+      { key: 'q1Sales', caption: 'Q1', width: 100, renderFooter: () => 'Total Q1 Sales' },
+      { key: 'q2Sales', caption: 'Q2', width: 100, renderFooter: () => 'Total Q2 Sales' },
+      { key: 'q3Sales', caption: 'Q3', width: 100, renderFooter: () => 'Total Q3 Sales' },
+      { key: 'q4Sales', caption: 'Q4', width: 100, renderFooter: () => 'Total Q4 Sales' },
     ],
   },
-  { key: 'totalSales', caption: 'Total Sales', width: 120, freeze: 'right' },
+  { key: 'totalSales', caption: 'Total Sales', width: 120, freeze: 'right', renderFooter: () => 'XXXXX' },
 ];
 
 function ExplorePage() {
@@ -232,6 +232,7 @@ function ExplorePage() {
             isLoading={false}
             headers={combinedHeaders}
             data={combinedExampleData}
+            useFooter
             useRegularTable
             onRightClickRow={(item) => {
               console.log('onRightClickRow', item);
