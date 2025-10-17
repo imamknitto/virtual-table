@@ -1,9 +1,9 @@
 export const CODE_EXAMPLES = {
-  scrollTracking: `import { VirtualTable, type IHeader } from '@knitto/virtual-table';
+  scrollTracking: `import { VirtualTable, type IHeader, type IVirtualTableRef } from '@knitto/virtual-table';
 import { useRef, useCallback } from 'react';
 
 const ScrollTrackingTable = () => {
-  const tableRef = useRef<HTMLDivElement>(null);
+  const tableRef = useRef<IVirtualTableRef>(null);
   const [scrollPosition, setScrollPosition] = useState({ 
     scrollTop: 0, 
     scrollLeft: 0 
@@ -32,26 +32,26 @@ const ScrollTrackingTable = () => {
   );
 };`,
 
-  programmaticScrolling: `import { VirtualTable, type IHeader } from '@knitto/virtual-table';
+  programmaticScrolling: `import { VirtualTable, type IHeader, type IVirtualTableRef } from '@knitto/virtual-table';
 import { useRef } from 'react';
 
 const ProgrammaticScrollTable = () => {
-  const tableRef = useRef<HTMLDivElement>(null);
+  const tableRef = useRef<IVirtualTableRef>(null);
 
   // Programmatic scroll functions
   const scrollToTop = () => {
-    tableRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
+    tableRef.current?.scrollElement?.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const scrollToBottom = () => {
-    tableRef.current?.scrollTo({ 
+    tableRef.current?.scrollElement?.scrollTo({ 
       top: tableRef.current.scrollHeight, 
       behavior: 'smooth' 
     });
   };
 
   const scrollToPosition = (top: number, left: number = 0) => {
-    tableRef.current?.scrollTo({ top, left, behavior: 'smooth' });
+    tableRef.current?.scrollElement?.scrollTo({ top, left, behavior: 'smooth' });
   };
 
   return (
@@ -72,7 +72,7 @@ const ProgrammaticScrollTable = () => {
   );
 };`,
 
-  infiniteScroll: `import { VirtualTable, type IHeader } from '@knitto/virtual-table';
+  infiniteScroll: `import { VirtualTable, type IHeader} from '@knitto/virtual-table';
 import { useCallback, useState } from 'react';
 
 const InfiniteScrollTable = () => {

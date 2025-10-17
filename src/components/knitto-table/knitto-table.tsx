@@ -217,5 +217,5 @@ const KnittoTable = forwardRef(<TData,>(props: IKnittoTable<TData>, ref: React.F
 });
 
 export default KnittoTable as <TData>(
-  props: IKnittoTable<TData> & { ref?: React.ForwardedRef<HTMLDivElement> },
+  props: IKnittoTable<TData> & { ref?: React.ForwardedRef<IVirtualTableRef> },
 ) => ReactNode;
