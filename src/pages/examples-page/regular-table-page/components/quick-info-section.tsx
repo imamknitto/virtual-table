@@ -45,7 +45,6 @@ const QuickInfoSection = () => {
                 <ul className='space-y-1 text-xs'>
                   <li>• Row virtualization</li>
                   <li>• Column virtualization</li>
-                  <li>• Dynamic row height</li>
                   <li>• Infinite scroll optimization</li>
                   <li>• Large dataset performance</li>
                 </ul>
