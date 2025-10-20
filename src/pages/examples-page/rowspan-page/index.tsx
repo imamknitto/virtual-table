@@ -1,4 +1,9 @@
-import { BasicRowspanSection, AdvancedRowspanSection, QuickInfoSection } from './components/index';
+import {
+  BasicRowspanSection,
+  AdvancedRowspanSection,
+  QuickInfoSection,
+  OnclickDocumentationSection,
+} from './components/index';
 
 function RowspanPage() {
   return (
@@ -13,9 +18,9 @@ function RowspanPage() {
       </div>
 
       <QuickInfoSection />
-
       <BasicRowspanSection />
       <AdvancedRowspanSection />
+      <OnclickDocumentationSection />
     </div>
   );
 }

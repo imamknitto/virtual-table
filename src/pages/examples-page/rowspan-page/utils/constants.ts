@@ -162,3 +162,33 @@ const AdvancedRowspanExample = () => {
     </div>
   );
 };`;
+
+export const CODE_EXAMPLE_ONCLICK = `import { KnittoTable, type IHeader } from '@knitto/virtual-table';
+import { generateBasicRowspanData } from './data-generator';
+import { basicRowspanHeaders } from './table-headers';
+
+const OnclickExample = () => {
+  const data = generateBasicRowspanData();
+
+  return (
+    <div className="h-80">
+      <KnittoTable
+        rowKey="id"
+        isLoading={false}
+        headers={basicRowspanHeaders}
+        data={data}
+        useRegularTable
+        onClickRow={(item, rowIndex, columnIndex, groupOfItems) => {
+          console.log('=== CLICK ROW DEBUG ===');
+          console.log('Item:', item);
+          console.log('Row Index:', rowIndex);
+          console.log('Column Index:', columnIndex);
+          console.log('Group of Items:', groupOfItems);
+          console.log('========================');
+        }}
+      />
+    </div>
+  );
+};
+
+export default OnclickExample;`;

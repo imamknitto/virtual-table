@@ -277,14 +277,9 @@ function RegularTableBody<TData>({
         </div>
       );
     } else if (column.renderCell) {
-      cellContent = column.renderCell(item);
+      cellContent = <div className={classNameCellContent}>{column.renderCell(item)}</div>;
     } else {
-      cellContent = (
-        <div className={classNameCellContent}>
-          {String(item[column.key as keyof TData] || '')}
-          {freezeRightPosition}
-        </div>
-      );
+      cellContent = <div className={classNameCellContent}>{String(item[column.key as keyof TData] || '')}</div>;
     }
 
     // NOTE: Untuk cell dengan rowspan yang highlighted, tambahkan border visual feedback
