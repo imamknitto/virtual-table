@@ -1,5 +1,6 @@
 import { forwardRef, memo, useMemo, type ReactNode } from 'react';
-import { BodyCell, RowExpandedContent } from './components';
+import BodyCell from './components/body/body-cell';
+import RowExpandedContent from './components/body/row-expanded-content';
 import type { IAdjustedHeader } from './lib';
 import clsx from 'clsx';
 import {

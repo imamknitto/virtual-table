@@ -3,7 +3,7 @@ import RegularTableBody from './regular-table-body';
 import RegularTableHeader from './regular-table-header';
 import { DEFAULT_SIZE, type IKnittoTable } from './lib';
 import { useContainerDimensions } from './hooks/use-container-dimensions';
-import { EmptyDataIndicator } from './components';
+import EmptyDataIndicator from './components/empty-data-indicator';
 import RegularTableFooter from './regular-table-footer';
 
 type TPickKnittoTable<TData> = Pick<
@@ -19,7 +19,7 @@ type TPickKnittoTable<TData> = Pick<
   | 'isLoading'
 >;
 
-interface IRegularTableProps<TData> extends TPickKnittoTable<TData> {
+export interface IRegularTableProps<TData> extends TPickKnittoTable<TData> {
   scrollElementRef: React.RefObject<HTMLDivElement | null>;
 }
 

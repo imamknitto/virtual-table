@@ -1,9 +1,6 @@
 import { useMemo, useRef, forwardRef, type ReactNode } from 'react';
 import AutoSizer from 'react-virtualized-auto-sizer';
 
-import RegularTable from './regular-table';
-import VirtualTable from './virtual-table';
-
 import { HeaderContextProvider } from './context/header-context';
 import { VirtualizerContextProvider } from './context/virtualizer-context';
 import { FilterContextProvider } from './context/filter-context';
@@ -12,9 +9,11 @@ import { UIContextProvider } from './context/ui-context';
 
 import { useScrollBottomDetection } from './hooks';
 import { DEFAULT_SIZE, type IAdjustedHeader, type IKnittoTable, type IVirtualTableRef } from './lib';
+import { TypedRegularTable, TypedVirtualTable } from './typed-lazy-components';
 
 import './lib/style.css';
-import { LoadingIndicator, TableScrollWrapper } from './components';
+import LoadingIndicator from './components/loading-indicator';
+import TableScrollWrapper from './components/table-scroll-wrapper';
 import type { Virtualizer } from '@tanstack/react-virtual';
 
 const KnittoTable = forwardRef(<TData,>(props: IKnittoTable<TData>, ref: React.ForwardedRef<IVirtualTableRef>) => {
@@ -86,15 +85,6 @@ const KnittoTable = forwardRef(<TData,>(props: IKnittoTable<TData>, ref: React.F
       }
     }
   };
-  // useEffect(() => {
-  //   if (!scrollElementRef.current) return;
-
-  //   if (typeof ref === 'function') {
-  //     ref(scrollElementRef.current);
-  //   } else if (ref) {
-  //     (ref as React.MutableRefObject<HTMLDivElement | null>).current = scrollElementRef.current;
-  //   }
-  // }, [ref, scrollElementRef.current]);
 
   // Setup scroll bottom detection
   useScrollBottomDetection(scrollElementRef, {
@@ -146,7 +136,7 @@ const KnittoTable = forwardRef(<TData,>(props: IKnittoTable<TData>, ref: React.F
           height={height}
           onScroll={onScroll || (() => {})}
         >
-          <VirtualTable {...props} />
+          <TypedVirtualTable {...props} />
         </TableScrollWrapper>
       </UIContextProvider>
     </VirtualizerContextProvider>
@@ -177,7 +167,7 @@ const KnittoTable = forwardRef(<TData,>(props: IKnittoTable<TData>, ref: React.F
         height={height}
         onScroll={onScroll || (() => {})}
       >
-        <RegularTable scrollElementRef={scrollElementRef} {...props} />
+        <TypedRegularTable scrollElementRef={scrollElementRef} {...props} />
       </TableScrollWrapper>
     </UIContextProvider>
   );

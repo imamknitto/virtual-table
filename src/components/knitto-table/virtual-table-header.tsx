@@ -1,7 +1,7 @@
 import { forwardRef, memo, type ReactNode } from 'react';
 import clsx from 'clsx';
 import { type IAdjustedHeader } from './lib';
-import { HeaderCell } from './components';
+import HeaderCell from './components/header/header-cell';
 import ResizeLine from './components/resize-line';
 import {
   useColumns,

@@ -11,7 +11,8 @@ import {
 } from './context/header-context';
 import HeaderCaption from './components/header/header-caption';
 import { useFilterHeight, useHeaderMode } from './context/ui-context';
-import { RowCheckbox, TableFilter } from './components';
+import RowCheckbox from './components/body/row-checkbox';
+import TableFilter from './components/header/header-filter';
 import ResizeIndicator from './components/resize-indicator';
 import ResizeLine from './components/resize-line';
 import NativeTableHead from './components/native-table-head';
