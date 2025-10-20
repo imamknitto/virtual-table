@@ -22,7 +22,7 @@ export default defineConfig({
     // Enable source maps for debugging
     sourcemap: true,
     // Optimize chunk size
-    chunkSizeWarningLimit: 1000,
+    chunkSizeWarningLimit: 500,
   },
   // Enable experimental features for better performance
   optimizeDeps: {

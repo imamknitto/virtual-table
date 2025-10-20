@@ -1,5 +1,5 @@
 export const CODE_EXAMPLES = {
-  basicExpand: `import { VirtualTable, type IHeader } from '@knitto/virtual-table';
+  basicExpand: `import { KnittoTable, type IHeader } from '@knitto/virtual-table';
 
 const EmployeeTable = () => {
   const [data] = useState(generateEmployeeData());
@@ -40,7 +40,7 @@ const EmployeeTable = () => {
   );
 
   return (
-    <VirtualTable
+    <KnittoTable
       headers={headers}
       data={data}
       rowKey="id"
@@ -53,7 +53,7 @@ const EmployeeTable = () => {
   );
 };`,
 
-  nestedTable: `import { VirtualTable, type IHeader } from '@knitto/virtual-table';
+  nestedTable: `import { KnittoTable, type IHeader } from '@knitto/virtual-table';
 
 const CompanyTable = () => {
   const [data] = useState(generateCompanyData());
@@ -71,7 +71,7 @@ const CompanyTable = () => {
       <div className="p-3 bg-blue-50 border-l-4 border-blue-400">
         <h5 className="font-medium text-sm mb-3">{department.name} Teams</h5>
         <div className="h-48">
-          <VirtualTable
+          <KnittoTable
             headers={teamHeaders}
             data={department.teams}
             rowKey="name"
@@ -87,7 +87,7 @@ const CompanyTable = () => {
       <div className="p-4 bg-gray-50 border-l-4 border-green-500">
         <h4 className="font-semibold text-lg mb-4">Company Departments</h4>
         <div className="h-64">
-          <VirtualTable
+          <KnittoTable
             headers={departmentHeaders}
             data={company.departments}
             rowKey="name"
@@ -99,7 +99,7 @@ const CompanyTable = () => {
   };
 
   return (
-    <VirtualTable
+    <KnittoTable
       headers={companyHeaders}
       data={data}
       rowKey="id"
@@ -108,7 +108,7 @@ const CompanyTable = () => {
   );
 };`,
 
-  customToggle: `import { VirtualTable, type IHeader } from '@knitto/virtual-table';
+  customToggle: `import { KnittoTable, type IHeader } from '@knitto/virtual-table';
 
 const CustomExpandTable = () => {
   const [data] = useState(generateEmployeeData());
@@ -141,7 +141,7 @@ const CustomExpandTable = () => {
   ];
 
   return (
-    <VirtualTable
+    <KnittoTable
       headers={headers}
       data={data}
       rowKey="id"

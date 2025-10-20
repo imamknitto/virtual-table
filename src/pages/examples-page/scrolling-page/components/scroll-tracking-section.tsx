@@ -1,5 +1,5 @@
 import { memo, useCallback, useRef, useState } from 'react';
-import { VirtualTable } from '../../../../components/virtual-table';
+import { KnittoTable, type IVirtualTableRef } from '../../../../components/knitto-table';
 import { CODE_EXAMPLES, type Employee, type ScrollPosition } from '../utils';
 import { getEmployeeHeaders } from '../utils/table-headers';
 import CodeBlock from './code-block';
@@ -12,7 +12,7 @@ const ScrollTrackingSection = ({ data }: ScrollTrackingSectionProps) => {
   const [showCode, setShowCode] = useState(false);
   const [scrollPosition, setScrollPosition] = useState<ScrollPosition>({ scrollTop: 0, scrollLeft: 0 });
   const [scrollEvents, setScrollEvents] = useState<string[]>([]);
-  const tableRef = useRef<HTMLDivElement>(null);
+  const tableRef = useRef<IVirtualTableRef>(null);
   const headers = getEmployeeHeaders();
 
   const handleScroll = useCallback((scrollTop: number, scrollLeft: number) => {
@@ -48,7 +48,7 @@ const ScrollTrackingSection = ({ data }: ScrollTrackingSectionProps) => {
         {/* Table */}
         <div className='lg:col-span-2'>
           <div className='h-96'>
-            <VirtualTable
+            <KnittoTable
               data={data}
               filterHeight={32}
               headerHeight={40}

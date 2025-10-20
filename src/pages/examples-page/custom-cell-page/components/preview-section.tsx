@@ -1,5 +1,5 @@
 import { memo, useState } from 'react';
-import { VirtualTable } from '../../../../components/virtual-table';
+import { KnittoTable } from '../../../../components/knitto-table';
 import { CODE_EXAMPLE, type Employee } from '../utils';
 import CodeBlock from './code-block';
 import { getEmployeeHeaders } from './table-headers';
@@ -25,7 +25,7 @@ const PreviewSection = ({ data }: PreviewSectionProps) => {
       </div>
 
       <div className='h-96'>
-        <VirtualTable
+        <KnittoTable
           classNameCell={(rowData, rowIndex, columnIndex) => {
             if (columnIndex === 4) return 'bg-blue-50 dark:bg-blue-950';
             if (rowData.status === 'inactive') return 'opacity-60';

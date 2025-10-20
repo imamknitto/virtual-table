@@ -1,5 +1,5 @@
 import clsx from 'clsx';
-import type { IHeader } from '../../../../components/virtual-table';
+import type { IHeader } from '../../../../components/knitto-table';
 import type { Employee } from './types';
 
 type HeaderOptions = {

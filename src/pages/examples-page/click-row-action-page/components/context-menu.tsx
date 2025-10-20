@@ -1,6 +1,6 @@
 import { memo, useRef } from 'react';
 import { createPortal } from 'react-dom';
-import { useClickOutside } from '../../../../components/virtual-table';
+import { useClickOutside } from '../../../../components/knitto-table';
 import type { ContextMenuPosition, Product } from '../utils';
 
 type ContextMenuProps = {

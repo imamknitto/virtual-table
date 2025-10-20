@@ -1,5 +1,5 @@
 import { memo, useState } from 'react';
-import { VirtualTable } from '../../../../components/virtual-table';
+import { KnittoTable } from '../../../../components/knitto-table';
 import { CODE_EXAMPLES, type SalesData } from '../utils';
 import { getSalesHeaders } from '../utils/table-headers';
 import CodeBlock from './code-block';
@@ -32,7 +32,7 @@ const ComplexGroupingSection = ({ data }: ComplexGroupingSectionProps) => {
       </div>
 
       <div className='h-96'>
-        <VirtualTable
+        <KnittoTable
           data={data}
           filterHeight={32}
           headerHeight={40}

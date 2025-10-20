@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import type { TFilterAdvanceConfig, TSortOrder } from '../../../../components/virtual-table/lib/types';
+import type { TFilterAdvanceConfig, TSortOrder } from '../../../../components/knitto-table/lib/types';
 import { fetchCombinedData } from '../utils/api';
 import type { CombinedData, ServerFilters } from '../utils/types';
 

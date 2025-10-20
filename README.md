@@ -6,7 +6,7 @@ A high-performance virtual table component built with React and TypeScript, powe
 ## 📖 Basic Usage
 
 ```tsx
-import { VirtualTable, type IHeader } from '@knitto/virtual-table';
+import { KnittoTable, type IHeader } from '@knitto/virtual-table';
 
 const MyTable = () => {
   const data = [
@@ -22,7 +22,7 @@ const MyTable = () => {
   ];
 
   return (
-    <VirtualTable
+    <KnittoTable
       headers={headers}
       data={data}
       rowKey='id'

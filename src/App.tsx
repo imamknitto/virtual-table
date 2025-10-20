@@ -28,6 +28,8 @@ const ScrollingPage = lazy(() => import('./pages/examples-page/scrolling-page'))
 const ExplorePage = lazy(() => import('./pages/explore-page'));
 const ColumnVirtualizationPage = lazy(() => import('./pages/examples-page/column-virtualization-page'));
 const DynamicRowHeightPage = lazy(() => import('./pages/examples-page/dynamic-row-height-page'));
+const RegularTablePage = lazy(() => import('./pages/examples-page/regular-table-page'));
+const RowspanPage = lazy(() => import('./pages/examples-page/rowspan-page'));
 
 const router = createBrowserRouter(
   [
@@ -59,6 +61,8 @@ const router = createBrowserRouter(
         { path: 'docs/examples/scrolling', element: <ScrollingPage /> },
         { path: 'docs/examples/column-virtualization', element: <ColumnVirtualizationPage /> },
         { path: 'docs/examples/dynamic-row-height', element: <DynamicRowHeightPage /> },
+        { path: 'docs/examples/regular-table', element: <RegularTablePage /> },
+        { path: 'docs/examples/rowspan', element: <RowspanPage /> },
         { path: 'docs/api/props', element: <PropsPage /> },
         { path: 'docs/api/methods', element: <MethodsPage /> },
         { path: 'blog', element: <BlogPage /> },

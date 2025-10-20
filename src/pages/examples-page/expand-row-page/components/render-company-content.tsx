@@ -1,4 +1,4 @@
-import { VirtualTable } from '../../../../components/virtual-table';
+import { KnittoTable } from '../../../../components/knitto-table';
 import type { Company, Department } from '../utils';
 import { getDepartmentHeaders, getTeamHeaders } from '../utils/table-headers';
 
@@ -14,7 +14,7 @@ export const renderCompanyExpandedContent = (company: Company) => {
           {department.name} Teams
         </h5>
         <div className='h-48'>
-          <VirtualTable
+          <KnittoTable
             data={department.teams}
             headerHeight={28}
             headerMode='single'
@@ -34,7 +34,7 @@ export const renderCompanyExpandedContent = (company: Company) => {
         Company Departments
       </h4>
       <div className='h-64'>
-        <VirtualTable
+        <KnittoTable
           data={company.departments}
           headerHeight={32}
           headerMode='single'

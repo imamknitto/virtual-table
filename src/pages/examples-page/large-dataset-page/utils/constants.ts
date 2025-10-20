@@ -1,5 +1,5 @@
 export const CODE_EXAMPLES = {
-  basicUsage: `import { VirtualTable, type IHeader } from '@knitto/virtual-table';
+  basicUsage: `import { KnittoTable, type IHeader } from '@knitto/virtual-table';
 import { useMemo } from 'react';
 
 const LargeDatasetTable = () => {
@@ -21,7 +21,7 @@ const LargeDatasetTable = () => {
   ];
 
   return (
-    <VirtualTable
+    <KnittoTable
       headers={headers}
       data={data}
       rowKey="id"
@@ -45,7 +45,7 @@ const headers = [
 ];
 
 // 3. Optimize row height
-<VirtualTable
+<KnittoTable
   rowHeight={32} // Fixed height for better performance
   // ... other props
 />

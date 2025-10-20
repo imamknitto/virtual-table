@@ -1,5 +1,5 @@
 export const BASIC_CODE_EXAMPLE = `// Basic Footer with Calculations
-import { VirtualTable, type IHeader } from '@knitto/virtual-table';
+import { KnittoTable, type IHeader } from '@knitto/virtual-table';
 
 // Footer component for calculations
 const CalculationFooter = ({ data, columnKey }) => {
@@ -54,7 +54,7 @@ const headers: IHeader<SampleData>[] = [
 ];
 
 // Virtual Table with Basic Footer
-<VirtualTable
+<KnittoTable
   headers={headers}
   data={data}
   rowKey="id"
@@ -67,7 +67,7 @@ const headers: IHeader<SampleData>[] = [
 />`;
 
 export const ADVANCED_CODE_EXAMPLE = `// Advanced Footer with Freeze Columns
-import { VirtualTable, type IHeader } from '@knitto/virtual-table';
+import { KnittoTable, type IHeader } from '@knitto/virtual-table';
 
 // Footer component for calculations
 const CalculationFooter = ({ data, columnKey }) => {
@@ -132,7 +132,7 @@ const headers: IHeader<SampleData>[] = [
 ];
 
 // Virtual Table with Advanced Footer
-<VirtualTable
+<KnittoTable
   headers={headers}
   data={data}
   rowKey="id"
@@ -145,7 +145,7 @@ const headers: IHeader<SampleData>[] = [
 />`;
 
 export const SUMMARY_CODE_EXAMPLE = `// Summary Footer Example
-import { VirtualTable, type IHeader } from '@knitto/virtual-table';
+import { KnittoTable, type IHeader } from '@knitto/virtual-table';
 
 // Footer component for calculations
 const CalculationFooter = ({ data, columnKey }) => {
@@ -211,7 +211,7 @@ const headers: IHeader<SampleData>[] = [
 ];
 
 // Virtual Table with Summary Footer
-<VirtualTable
+<KnittoTable
   headers={headers}
   data={data}
   rowKey="id"

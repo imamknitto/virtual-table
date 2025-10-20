@@ -1,5 +1,5 @@
 import { memo, useState } from 'react';
-import { VirtualTable } from '../../../../components/virtual-table';
+import { KnittoTable } from '../../../../components/knitto-table';
 import { CODE_EXAMPLE, type Product } from '../utils';
 import { getProductHeaders } from '../utils/table-headers';
 import CodeBlock from './code-block';
@@ -54,7 +54,7 @@ const PreviewSection = ({
         {/* Table */}
         <div className='lg:col-span-2'>
           <div className='h-96'>
-            <VirtualTable
+            <KnittoTable
               classNameCell={(item) => {
                 if (selectedRow?.id === item.id)
                   return 'bg-blue-50 dark:bg-blue-950 !border-l-blue-950 dark:!border-blue-800';

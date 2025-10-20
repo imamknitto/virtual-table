@@ -1,114 +1,249 @@
-import { faker } from '@faker-js/faker';
-import { VirtualTable, type IHeader } from '../components/virtual-table';
+import { KnittoTable, type IHeader } from '../components/knitto-table';
 
-interface User {
+// ========== Combined Colspan & Rowspan Example Data ==========
+type SalesReport = {
   id: number;
-  name: string;
-  email: string;
-  username: string;
-  phone: string;
-  company: string;
-  jobTitle: string;
-  city: string;
-  country: string;
-  status: string;
-  salary: string;
-  department: string;
-}
+  region: string; // ✅ Rowspan (merge duplicate values)
+  country: string; // ✅ Rowspan (merge duplicate values)
+  salesRep: string; // ✅ Rowspan (merge duplicate values)
+  product: string; // ❌ Unique per row
+  q1Sales: number; // ❌ Unique per row
+  q2Sales: number; // ❌ Unique per row
+  q3Sales: number; // ❌ Unique per row
+  q4Sales: number; // ❌ Unique per row
+  totalSales: number; // ❌ Unique per row
+};
 
-const generateFakeUser = (id: number): User => ({
-  id,
-  name: faker.person.fullName(),
-  email: faker.internet.email(),
-  username: faker.internet.username(),
-  phone: faker.phone.number(),
-  company: faker.company.name(),
-  jobTitle: faker.person.jobTitle() + ' ' + faker.person.jobTitle(),
-  city: faker.location.city(),
-  country: faker.location.country(),
-  status: faker.helpers.arrayElement(['Active', 'Inactive', 'Pending']),
-  salary: faker.finance.amount({ min: 30000, max: 150000, dec: 0 }),
-  department: faker.commerce.department(),
-});
+// NOTE: Data sudah di-sort berdasarkan region, country, dan salesRep
+const combinedExampleData: SalesReport[] = [
+  // NOTE: North America region (rowSpan = 8)
+  //   - USA country (rowSpan = 6)
+  //     - John Doe salesRep (rowSpan = 3)
+  {
+    id: 1,
+    region: 'North America',
+    country: 'USA',
+    salesRep: 'John Doe',
+    product: 'Laptop',
+    q1Sales: 25000,
+    q2Sales: 30000,
+    q3Sales: 28000,
+    q4Sales: 32000,
+    totalSales: 115000,
+  },
+  {
+    id: 2,
+    region: 'North America',
+    country: 'USA',
+    salesRep: 'John Doe',
+    product: 'Desktop',
+    q1Sales: 18000,
+    q2Sales: 22000,
+    q3Sales: 20000,
+    q4Sales: 25000,
+    totalSales: 85000,
+  },
+  {
+    id: 3,
+    region: 'North America',
+    country: 'USA',
+    salesRep: 'John Doe',
+    product: 'Tablet',
+    q1Sales: 12000,
+    q2Sales: 15000,
+    q3Sales: 14000,
+    q4Sales: 16000,
+    totalSales: 57000,
+  },
+  //     - Jane Smith salesRep (rowSpan = 3)
+  {
+    id: 4,
+    region: 'North America',
+    country: 'USA',
+    salesRep: 'Jane Smith',
+    product: 'Laptop',
+    q1Sales: 22000,
+    q2Sales: 26000,
+    q3Sales: 24000,
+    q4Sales: 28000,
+    totalSales: 100000,
+  },
+  {
+    id: 5,
+    region: 'North America',
+    country: 'USA',
+    salesRep: 'Jane Smith',
+    product: 'Desktop',
+    q1Sales: 16000,
+    q2Sales: 20000,
+    q3Sales: 18000,
+    q4Sales: 22000,
+    totalSales: 76000,
+  },
+  {
+    id: 6,
+    region: 'North America',
+    country: 'USA',
+    salesRep: 'Jane Smith',
+    product: 'Tablet',
+    q1Sales: 10000,
+    q2Sales: 13000,
+    q3Sales: 12000,
+    q4Sales: 14000,
+    totalSales: 49000,
+  },
+  //   - Canada country (rowSpan = 2)
+  //     - Mike Johnson salesRep (rowSpan = 2)
+  {
+    id: 7,
+    region: 'North America',
+    country: 'Canada',
+    salesRep: 'Mike Johnson',
+    product: 'Laptop',
+    q1Sales: 15000,
+    q2Sales: 18000,
+    q3Sales: 16000,
+    q4Sales: 20000,
+    totalSales: 69000,
+  },
+  {
+    id: 8,
+    region: 'North America',
+    country: 'Canada',
+    salesRep: 'Mike Johnson',
+    product: 'Desktop',
+    q1Sales: 12000,
+    q2Sales: 15000,
+    q3Sales: 14000,
+    q4Sales: 17000,
+    totalSales: 58000,
+  },
 
-const ExplorePage = () => {
-  const data: User[] = Array.from({ length: 1000 }, (_, i) => generateFakeUser(i + 1));
+  // NOTE: Europe region (rowSpan = 6)
+  //   - UK country (rowSpan = 3)
+  //     - Sarah Wilson salesRep (rowSpan = 3)
+  {
+    id: 9,
+    region: 'Europe',
+    country: 'UK',
+    salesRep: 'Sarah Wilson',
+    product: 'Laptop',
+    q1Sales: 20000,
+    q2Sales: 24000,
+    q3Sales: 22000,
+    q4Sales: 26000,
+    totalSales: 92000,
+  },
+  {
+    id: 10,
+    region: 'Europe',
+    country: 'UK',
+    salesRep: 'Sarah Wilson',
+    product: 'Desktop',
+    q1Sales: 14000,
+    q2Sales: 17000,
+    q3Sales: 16000,
+    q4Sales: 19000,
+    totalSales: 66000,
+  },
+  {
+    id: 11,
+    region: 'Europe',
+    country: 'UK',
+    salesRep: 'Sarah Wilson',
+    product: 'Tablet',
+    q1Sales: 8000,
+    q2Sales: 10000,
+    q3Sales: 9000,
+    q4Sales: 11000,
+    totalSales: 38000,
+  },
+  //   - Germany country (rowSpan = 3)
+  //     - Klaus Mueller salesRep (rowSpan = 3)
+  {
+    id: 12,
+    region: 'Europe',
+    country: 'Germany',
+    salesRep: 'Klaus Mueller',
+    product: 'Laptop',
+    q1Sales: 23000,
+    q2Sales: 27000,
+    q3Sales: 25000,
+    q4Sales: 29000,
+    totalSales: 104000,
+  },
+  {
+    id: 13,
+    region: 'Europe',
+    country: 'Germany',
+    salesRep: 'Klaus Mueller',
+    product: 'Desktop',
+    q1Sales: 17000,
+    q2Sales: 21000,
+    q3Sales: 19000,
+    q4Sales: 23000,
+    totalSales: 80000,
+  },
+  {
+    id: 14,
+    region: 'Europe',
+    country: 'Germany',
+    salesRep: 'Klaus Mueller',
+    product: 'Tablet',
+    q1Sales: 9000,
+    q2Sales: 12000,
+    q3Sales: 11000,
+    q4Sales: 13000,
+    totalSales: 45000,
+  },
+];
 
-  const headers: IHeader<User>[] = [
-    // Freeze Left
-    { key: 'id', caption: 'ID', width: 80 },
-    { key: 'name', caption: 'Name', width: 180 },
+const combinedHeaders: IHeader<SalesReport>[] = [
+  { key: 'region', caption: 'Region', enableRowSpan: true, freeze: 'left', renderFooter: () => 'Total Region' },
+  { key: 'country', caption: 'Country', enableRowSpan: true },
+  { key: 'salesRep', caption: 'Sales Rep', width: 150, enableRowSpan: true },
+  { key: 'product', caption: 'Product', width: 120, renderFooter: () => 'Total Product' },
+  {
+    key: 'group-header-sales',
+    caption: 'Quarterly Sales',
+    children: [
+      { key: 'q1Sales', caption: 'Q1', width: 100, renderFooter: () => 'Total Q1 Sales' },
+      { key: 'q2Sales', caption: 'Q2', width: 100, renderFooter: () => 'Total Q2 Sales' },
+      { key: 'q3Sales', caption: 'Q3', width: 100, renderFooter: () => 'Total Q3 Sales' },
+      { key: 'q4Sales', caption: 'Q4', width: 100, renderFooter: () => 'Total Q4 Sales' },
+    ],
+  },
+  { key: 'totalSales', caption: 'Total Sales', width: 120, freeze: 'right', renderFooter: () => 'XXXXX' },
+];
 
-    // Multi-level Group Headers (scrollable)
-    {
-      key: 'group-header-personal',
-      caption: 'Personal Information',
-      children: [
-        {
-          key: 'group-header-contact',
-          caption: 'Contact Details',
-          children: [
-            { key: 'email', caption: 'Email', width: 180 },
-            { key: 'phone', caption: 'Phone', width: 160 },
-          ],
-        },
-        { key: 'username', caption: 'Username', width: 140 },
-      ],
-    },
-    {
-      key: 'group-header-professional',
-      caption: 'Professional Information',
-      children: [
-        {
-          key: 'group-header-work',
-          caption: 'Work Details',
-          children: [
-            { key: 'company', caption: 'Company', width: 180 },
-            { key: 'jobTitle', caption: 'Job Title', width: 160 },
-            { key: 'department', caption: 'Department', width: 140 },
-          ],
-        },
-        {
-          key: 'group-header-location',
-          caption: 'Location',
-          children: [
-            { key: 'city', caption: 'City', width: 120 },
-            { key: 'country', caption: 'Country', width: 120 },
-          ],
-        },
-      ],
-    },
-
-    // Regular Column (scrollable)
-    { key: 'salary', caption: 'Salary', width: 120, freeze: 'right' },
-
-    // Freeze Right
-    { key: 'status', caption: 'Status', width: 100, freeze: 'right' },
-  ];
-
+function ExplorePage() {
   return (
     <div className='flex flex-col gap-y-8'>
-      <div className='flex flex-col gap-y-4 w-full h-[500px]'>
-        <h4>Kolom tidak di-virtualisasi dan menggunakan Dynamic Row Height</h4>
-        <div className='flex-1'>
-          <VirtualTable
-            data={data}
-            headers={headers}
-            rowKey={'id'}
-            enableColumnVirtualization={false}
-            useDynamicRowHeight={true}
-          />
-        </div>
-      </div>
+      <div className='space-y-2.5'>
+        <h4>Regular Table pake Kombinasi Colspan & Rowspan</h4>
+        <p className='text-sm text-gray-600'>
+          Contoh laporan penjualan dengan hierarchical data (Region → Country → Sales Rep) yang menggunakan rowspan
+          untuk merge duplicate values, dan colspan untuk group quarterly sales data.
+        </p>
 
-      <div className='flex flex-col gap-y-4 w-full h-[500px]'>
-        <h4>Kolom di-virtualisasi</h4>
-        <div className='flex-1'>
-          <VirtualTable data={data} headers={headers} rowKey={'id'} />
+        <div className='h-96'>
+          <KnittoTable
+            rowKey='id'
+            isLoading={false}
+            headers={combinedHeaders}
+            data={combinedExampleData}
+            useRegularTable
+            onClickRow={(item, rowIndex, columnIndex, groupOfItems) => {
+              console.log('CLICK ROW: ', { item, rowIndex, columnIndex, groupOfItems });
+            }}
+            onRightClickRow={(item, position) => {
+              console.log('RIGHT CLICK ROW: ', { item, position });
+            }}
+          />
         </div>
       </div>
     </div>
   );
-};
+}
 
 export default ExplorePage;

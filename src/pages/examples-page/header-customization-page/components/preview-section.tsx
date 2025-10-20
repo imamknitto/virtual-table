@@ -1,5 +1,5 @@
 import { memo, useMemo } from 'react';
-import { VirtualTable } from '../../../../components/virtual-table';
+import { KnittoTable } from '../../../../components/knitto-table';
 import { CODE_EXAMPLE, type Employee, getEmployeeHeaders } from '../utils';
 import CodeBlock from './code-block';
 
@@ -46,7 +46,7 @@ const PreviewSection = ({
       </div>
 
       <div className='h-96 border rounded-lg overflow-hidden'>
-        <VirtualTable
+        <KnittoTable
           classNameOuterTable='border-0'
           data={data}
           filterHeight={32}

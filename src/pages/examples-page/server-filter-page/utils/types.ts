@@ -1,4 +1,4 @@
-import type { TFilterAdvanceConfig, TSortOrder } from '../../../../components/virtual-table/lib/types';
+import type { TFilterAdvanceConfig, TSortOrder } from '../../../../components/knitto-table/lib/types';
 
 export type User = {
   id: number;

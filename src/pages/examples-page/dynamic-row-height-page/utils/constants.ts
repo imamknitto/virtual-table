@@ -1,4 +1,4 @@
-export const CODE_EXAMPLE_BASIC = `import { VirtualTable } from '@/components/virtual-table';
+export const CODE_EXAMPLE_BASIC = `import { KnittoTable } from '@/components/virtual-table';
 
 const headers = [
   { key: 'id', caption: 'ID', width: 80 },
@@ -11,7 +11,7 @@ const headers = [
 
 function MyTable() {
   return (
-    <VirtualTable
+    <KnittoTable
       data={data}
       headers={headers}
       rowKey="id"
@@ -21,7 +21,7 @@ function MyTable() {
   );
 }`;
 
-export const CODE_EXAMPLE_WITH_CUSTOM_CELL = `import { VirtualTable } from '@/components/virtual-table';
+export const CODE_EXAMPLE_WITH_CUSTOM_CELL = `import { KnittoTable } from '@/components/virtual-table';
 
 const headers = [
   { key: 'id', caption: 'ID', width: 80 },
@@ -55,7 +55,7 @@ const headers = [
 
 function MyTable() {
   return (
-    <VirtualTable
+    <KnittoTable
       data={data}
       headers={headers}
       rowKey="id"
@@ -65,7 +65,7 @@ function MyTable() {
   );
 }`;
 
-export const CODE_EXAMPLE_WITH_FREEZE = `import { VirtualTable } from '@/components/virtual-table';
+export const CODE_EXAMPLE_WITH_FREEZE = `import { KnittoTable } from '@/components/virtual-table';
 
 const headers = [
   { key: 'id', caption: 'ID', width: 80, freeze: 'left' },
@@ -85,7 +85,7 @@ const headers = [
 
 function MyTable() {
   return (
-    <VirtualTable
+    <KnittoTable
       data={data}
       headers={headers}
       rowKey="id"

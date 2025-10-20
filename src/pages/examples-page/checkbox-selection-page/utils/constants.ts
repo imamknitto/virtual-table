@@ -1,4 +1,4 @@
-export const CODE_EXAMPLE = `import { VirtualTable, type IHeader } from '@knitto/virtual-table';
+export const CODE_EXAMPLE = `import { KnittoTable, type IHeader } from '@knitto/virtual-table';
 import { faker } from '@faker-js/faker';
 
 // Generate sample data
@@ -67,7 +67,7 @@ const CheckboxSelectionTable = () => {
   };
 
   return (
-    <VirtualTable
+    <KnittoTable
       headers={headers}
       data={data}
       rowKey="id"

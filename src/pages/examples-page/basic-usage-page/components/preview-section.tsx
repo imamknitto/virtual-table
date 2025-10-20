@@ -1,8 +1,8 @@
 import { memo, useState } from 'react';
-import { VirtualTable } from '../../../../components/virtual-table';
 import { CODE_EXAMPLE, type Employee } from '../utils';
 import { getEmployeeHeaders } from '../utils/table-headers';
 import CodeBlock from './code-block';
+import { KnittoTable } from '../../../../components/knitto-table';
 
 type PreviewSectionProps = {
   data: Employee[];
@@ -25,7 +25,7 @@ const PreviewSection = ({ data }: PreviewSectionProps) => {
       </div>
 
       <div className='h-96'>
-        <VirtualTable
+        <KnittoTable
           data={data}
           filterHeight={32}
           headerHeight={40}
@@ -46,4 +46,3 @@ const PreviewSection = ({ data }: PreviewSectionProps) => {
 };
 
 export default memo(PreviewSection);
-

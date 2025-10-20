@@ -1,6 +1,6 @@
 import { memo } from 'react';
-import { VirtualTable, type IHeader } from '../../../../components/virtual-table';
 import { PERFORMANCE_DATA } from '../utils';
+import { KnittoTable, type IHeader } from '../../../../components/knitto-table';
 
 const performanceHeaders: IHeader<(typeof PERFORMANCE_DATA)[0]>[] = [
   { key: 'metric', caption: 'Metric', width: 200 },
@@ -21,7 +21,7 @@ const PerformanceOverview = () => {
       </div>
 
       <div className='h-64'>
-        <VirtualTable
+        <KnittoTable
           data={PERFORMANCE_DATA}
           filterHeight={32}
           headerHeight={40}
