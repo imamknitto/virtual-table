@@ -1,4 +1,10 @@
-import { faker } from '@faker-js/faker';
+import { 
+  getRandomElement, 
+  getRandomNumber,
+  SAMPLE_NAMES,
+  SAMPLE_EMAILS,
+  SAMPLE_JOB_TITLES
+} from '../../../../lib/constants';
 import type { IEmployee, ISalesReport } from './types';
 
 export const generateEmployeeData = (): IEmployee[] => {
@@ -9,10 +15,10 @@ export const generateEmployeeData = (): IEmployee[] => {
     id: index + 1,
     department: departments[Math.floor(index / 5)],
     team: teams[Math.floor(index / 2.5)],
-    name: faker.person.fullName(),
-    position: faker.person.jobTitle(),
-    email: faker.internet.email(),
-    salary: faker.number.int({ min: 50000, max: 150000 }),
+    name: getRandomElement(SAMPLE_NAMES),
+    position: getRandomElement(SAMPLE_JOB_TITLES),
+    email: getRandomElement(SAMPLE_EMAILS),
+    salary: getRandomNumber(50000, 150000),
   }));
 };
 

@@ -99,10 +99,10 @@ export const fetchCombinedData = async (filterParams?: FilterParams): Promise<Co
 
       // Convert objects to strings for comparison
       if (typeof aVal === 'object' && aVal !== null) {
-        aVal = JSON.stringify(aVal) as any;
+        aVal = JSON.stringify(aVal) as string;
       }
       if (typeof bVal === 'object' && bVal !== null) {
-        bVal = JSON.stringify(bVal) as any;
+        bVal = JSON.stringify(bVal) as string;
       }
 
       if (aVal == null || bVal == null) return 0;

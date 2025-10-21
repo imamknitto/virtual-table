@@ -1,5 +1,5 @@
 export const CODE_EXAMPLE_BASIC = `import { KnittoTable, type IHeader } from '@knitto/virtual-table';
-import { faker } from '@faker-js/faker';
+import { generateEmployeeData } from './lib/constants';
 
 // Define employee data type
 interface IEmployee {
@@ -17,18 +17,7 @@ interface IEmployee {
 
 // Generate sample data
 const generateEmployeeData = (): IEmployee[] => {
-  return Array.from({ length: 25 }, (_, index) => ({
-    id: index + 1,
-    name: faker.person.fullName(),
-    email: faker.internet.email(),
-    company: faker.company.name(),
-    position: faker.person.jobTitle(),
-    phone: faker.phone.number(),
-    address: faker.location.streetAddress(),
-    city: faker.location.city(),
-    country: faker.location.country(),
-    salary: faker.number.int({ min: 30000, max: 150000 }),
-  }));
+  return generateEmployeeData(25);
 };
 
 const BasicImplementation = () => {
@@ -61,7 +50,7 @@ const BasicImplementation = () => {
 };`;
 
 export const CODE_EXAMPLE_WITH_COLSPAN = `import { KnittoTable, type IHeader } from '@knitto/virtual-table';
-import { faker } from '@faker-js/faker';
+import { generateEmployeeData } from './lib/constants';
 
 // Define employee data type
 interface IEmployee {
@@ -79,18 +68,7 @@ interface IEmployee {
 
 // Generate sample data
 const generateEmployeeData = (): IEmployee[] => {
-  return Array.from({ length: 25 }, (_, index) => ({
-    id: index + 1,
-    name: faker.person.fullName(),
-    email: faker.internet.email(),
-    company: faker.company.name(),
-    position: faker.person.jobTitle(),
-    phone: faker.phone.number(),
-    address: faker.location.streetAddress(),
-    city: faker.location.city(),
-    country: faker.location.country(),
-    salary: faker.number.int({ min: 30000, max: 150000 }),
-  }));
+  return generateEmployeeData(25);
 };
 
 const WithColspan = () => {
@@ -135,7 +113,7 @@ const WithColspan = () => {
 };`;
 
 export const CODE_EXAMPLE_WITH_FREEZE = `import { KnittoTable, type IHeader } from '@knitto/virtual-table';
-import { faker } from '@faker-js/faker';
+import { generateEmployeeData } from './lib/constants';
 
 // Define employee data type
 interface IEmployee {
@@ -153,18 +131,7 @@ interface IEmployee {
 
 // Generate sample data
 const generateEmployeeData = (): IEmployee[] => {
-  return Array.from({ length: 25 }, (_, index) => ({
-    id: index + 1,
-    name: faker.person.fullName(),
-    email: faker.internet.email(),
-    company: faker.company.name(),
-    position: faker.person.jobTitle(),
-    phone: faker.phone.number(),
-    address: faker.location.streetAddress(),
-    city: faker.location.city(),
-    country: faker.location.country(),
-    salary: faker.number.int({ min: 30000, max: 150000 }),
-  }));
+  return generateEmployeeData(25);
 };
 
 const WithFreezeColumn = () => {

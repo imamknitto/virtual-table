@@ -1,19 +1,30 @@
-import { faker } from '@faker-js/faker';
+import { 
+  getRandomElement, 
+  getRandomNumber,
+  getRandomDate,
+  SAMPLE_NAMES,
+  SAMPLE_EMAILS,
+  SAMPLE_DEPARTMENTS,
+  SAMPLE_JOB_TITLES,
+  SAMPLE_CITIES
+} from '../../../../lib/constants';
 import type { Employee } from './types';
+
+const STATUSES = ['active', 'inactive'];
 
 export const generateEmployeeData = (count: number = 100): Employee[] => {
   return Array.from({ length: count }, (_, index) => ({
     id: index + 1,
-    name: faker.person.fullName(),
-    email: faker.internet.email(),
-    department: faker.commerce.department(),
-    position: faker.person.jobTitle(),
-    salary: faker.number.int({ min: 30000, max: 150000 }),
-    startDate: faker.date.past({ years: 5 }).toISOString().split('T')[0],
-    status: faker.helpers.arrayElement(['active', 'inactive']) as Employee['status'],
-    location: faker.location.city(),
-    manager: faker.person.fullName(),
-    performance: faker.number.int({ min: 1, max: 5 }),
+    name: getRandomElement(SAMPLE_NAMES),
+    email: getRandomElement(SAMPLE_EMAILS),
+    department: getRandomElement(SAMPLE_DEPARTMENTS),
+    position: getRandomElement(SAMPLE_JOB_TITLES),
+    salary: getRandomNumber(30000, 150000),
+    startDate: getRandomDate(5),
+    status: getRandomElement(STATUSES) as Employee['status'],
+    location: getRandomElement(SAMPLE_CITIES),
+    manager: getRandomElement(SAMPLE_NAMES),
+    performance: getRandomNumber(1, 5),
   }));
 };
 

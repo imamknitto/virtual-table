@@ -1,6 +1,6 @@
 export const CODE_EXAMPLE = `import { useState, useMemo } from 'react';
 import { KnittoTable, type IHeader } from '@knitto/virtual-table';
-import { faker } from '@faker-js/faker';
+import { generateEmployeeData } from './lib/constants';
 import clsx from 'clsx';
 
 type Employee = {
