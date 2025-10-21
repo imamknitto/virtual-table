@@ -3,7 +3,8 @@ import { memo, type ReactNode, useMemo, useCallback } from 'react';
 import clsx from 'clsx';
 
 import NativeTableCell from './components/native-table-cell';
-import { RowCheckbox, RowExpand } from './components';
+import RowCheckbox from './components/body/row-checkbox';
+import RowExpand from './components/body/row-expand';
 import type { IHeader, IKnittoTable, IAdjustedHeader } from './lib';
 import { useFlattenColumns } from './context/header-context';
 import { useFilteredData } from './context/filter-context';

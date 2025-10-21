@@ -1,5 +1,5 @@
 export const CODE_EXAMPLE_BASIC_ROWSPAN = `import { KnittoTable, type IHeader } from '@knitto/virtual-table';
-import { faker } from '@faker-js/faker';
+import { generateEmployeeData } from './lib/constants';
 
 // Define employee data type
 interface IEmployee {
@@ -14,18 +14,7 @@ interface IEmployee {
 
 // Generate sample data (must be pre-sorted for rowspan)
 const generateEmployeeData = (): IEmployee[] => {
-  const departments = ['Engineering', 'Marketing', 'Sales', 'HR'];
-  const teams = ['Frontend', 'Backend', 'DevOps', 'Design'];
-  
-  return Array.from({ length: 20 }, (_, index) => ({
-    id: index + 1,
-    department: departments[Math.floor(index / 5)],
-    team: teams[Math.floor(index / 2.5)],
-    name: faker.person.fullName(),
-    position: faker.person.jobTitle(),
-    email: faker.internet.email(),
-    salary: faker.number.int({ min: 50000, max: 150000 }),
-  }));
+  return generateEmployeeData(20);
 };
 
 const BasicRowspanExample = () => {

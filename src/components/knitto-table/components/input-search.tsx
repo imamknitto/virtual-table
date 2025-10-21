@@ -1,6 +1,7 @@
 import clsx from 'clsx';
-import { forwardRef, useCallback, useEffect, useRef, useState } from 'react';
-import IcClose from '../icons/ic-close';
+import { forwardRef, useCallback, useEffect, useRef, useState, lazy, Suspense } from 'react';
+
+const IcClose = lazy(() => import('../icons/ic-close'));
 
 interface ITableVirtualInput extends React.InputHTMLAttributes<HTMLInputElement> {
   onClickEnter?: () => void;
@@ -69,13 +70,15 @@ const InputSearch = forwardRef<HTMLInputElement, ITableVirtualInput>(
         />
 
         {!props.disabled && (
-          <IcClose
-            onClick={onRemoveSearch}
-            className={clsx(
-              '!w-4 absolute right-1 top-1/2 -translate-y-1/2 text-gray-600 cursor-pointer',
-              'opacity-0 group-hover/input:opacity-100 transition-opacity duration-200 hover:text-red-600',
-            )}
-          />
+          <Suspense fallback={<div className='w-4 h-4' />}>
+            <IcClose
+              onClick={onRemoveSearch}
+              className={clsx(
+                '!w-4 absolute right-1 top-1/2 -translate-y-1/2 text-gray-600 cursor-pointer',
+                'opacity-0 group-hover/input:opacity-100 transition-opacity duration-200 hover:text-red-600',
+              )}
+            />
+          </Suspense>
         )}
       </div>
     );

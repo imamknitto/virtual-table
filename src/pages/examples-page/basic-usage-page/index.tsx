@@ -1,9 +1,9 @@
 import { memo, useMemo } from 'react';
 import { FeaturesSection, NextStepsSection, PreviewSection } from './components';
-import { generateSampleData } from './utils';
+import { generateEmployeeData } from '../../../lib/constants';
 
 const BasicUsagePage = () => {
-  const data = useMemo(() => generateSampleData(), []);
+  const data = useMemo(() => generateEmployeeData(50), []);
 
   return (
     <div className='space-y-8'>
@@ -28,4 +28,3 @@ const BasicUsagePage = () => {
 };
 
 export default memo(BasicUsagePage);
-

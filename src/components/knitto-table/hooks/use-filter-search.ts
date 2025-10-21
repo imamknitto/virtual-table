@@ -17,7 +17,7 @@ export default function useFilterSearch<TDataSource>(props: ISearchTable<TDataSo
   const [isSearchCardOpen, setIsSearchCardOpen] = useState({ show: false, key: '' });
 
   const [activeSearch, seActiveSearch] = useState<Record<keyof TDataSource, string>>(
-    {} as Record<keyof TDataSource, string>
+    {} as Record<keyof TDataSource, string>,
   );
 
   // reset session storage of search per column on reload page
@@ -46,10 +46,10 @@ export default function useFilterSearch<TDataSource>(props: ISearchTable<TDataSo
         JSON.stringify({
           ...JSON.parse(sessionStorage.getItem(SESSION_STORAGE_KEY.SEARCH_PER_COLUMN) || '{}'),
           [useSessionFilter?.tableKey || '']: data,
-        })
+        }),
       );
     },
-    [useSessionFilter]
+    [useSessionFilter],
   );
 
   const searchedData = useMemo(() => {
@@ -63,8 +63,8 @@ export default function useFilterSearch<TDataSource>(props: ISearchTable<TDataSo
           : row[dataKey as keyof TDataSource]
               ?.toString()
               ?.toLowerCase()
-              ?.includes((searchValue as string).toLowerCase())
-      )
+              ?.includes((searchValue as string).toLowerCase()),
+      ),
     );
   }, [data, activeSearch, useServerSearch]);
 
@@ -89,16 +89,17 @@ export default function useFilterSearch<TDataSource>(props: ISearchTable<TDataSo
 
       setIsSearchCardOpen({ show: false, key: '' });
     },
-    [onChangeSearch]
+    [onChangeSearch],
   );
 
   const resetSearch = useCallback(
     (dataKey: keyof TDataSource | string) => {
       function removeKeyImmutable<K extends keyof TDataSource>(
         source: Record<keyof TDataSource, string>,
-        key: K
+        key: K,
       ): Record<Exclude<keyof TDataSource, K>, string> {
-        const { [key]: _, ...rest } = source;
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { [key]: _unused, ...rest } = source;
         return rest;
       }
 
@@ -110,7 +111,7 @@ export default function useFilterSearch<TDataSource>(props: ISearchTable<TDataSo
 
       setIsSearchCardOpen({ show: false, key: '' });
     },
-    [onChangeSearch, activeSearch]
+    [onChangeSearch, activeSearch],
   );
 
   const resetAllSearch = useCallback(() => seActiveSearch({} as Record<keyof TDataSource, string>), []);

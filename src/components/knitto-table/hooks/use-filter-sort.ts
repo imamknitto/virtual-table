@@ -26,8 +26,20 @@ export default function useFilterSort<TDataSource>(props: ISortTable<TDataSource
     if (useServerSort) return data;
 
     const sorted = [...data].sort((a, b) => {
-      if (a[sortKey as keyof TDataSource] < b[sortKey as keyof TDataSource]) return sortBy === 'asc' ? -1 : 1;
-      if (a[sortKey as keyof TDataSource] > b[sortKey as keyof TDataSource]) return sortBy === 'asc' ? 1 : -1;
+      const aValue = a[sortKey as keyof TDataSource];
+      const bValue = b[sortKey as keyof TDataSource];
+
+      // Handle null/undefined values
+      if (aValue == null && bValue == null) return 0;
+      if (aValue == null) return sortBy === 'asc' ? -1 : 1;
+      if (bValue == null) return sortBy === 'asc' ? 1 : -1;
+
+      // Convert to string and normalize case for comparison
+      const aStr = String(aValue).toLowerCase();
+      const bStr = String(bValue).toLowerCase();
+
+      if (aStr < bStr) return sortBy === 'asc' ? -1 : 1;
+      if (aStr > bStr) return sortBy === 'asc' ? 1 : -1;
       return 0;
     });
 
@@ -45,7 +57,7 @@ export default function useFilterSort<TDataSource>(props: ISortTable<TDataSource
         return newSortBy === 'unset' ? null : key;
       });
     },
-    [sortBy, onChangeSort]
+    [sortBy, onChangeSort],
   );
 
   const handleSpecificSort = useCallback(
@@ -54,7 +66,7 @@ export default function useFilterSort<TDataSource>(props: ISortTable<TDataSource
       setSortBy(sortBy);
       onChangeSort?.(key, sortBy);
     },
-    [onChangeSort]
+    [onChangeSort],
   );
 
   return { sortedData, handleSort, handleSpecificSort, sortKey, sortBy };

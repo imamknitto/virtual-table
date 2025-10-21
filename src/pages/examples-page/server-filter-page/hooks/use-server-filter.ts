@@ -23,7 +23,7 @@ export const useServerFilter = () => {
 
       const result = await fetchCombinedData(fetchParams);
       setData(result);
-    } catch (error) {
+    } catch {
       setData([]);
     } finally {
       setLoading(false);

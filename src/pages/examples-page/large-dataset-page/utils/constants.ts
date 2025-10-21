@@ -1,16 +1,12 @@
 export const CODE_EXAMPLES = {
   basicUsage: `import { KnittoTable, type IHeader } from '@knitto/virtual-table';
 import { useMemo } from 'react';
+import { generateLargeEmployeeData } from './lib/constants';
 
 const LargeDatasetTable = () => {
   // Generate large dataset (1M records)
   const data = useMemo(() => {
-    return Array.from({ length: 1000000 }, (_, index) => ({
-      id: index + 1,
-      name: faker.person.fullName(),
-      email: faker.internet.email(),
-      // ... other fields
-    }));
+    return generateLargeEmployeeData(1000000);
   }, []);
 
   const headers: IHeader<(typeof data)[0]>[] = [

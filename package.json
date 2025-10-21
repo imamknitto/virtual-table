@@ -1,17 +1,18 @@
 {
   "name": "react-virtualized-table",
   "private": true,
-  "version": "1.7.0",
+  "version": "1.7.1",
   "type": "module",
   "homepage": "https://imamknitto.github.io/virtual-table/",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "build:analyze": "tsc -b && vite build --mode analyze",
+    "analyze": "node scripts/analyze-bundle.js",
     "lint": "eslint .",
     "preview": "vite preview"
   },
   "dependencies": {
-    "@faker-js/faker": "^10.0.0",
     "@originjs/vite-plugin-federation": "^1.4.1",
     "@tailwindcss/vite": "^4.1.10",
     "@tanstack/react-virtual": "^3.13.10",
@@ -33,6 +34,7 @@
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.19",
     "globals": "^16.0.0",
+    "terser": "^5.44.0",
     "typescript": "~5.8.3",
     "typescript-eslint": "^8.30.1",
     "vite": "^6.3.5"

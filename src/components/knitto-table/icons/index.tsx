@@ -1,31 +1,89 @@
-import { memo } from 'react';
+import { memo, lazy, Suspense } from 'react';
 import type { IIconProps } from '../lib';
-import IcCheck from './ic-check';
-import IcChevron from './ic-chevon';
-import IcClose from './ic-close';
-import IcColumn from './ic-column';
-import IcCopy from './ic-copy';
-import IcDelete from './ic-delete';
-import IcDotsVertical from './ic-dots-vertical';
-import IcFilterAdvance from './ic-filter-advance';
-import IcFilterMultiple from './ic-filter-multiple';
-import IcMenu from './ic-menu';
-import IcSearch from './ic-search';
-import IcSort, { type IconSortProps } from './ic-sort';
+
+// Lazy load icons to reduce initial bundle size
+const IcCheck = lazy(() => import('./ic-check'));
+const IcChevron = lazy(() => import('./ic-chevon'));
+const IcClose = lazy(() => import('./ic-close'));
+const IcColumn = lazy(() => import('./ic-column'));
+const IcCopy = lazy(() => import('./ic-copy'));
+const IcDelete = lazy(() => import('./ic-delete'));
+const IcDotsVertical = lazy(() => import('./ic-dots-vertical'));
+const IcFilterAdvance = lazy(() => import('./ic-filter-advance'));
+const IcFilterMultiple = lazy(() => import('./ic-filter-multiple'));
+const IcMenu = lazy(() => import('./ic-menu'));
+const IcSearch = lazy(() => import('./ic-search'));
+const IcSort = lazy(() => import('./ic-sort'));
+
+// Import type for sort icon
+import type { IconSortProps } from './ic-sort';
+
+// Icon wrapper component for lazy loading
+const IconWrapper = ({ children }: { children: React.ReactNode }) => (
+  <Suspense fallback={<div className='w-4 h-4' />}>{children}</Suspense>
+);
 
 export const icons = {
-  close: (props: IIconProps) => <IcClose {...props} />,
-  chevron: (prop: IIconProps) => <IcChevron {...prop} />,
-  column: (prop: IIconProps) => <IcColumn {...prop} />,
-  copy: (prop: IIconProps) => <IcCopy {...prop} />,
-  sort: (prop: IconSortProps) => <IcSort {...prop} />,
-  delete: (prop: IIconProps) => <IcDelete {...prop} />,
-  dotsVertical: (prop: IIconProps) => <IcDotsVertical {...prop} />,
-  filterAdvance: (prop: IIconProps) => <IcFilterAdvance {...prop} />,
-  filterMultiple: (prop: IIconProps) => <IcFilterMultiple {...prop} />,
-  search: (prop: IIconProps) => <IcSearch {...prop} />,
-  menu: (prop: IIconProps) => <IcMenu {...prop} />,
-  check: (prop: IIconProps) => <IcCheck {...prop} />,
+  close: (props: IIconProps) => (
+    <IconWrapper>
+      <IcClose {...props} />
+    </IconWrapper>
+  ),
+  chevron: (prop: IIconProps) => (
+    <IconWrapper>
+      <IcChevron {...prop} />
+    </IconWrapper>
+  ),
+  column: (prop: IIconProps) => (
+    <IconWrapper>
+      <IcColumn {...prop} />
+    </IconWrapper>
+  ),
+  copy: (prop: IIconProps) => (
+    <IconWrapper>
+      <IcCopy {...prop} />
+    </IconWrapper>
+  ),
+  sort: (prop: IconSortProps) => (
+    <IconWrapper>
+      <IcSort {...prop} />
+    </IconWrapper>
+  ),
+  delete: (prop: IIconProps) => (
+    <IconWrapper>
+      <IcDelete {...prop} />
+    </IconWrapper>
+  ),
+  dotsVertical: (prop: IIconProps) => (
+    <IconWrapper>
+      <IcDotsVertical {...prop} />
+    </IconWrapper>
+  ),
+  filterAdvance: (prop: IIconProps) => (
+    <IconWrapper>
+      <IcFilterAdvance {...prop} />
+    </IconWrapper>
+  ),
+  filterMultiple: (prop: IIconProps) => (
+    <IconWrapper>
+      <IcFilterMultiple {...prop} />
+    </IconWrapper>
+  ),
+  search: (prop: IIconProps) => (
+    <IconWrapper>
+      <IcSearch {...prop} />
+    </IconWrapper>
+  ),
+  menu: (prop: IIconProps) => (
+    <IconWrapper>
+      <IcMenu {...prop} />
+    </IconWrapper>
+  ),
+  check: (prop: IIconProps) => (
+    <IconWrapper>
+      <IcCheck {...prop} />
+    </IconWrapper>
+  ),
 };
 
 type IconName = keyof typeof icons;

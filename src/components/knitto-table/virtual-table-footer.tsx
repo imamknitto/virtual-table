@@ -1,5 +1,5 @@
 import { memo } from 'react';
-import { FooterCell } from './components';
+import FooterCell from './components/footer/footer-cell';
 import {
   useColumns,
   useFreezeLeftColumns,
