@@ -118,7 +118,7 @@ function HeaderCellNested(props: INestedHeaderCell) {
 
     // Get virtual items and find the correct parent item
     const virtualItems = typeof parentVirtualIndex === 'number' ? columnVirtualizer?.getVirtualItems() : null;
-    const virtualParent = virtualItems?.find((item: any) => columns[item.index]?.key === parentKey);
+    const virtualParent = virtualItems?.find((item) => columns[item.index]?.key === parentKey);
 
     // Use virtual size if available, otherwise fallback to original width
     const parentSize = virtualParent?.size ?? parent.width;
