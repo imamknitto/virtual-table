@@ -76,13 +76,7 @@ export default defineConfig({
     // Enable source maps for debugging
     sourcemap: true,
     // Optimize chunk size
-    chunkSizeWarningLimit: 1000,
-    terserOptions: {
-      compress: {
-        drop_console: true,
-        drop_debugger: true,
-      },
-    },
+    chunkSizeWarningLimit: 500,
   },
   // Enable experimental features for better performance
   optimizeDeps: {
@@ -95,6 +89,5 @@ export default defineConfig({
       'clsx',
       'use-context-selector',
     ],
-    exclude: ['@faker-js/faker'], // Exclude faker from optimization
   },
 });
