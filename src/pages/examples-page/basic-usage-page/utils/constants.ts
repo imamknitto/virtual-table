@@ -1,19 +1,9 @@
 export const CODE_EXAMPLE = `import { KnittoTable, type IHeader } from '@knitto/virtual-table';
-import { faker } from '@faker-js/faker';
+import { generateEmployeeData } from './lib/constants';
 
 // Generate sample data
 const generateSampleData = () => {
-  return Array.from({ length: 20 }, (_, index) => ({
-    id: index + 1,
-    name: faker.person.fullName(),
-    email: faker.internet.email(),
-    company: faker.company.name(),
-    position: faker.person.jobTitle(),
-    phone: faker.phone.number(),
-    city: faker.location.city(),
-    country: faker.location.country(),
-    salary: faker.number.int({ min: 30000, max: 150000 }),
-  }));
+  return generateEmployeeData(20);
 };
 
 const MyTable = () => {
