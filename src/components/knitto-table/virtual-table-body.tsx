@@ -492,7 +492,7 @@ const VirtualTableBody = forwardRef(<TData,>(props: IVirtualTableBody<TData>, re
       onDoubleClick={handleDoubleClickRow}
       onContextMenu={handleContextMenu}
       onChange={handleCheckboxChange}
-      style={{ position: 'relative', top: calcHeaderTotalHeight, height: calcBodyHeight }}
+      style={{ position: 'relative', top: calcHeaderTotalHeight, height: calcBodyHeight, minHeight: calcBodyHeight }}
     >
       <div
         className='absolute top-0 left-0 w-full'

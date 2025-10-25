@@ -1,4 +1,4 @@
-import { KnittoTable, type IHeader } from '../components/knitto-table';
+import { KnittoTable, type IHeader } from '../../components/knitto-table';
 
 // ========== Combined Colspan & Rowspan Example Data ==========
 type SalesReport = {
@@ -216,7 +216,7 @@ const combinedHeaders: IHeader<SalesReport>[] = [
   { key: 'totalSales', caption: 'Total Sales', width: 120, freeze: 'right', renderFooter: () => 'XXXXX' },
 ];
 
-function ExplorePage() {
+function RegularRowspan() {
   return (
     <div className='flex flex-col gap-y-8'>
       <div className='space-y-2.5'>
@@ -228,6 +228,7 @@ function ExplorePage() {
 
         <div className='h-96'>
           <KnittoTable
+            useFooter
             rowKey='id'
             isLoading={false}
             headers={combinedHeaders}
@@ -246,4 +247,4 @@ function ExplorePage() {
   );
 }
 
-export default ExplorePage;
+export default RegularRowspan;

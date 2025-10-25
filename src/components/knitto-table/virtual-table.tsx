@@ -39,6 +39,7 @@ function VirtualTable<TData>(props: TPickKnittoTable<TData>) {
   return (
     <>
       <VirtualTableHeader />
+      {useFooter && <VirtualTableFooter footerHeight={footerHeight} />}
 
       <VirtualTableBody
         headerHeight={headerHeight}
@@ -51,7 +52,6 @@ function VirtualTable<TData>(props: TPickKnittoTable<TData>) {
         onRightClickRowToParent={onRightClickRow}
       />
 
-      {useFooter && <VirtualTableFooter footerHeight={footerHeight} />}
       {!isLoading && <EmptyDataIndicator containerHeight={containerHeight} />}
     </>
   );

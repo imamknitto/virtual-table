@@ -11,7 +11,11 @@ const RowExpandedContent = (props: RowExpandedContentProps): ReactNode => {
   const { width, emptyPadding, children } = props;
 
   return (
-    <div data-name="row-expanded" style={{ width }} className={clsx('border-b border-gray-200', emptyPadding && 'p-2')}>
+    <div
+      data-name='row-expanded'
+      style={{ width, height: 'auto' }}
+      className={clsx('border-b border-gray-200', emptyPadding && 'p-2')}
+    >
       {children}
     </div>
   );
