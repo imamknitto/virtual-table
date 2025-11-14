@@ -254,8 +254,33 @@ export interface IKnittoTable<TData> {
    *   data.status === 'active' ? 'bg-green-50' : 'bg-red-50'
    * }
    * ```
+   * 
+   * * @example
+   * Highlight row with blue border
+   * ```tsx
+   * classNameCell={(data, rowIndex, columnIndex, opts) => {
+   *   return clsx({
+   *     '!border-l !border-l-blue-950': opts?.isFirstIndex && opts?.isRowHighlighted,
+   *     '!border-r !border-r-blue-950': opts?.isLastIndex && opts?.isRowHighlighted,
+   *     '!border-y !border-y-blue-950 bg-[#ECEEFF]': opts?.isRowHighlighted,
+   *   });
+   * }}
+   * ```
    */
-  classNameCell?: (data: TData, rowIndex: number, columnIndex: number) => string;
+  classNameCell?: (
+    data: TData,
+    rowIndex: number,
+    columnIndex: number,
+    opts?: {
+      isRowHighlighted?: boolean;
+      isFirstIndex?: boolean;
+      isLastIndex?: boolean;
+      hasFreezeLeft?: boolean;
+      hasFreezeRight?: boolean;
+      isFreezeLeft?: boolean;
+      isFreezeRight?: boolean;
+    },
+  ) => string;
 
   /**
    * Custom render function for expanded row content.

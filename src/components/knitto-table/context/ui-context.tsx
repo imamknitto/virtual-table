@@ -22,7 +22,20 @@ export type IUIContext = {
   calcHeaderTotalHeight: number;
   useDynamicRowHeight: boolean;
   expandedContent: (rowData: unknown) => ReactNode;
-  classNameCell?: (data: unknown, rowIndex: number, columnIndex: number) => string;
+  classNameCell?: (
+    data: unknown,
+    rowIndex: number,
+    columnIndex: number,
+    opts?: {
+      isRowHighlighted?: boolean;
+      isFirstIndex?: boolean;
+      isLastIndex?: boolean;
+      hasFreezeLeft?: boolean;
+      hasFreezeRight?: boolean;
+      isFreezeLeft?: boolean;
+      isFreezeRight?: boolean;
+    },
+  ) => string;
 };
 
 type IUIContextProviderProps<TData = unknown> = {
@@ -34,7 +47,20 @@ type IUIContextProviderProps<TData = unknown> = {
   isFilterVisible?: boolean;
   useDynamicRowHeight?: boolean;
   expandedContent?: (rowData: unknown) => ReactNode;
-  classNameCell?: (data: TData, rowIndex: number, columnIndex: number) => string;
+  classNameCell?: (
+    data: TData,
+    rowIndex: number,
+    columnIndex: number,
+    opts?: {
+      isRowHighlighted?: boolean;
+      isFirstIndex?: boolean;
+      isLastIndex?: boolean;
+      hasFreezeLeft?: boolean;
+      hasFreezeRight?: boolean;
+      isFreezeLeft?: boolean;
+      isFreezeRight?: boolean;
+    },
+  ) => string;
 };
 
 // ==================== Context ====================

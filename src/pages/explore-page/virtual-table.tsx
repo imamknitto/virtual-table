@@ -1,6 +1,7 @@
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { KnittoTable, type IHeader } from '../../components/knitto-table';
 import { generateEmployeeData, type Employee } from '../../lib/constants';
+import clsx from 'clsx';
 
 const employeeHeaders = (): IHeader<Employee>[] => [
   { key: 'name', caption: 'Name', width: 200 },
@@ -32,6 +33,16 @@ function VirtualTable() {
         headers={employeeHeaders()}
         rowHeight={32}
         rowKey='id'
+        classNameCell={(_, __, ___, opts) => {
+          return clsx({
+            '!border-l !border-l-blue-950': opts?.isFirstIndex && opts?.isRowHighlighted,
+            '!border-r !border-r-blue-950': opts?.isLastIndex && opts?.isRowHighlighted,
+            '!border-y !border-y-blue-950 bg-[#ECEEFF]': opts?.isRowHighlighted,
+          });
+        }}
+        onClickRow={(item, rowIndex, columnIndex) => {
+          console.log({ item, rowIndex, columnIndex });
+        }}
       />
     </div>
   );

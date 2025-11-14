@@ -5,6 +5,7 @@ import { getProductHeaders } from '../utils/table-headers';
 import CodeBlock from './code-block';
 import ContextMenu from './context-menu';
 import InteractionLog from './interaction-log';
+import clsx from 'clsx';
 
 type PreviewSectionProps = {
   data: Product[];
@@ -55,13 +56,13 @@ const PreviewSection = ({
         <div className='lg:col-span-2'>
           <div className='h-96'>
             <KnittoTable
-              classNameCell={(item) => {
-                if (selectedRow?.id === item.id)
-                  return 'bg-blue-50 dark:bg-blue-950 !border-l-blue-950 dark:!border-blue-800';
-                if (doubleClickedRow?.id === item.id)
-                  return 'bg-green-50 dark:bg-green-950 !border-l-green-950 dark:!border-green-800';
-                return '';
-              }}
+              // classNameCell={(item) => {
+              //   if (selectedRow?.id === item.id)
+              //     return 'bg-blue-50 dark:bg-blue-950 !border-l-blue-950 dark:!border-blue-800';
+              //   if (doubleClickedRow?.id === item.id)
+              //     return 'bg-green-50 dark:bg-green-950 !border-l-green-950 dark:!border-green-800';
+              //   return '';
+              // }}
               data={data}
               filterHeight={32}
               headerHeight={40}
@@ -72,6 +73,13 @@ const PreviewSection = ({
               onRightClickRow={onRightClickRow}
               rowHeight={32}
               rowKey='id'
+              classNameCell={(_, __, ___, opts) => {
+                return clsx({
+                  '!border-l !border-l-blue-950': opts?.isFirstIndex && opts?.isRowHighlighted,
+                  '!border-r !border-r-blue-950': opts?.isLastIndex && opts?.isRowHighlighted,
+                  '!border-y !border-y-blue-950 bg-[#ECEEFF]': opts?.isRowHighlighted,
+                });
+              }}
             />
           </div>
 

@@ -121,7 +121,7 @@ function HeaderCell(props: IHeaderCell) {
           <div
             style={{ height: DEFAULT_SIZE.GROUP_HEADER_HEIGHT }}
             className={clsx(
-              'w-full border-b border-gray-200 text-center content-center',
+              'w-full border-b border-[#D2D2D4] text-center content-center',
               freezeType === 'right' ? 'border-l' : 'border-r',
             )}
           >

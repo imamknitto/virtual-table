@@ -78,6 +78,7 @@ const VirtualTableHeaderV2 = forwardRef(
     const renderFreezeRightColumns = () => {
       return freezeRightColumns.map((column, freezeRightIdx) => {
         const hasChildren = column?.children;
+        const isLastColumn = freezeRightIdx === freezeRightColumns.length - 1;
 
         return (
           <HeaderCell
@@ -92,7 +93,7 @@ const VirtualTableHeaderV2 = forwardRef(
               width: column.width!,
               top: 0,
             }}
-            cellClassName={clsx(!hasChildren && 'border-l')}
+            cellClassName={clsx(!hasChildren && 'border-l', isLastColumn && 'border-r')}
           />
         );
       });
@@ -102,7 +103,6 @@ const VirtualTableHeaderV2 = forwardRef(
       return columnVirtualItems?.map((column) => {
         const header = columns[column.index];
         const hasChildren = header?.children;
-        const isLastColumn = column.index === columns.length - 1;
 
         return (
           <HeaderCell
@@ -116,7 +116,7 @@ const VirtualTableHeaderV2 = forwardRef(
               width: column.size,
               top: 0,
             }}
-            cellClassName={clsx(!hasChildren && 'border-r', isLastColumn && 'border-r-transparent')}
+            cellClassName={clsx(!hasChildren && 'border-r')}
           />
         );
       });

@@ -177,7 +177,7 @@ function RegularTableHeader({ headerHeight }: IRegularTableHeader) {
 
           const baseClassName = clsx('size-full relative group/outer', {
             'border-b border-r border-[#D2D2D4]': !isLastColumn,
-            'border-l': isFreezeRight,
+            'border-l border-[#D2D2D4]': isFreezeRight,
             'h-full content-center': true,
             'bg-[#EFF0F6] dark:bg-black': true,
             'text-start !text-xs font-semibold': true,
@@ -290,7 +290,7 @@ function RegularTableHeader({ headerHeight }: IRegularTableHeader) {
             const childFreezeRightPosition = isFreezeRight ? parentFreezeRightPosition + childOffset : 0;
 
             const baseClassName = clsx('size-full relative group/outer', {
-              'border-r': true,
+              'border-r border-b border-[#D2D2D4]': true,
               'h-full content-center': true,
               'bg-[#EFF0F6] dark:bg-black': true,
               '!text-xs font-semibold': true,
@@ -382,8 +382,8 @@ function RegularTableHeader({ headerHeight }: IRegularTableHeader) {
 
               const baseClassName = clsx('size-full relative group/outer', {
                 '!border-r border-[#D2D2D4]': !isLastColumn,
-                'border-l': isFreezeRight,
-                'h-full content-center': true,
+                'border-l border-[#D2D2D4]': isFreezeRight,
+                'h-full border-b border-[#D2D2D4] content-center': true,
                 'bg-[#EFF0F6] dark:bg-black': true,
                 '!text-xs font-semibold': true,
               });

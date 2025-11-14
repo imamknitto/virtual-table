@@ -137,7 +137,7 @@ function HeaderCellNested(props: INestedHeaderCell) {
     return (
       <div
         className={clsx(
-          'group/outer relative border-gray-200 flex h-full',
+          'group/outer relative border-[#D2D2D4] flex h-full',
           freezeType === 'right' ? 'border-l' : 'border-r',
           isSingleHeader ? 'flex-row justify-between items-center px-1' : 'flex-col justify-between items-start',
           cellClassName,

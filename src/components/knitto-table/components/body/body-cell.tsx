@@ -59,8 +59,27 @@ function BodyCell<TData>(bodyCellProps: IBodyCell<TData>) {
   // Memoize custom className untuk performa optimal
   const customClassName = useMemo(() => {
     if (!classNameCell) return '';
-    return classNameCell(rowData, rowIndex, columnIndex);
-  }, [classNameCell, rowData, rowIndex, columnIndex]);
+    return classNameCell(rowData, rowIndex, columnIndex, {
+      isRowHighlighted,
+      isFirstIndex,
+      isLastIndex,
+      hasFreezeLeft: freezeLeftColumnsWidth > 0,
+      hasFreezeRight: freezeRightColumnsWidth > 0,
+      isFreezeLeft: freezeMode === 'left',
+      isFreezeRight: freezeMode === 'right',
+    });
+  }, [
+    classNameCell,
+    rowData,
+    rowIndex,
+    columnIndex,
+    isRowHighlighted,
+    isFirstIndex,
+    isLastIndex,
+    freezeLeftColumnsWidth,
+    freezeRightColumnsWidth,
+    freezeMode,
+  ]);
 
   const classNames = useMemo(() => {
     const baseClasses = {
@@ -73,7 +92,6 @@ function BodyCell<TData>(bodyCellProps: IBodyCell<TData>) {
       return clsx('table-cell border-r bg-white dark:bg-black/50 backdrop-blur-2xl break-words', customClassName, {
         ...baseClasses,
         truncate: !useDynamicRowHeight,
-        '!border-b !border-l !border-t !border-y-[#2F3574] nth-[1]:border-l-[#2F3574]': isRowHighlighted,
       });
     }
 
@@ -81,31 +99,14 @@ function BodyCell<TData>(bodyCellProps: IBodyCell<TData>) {
       return clsx('table-cell border-l bg-white dark:bg-black/50 backdrop-blur-2xl break-words', customClassName, {
         ...baseClasses,
         truncate: !useDynamicRowHeight,
-        '!border-y !border-y-[#2F3574]': isRowHighlighted,
-        '!border-r !border-r-[#2F3574]': isRowHighlighted && isLastIndex,
       });
     }
 
     return clsx('table-cell border-r break-words', customClassName, {
       ...baseClasses,
       truncate: !useDynamicRowHeight,
-      '!border-r-transparent': isLastIndex && !isRowHighlighted,
-      '!border-r-[#2F3574]': isLastIndex && isRowHighlighted && !freezeRightColumnsWidth,
-      'border-l border-l-[#2F3574]': isRowHighlighted && !freezeLeftColumnsWidth && isFirstIndex,
-      'nth-last-[1]:!border-r-[#2F3574]': isRowHighlighted && !freezeRightColumnsWidth,
-      '!border-b !border-t !border-y-[#2F3574]': isRowHighlighted,
     });
-  }, [
-    freezeMode,
-    isRowHighlighted,
-    isVisible,
-    freezeLeftColumnsWidth,
-    freezeRightColumnsWidth,
-    isFirstIndex,
-    isLastIndex,
-    customClassName,
-    useDynamicRowHeight,
-  ]);
+  }, [freezeMode, isRowHighlighted, isVisible, customClassName, useDynamicRowHeight]);
 
   const cellStyle = useMemo(() => {
     if (useDynamicRowHeight) {
@@ -154,6 +155,7 @@ function BodyCell<TData>(bodyCellProps: IBodyCell<TData>) {
       data-row-index={rowIndex}
       data-cell-index={columnIndex}
       data-col-key={String(column.key)}
+      data-cell-highlighted={isRowHighlighted ? 'true' : undefined}
       className={classNames}
       style={cellStyle}
     >

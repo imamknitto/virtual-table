@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { KnittoTable, type IHeader } from '../../components/knitto-table';
 import { generateEmployeeData, type Employee } from '../../lib/constants';
 
